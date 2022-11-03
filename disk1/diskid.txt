@@ -1,0 +1,4 @@
+-------------------------------------
+You can change this file (DISKID.TXT)
+to hold the text you want...
+-------------------------------------
