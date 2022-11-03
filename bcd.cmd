@@ -427,6 +427,7 @@ echo Usage: bcd [-d] [-b] [-s nn] name
 echo        bcd -bab
 echo.
 echo   name    : name of the CD to build
+echo   -a      : build all ISO9660 image files
 echo   -d      : print debug messages
 echo   -b      : burning disabled (only create ISO image)
 echo   -s nn   : set burning speed
@@ -462,7 +463,7 @@ if not exist %temp%\%bcd_name%.iso goto _end2
 if not "%bcd_noburn%" == "" (
 	echo BCD: Burning disabled, so moving ISO file "%temp%\%bcd_name%.iso" to working directory.
 	echo BCD: You can use this ISO file to record with your favorite recording program.
-	xcopy %temp%\%bcd_name%.iso .\%bcd_name%.iso /-I /Q /Y /J
+	xcopy %temp%\%bcd_name%.iso %cd%\ /-I /Y /Q /J /Z
 	goto _end2)
 if exist %temp%\%bcd_name%.iso (
 	echo BCD: Removing ISO file "%temp%\%bcd_name%.iso"
