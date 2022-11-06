@@ -401,7 +401,7 @@ goto :eof
 :_bflopo
 if "%bcd_err%" == "1" goto :eof
 echo BCD: Creating bootimage "%3"
-call bfd.cmd %2 -i %1\files\%3
+call bfd.cmd %2 -i %1\files\%3 -t 288
 if "%rv%" == "1" (
 	set bcd_err=1
 	goto :eof)
@@ -411,7 +411,7 @@ goto :eof
 if "%bcd_err%" == "1" goto :eof
 if exist cds\%bcd_name%\files\%2 goto _biext
 echo BCD: Bootimage "%2" does not exist, let's create it now!
-call bfd.cmd %1 -i cds\%bcd_name%\files\%2
+call bfd.cmd %1 -i cds\%bcd_name%\files\%2 -t 288
 if "%rv%" == "1" set bcd_err=1
 goto :eof
 :_biext
