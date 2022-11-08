@@ -1,6 +1,6 @@
 @echo off
 echo.
-echo BCD, Build CD-Rom, v1.1.2
+echo BCD, Build CD-Rom, v1.1.3
 echo Copyright (c) 2022 John Wolfe. All rights reserved.
 echo.
 verify other 2>nul
