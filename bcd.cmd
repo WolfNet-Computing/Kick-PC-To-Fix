@@ -439,7 +439,6 @@ echo.
 echo This program uses the following files (located in the "bin" directory):
 echo - Mkisofs and Cdrecord by Joerg Schilling (GNU-GPL license). 
 echo - Nero Aspi Library (wnaspi32.dll) by Ahead Software AG (abandonware)
-pause
 goto _end4
 :_4nt
 echo BFD: Cannot run with 4NT! Use the normal command interperter (cmd.exe)
