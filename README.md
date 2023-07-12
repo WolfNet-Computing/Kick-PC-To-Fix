@@ -1,6 +1,8 @@
 # WolfNet-Boot-CD-Builder
 
-Download and install WolfNet-Boot-CD-Builder.exe to the recommended location and click either the shortcut on the desktop or in the start menu and call bcd with your arguments. Examples are included as subfolders. cdrommi is a multiboot cd image and cdromsi is a single boot image. If you don't know which type you need then remember, for one OS it's single boot. If you want multiple bootable entries it's multiboot.  
+CURRENT VERSION = v1.2.3
+
+Download and install WolfNet-Boot-CD-Builder.exe to the "Program Files (x86)" and click either the shortcut on the desktop or in the start menu and call bcd with your arguments. Examples are included as subfolders. cdrommi is a multiboot cd image and cdromsi is a single boot image. If you don't know which type you need then remember, for one OS it's single boot. If you want multiple bootable entries it's multiboot.  
   
 Usage: bcd [-d] [-b] [-s nn] name  
        bcd -bab  

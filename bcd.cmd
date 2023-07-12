@@ -1,7 +1,7 @@
 @echo off
 echo.
-echo BCD, Build CD-Rom, v1.1.3
-echo Copyright (c) 2022 WolfNet Computing. All rights reserved.
+echo BCD, Boot-CD-Builder, v1.2.3
+echo Copyright (c) 2023 WolfNet Computing. All rights reserved.
 echo.
 verify other 2>nul
 setlocal enableextensions
@@ -441,37 +441,54 @@ echo - Mkisofs and Cdrecord by Joerg Schilling (GNU-GPL license).
 echo - Nero Aspi Library (wnaspi32.dll) by Ahead Software AG (abandonware)
 goto _end4
 :_4nt
-echo BFD: Cannot run with 4NT! Use the normal command interperter (cmd.exe)
-goto _abort
+	echo BFD: Cannot run with 4NT! Use the normal command interperter (cmd.exe)
+	goto _abort
 :_noext
-echo BCD: Unable to enable extensions.
-rem flow into _abort
+	echo BCD: Unable to enable extensions.
+	rem flow into _abort
 :_abort
-if exist %temp%\%bcd_name%.iso (
-	echo BCD: Aborting, removing ISO file "%temp%\%bcd_name%.iso"
-	del %temp%\%bcd_name%.iso)
-echo BCD: Aborted...
-echo.
-rem set return value to 1
-endlocal
-set rv=1
-pause
-goto _end3
+	if exist %temp%\%bcd_name%.iso (
+		echo BCD: Aborting, removing ISO file "%temp%\%bcd_name%.iso"
+		del %temp%\%bcd_name%.iso
+	)
+	echo BCD: Aborted...
+	echo.
+	rem set return value to 1
+	endlocal
+	set rv=1
+	pause
+	goto _end3
+
 :_end
-if not exist %temp%\%bcd_name%.iso goto _end2
-if not "%bcd_noburn%" == "" (
-	echo BCD: Burning disabled, so moving ISO file "%temp%\%bcd_name%.iso" to working directory.
-	echo BCD: You can use this ISO file to record with your favorite recording program.
-	xcopy %temp%\%bcd_name%.iso %cd%\ /-I /Y /Q /J /Z
-	goto _end2)
-if exist %temp%\%bcd_name%.iso (
-	echo BCD: Removing ISO file "%temp%\%bcd_name%.iso"
-	del %temp%\%bcd_name%.iso)
+	if not exist %temp%\%bcd_name%.iso goto _end2
+	if not "%bcd_noburn%" == "" (
+		echo BCD: Burning disabled, so moving ISO file "%temp%\%bcd_name%.iso" to working directory.
+		echo BCD: You can use this ISO file to record with your favorite recording program.
+		if not exist builds\ (
+			echo BCD: Creating non-existent 'builds' directory.
+			mkdir builds
+		)
+		pushd builds
+		set "bcddate=%DATE:/=-%"
+		echo !bcddate!
+		set "bcdtime=%TIME::=-%"
+		echo !bcdtime!
+		set "filename=%bcd_name%.!bcddate!_!bcdtime!.iso"
+		echo !filename!
+		xcopy %temp%\%bcd_name%.iso !filename!* /Q /Y /J /Z
+		popd
+		echo BCD: Copied ISO file from "%temp%\%bcd_name%.iso" to ".\builds\!filename!"
+		goto _end2
+	)
+	if exist %temp%\%bcd_name%.iso (
+		echo BCD: Removing ISO file "%temp%\%bcd_name%.iso"
+		del %temp%\%bcd_name%.iso
+	)
 :_end2
-rem set return value to 0
-endlocal
-set rv=0
+	rem set return value to 0
+	endlocal
+	set rv=0
 :_end3
-if exist %temp%\$bcd$.tm? del %temp%\$bcd$.tm?
+	if exist %temp%\$bcd$.tm? del %temp%\$bcd$.tm?
 :_end4
-echo BCD: Exiting with return value %rv%
+	echo BCD: Exiting with return value %rv%

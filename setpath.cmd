@@ -1,4 +1,3 @@
 @echo off
 echo Setting up environment for WolfNet Boot Tools CLI...
-echo.
-cmd -k "set PATH=%~dp0;%PATH%"
+cmd /Q /T:0A /E:ON /V:ON /S /K "set PATH=%~dp0;%PATH% && cd %~dp0"

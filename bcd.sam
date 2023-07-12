@@ -9,7 +9,7 @@
 
 # Set Volume publisher
 # publisher <string>
-# publisher John Wolfe
+publisher WolfNet-Computing
 
 # Set Volume application
 application BCD/MKISOFS
@@ -34,7 +34,7 @@ system Win32
 # cdrecordargs <options>
 
 # Call a sub batchfile to check for some files or do whatever you like
-# call custom.cmd
+call custom.cmd
 
 # Additional path arguments for mkisofs
 # addpath <path1> [<path2> ...]
