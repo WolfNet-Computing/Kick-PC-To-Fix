@@ -1,8 +1,13 @@
-WolfNet-Boot-CD-Builder.exe
+# Wildcard ignores.
 *.iso
 *.img
 *.nsi
+
+# File Ignores.
+WolfNet-Computing-Boot-Tools.nssp
 thumbs.db
+
+# Directory Ignores.
 builds/
 Installers/
 ProjectFiles/
