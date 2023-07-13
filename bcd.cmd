@@ -1,6 +1,6 @@
 @echo off
 echo.
-echo BCD, Boot-CD-Builder, v1.2.3
+echo Boot CD Builder
 echo Copyright (c) 2023 WolfNet Computing. All rights reserved.
 echo.
 verify other 2>nul
