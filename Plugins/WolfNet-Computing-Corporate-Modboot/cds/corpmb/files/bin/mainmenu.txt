@@ -1,0 +1,133 @@
+; Corporate Modboot Main Menu
+; Created by Bart Lagerweij
+; You should change this menu file and add any applications you want.
+
+#header message=Corporate Modboot v1.0
+
+#display ,,20
+  "Copyright (c) 2002 Bart Lagerweij, http://www.nu2.nu/corpmodboot"
+
+#f1=Help
+  show %cddrv%\readme.txt
+#f10=Exit
+  echo Type "menu" to start the menu again...
+  #exit
+#if_exist %cddrv%\bin\restart.com
+#if_exist %cddrv%\bin\atxoff.com
+#f8=ShutDown
+  #ask choice,Shut down... ,,,1
+    "Power Off computer?" = 1
+    "Restart computer?" = 2
+  #if "%choice%" == "1"
+    %cddrv%\bin\atxoff.com
+    echo Did "%cddrv%\bin\atxoff.com" fail?
+    pause
+  #endif
+  #if "%choice%" == "2"
+    %cddrv%\bin\restart.com
+    echo Did "%cddrv%\bin\restart.com" fail?
+    pause
+  #endif
+#endif
+#endif
+
+%Corporate Menu,,4
+#if_exist %cddrv%\ghost\ghost.exe
+Symantec Ghost
+  if "%dmpdrv%" == "" goto _ghost
+  %dmpdrv%
+  cd \
+  echo.
+  echo You can store your ghost images on drive %dmpdrv%...
+  echo.
+  :_ghost
+  echo Copying Ghost to ramdisk...
+  echo.
+  copy %cddrv%\ghost\ghost.exe %tmp%\ghost.exe
+  %tmp%\ghost.exe -afile=%tmp%\ghost.err
+  del %tmp%\ghost.exe
+  if errorlevel 1 pause
+#endif
+#if_exist %cddrv%\pqmagic\pqmagic.exe
+PowerQuest PartitionMagic
+  if exist %tmp%\pqmagic\pqmagic.exe goto _pqm
+  mkdir %tmp%\pqmagic
+  echo Copying PQMagic to ramdisk...
+  echo.
+  copy %cddrv%\pqmagic\*.* %tmp%\pqmagic
+  :_pqm
+  %tmp%\pqmagic\pqmagic.exe
+  if errorlevel 1 pause
+#endif
+#if_exist %cddrv%\pqmagic\ptedit.exe
+PowerQuest Partition Table Editor
+  rem Don't remove this remark
+  %cddrv%\pqmagic\ptedit.exe
+  if errorlevel 1 pause
+#endif
+#if_exist %cddrv%\pqmagic\partinfo.exe
+PowerQuest Partition Information Program
+  rem Don't remove this remark
+  %cddrv%\pqmagic\partinfo.exe > %tmp%\partinfo.txt
+  %cddrv%\bin\show.com %tmp%\partinfo.txt
+  del %tmp%\partinfo.txt
+#endif
+VirusScan
+  call %cddrv%\bin\virus.bat
+  echo.
+  echo Return to Dougmenu...
+  pause
+#if_exist %cddrv%\vc\vc.com
+Volkov Commander
+  rem Don't remove this remark
+  %cddrv%
+  cd \
+  %cddrv%\vc\vc.com
+#endif
+#if_exist %cddrv%\vc\vc.com
+#if_exist %cddrv%\ntfspro\ntfspro.exe
+Access NTFS volumes (NTFS Pro/VC)
+  rem Don't remove this remark
+  call %cddrv%\bin\whatnt.bat
+  if "%wbat%" == "" goto _end
+  %cddrv%
+  cd \ntfspro
+  ntfspro.exe /P%cddrv%\ntfspro\%wbat% /S%cddrv%\vc\vc.com
+  rem Change CWD to root of ramdrive
+  %ramdrv%
+  cd \
+  echo Return to Dougmenu...
+  pause
+  :_end
+#endif
+#endif
+#if_exist %cddrv%\pci\pci.exe
+PCI diagnostic
+  rem Don't remove this remark
+  %cddrv%
+  cd \pci
+  pci.exe > %tmp%\pci.txt
+  %cddrv%\bin\show.com %tmp%\pci.txt
+#endif
+#if_exist %cddrv%\bin\disktool.exe
+Bart's Disktool
+  rem Don't remove this remark
+  %cddrv%\bin\disktool.exe
+#endif
+#if_exist %cddrv%\bin\detect.com
+Detect BIOS/Chipset
+  rem Don't remove this remark
+  %cddrv%\bin\detect.com %tmp%\bios
+  %cddrv%\bin\show.com %tmp%\bios.txt
+#endif
+#if_exist %cddrv%\pwrmax\powermax.exe
+Maxtor Power Diagnostic Utility
+  rem Don't remove this remark
+  %cddrv%
+  cd \pwrmax
+  powermax.exe
+#endif
+Exit
+  echo.
+  echo Type "menu" to start the menu again...
+  #exit

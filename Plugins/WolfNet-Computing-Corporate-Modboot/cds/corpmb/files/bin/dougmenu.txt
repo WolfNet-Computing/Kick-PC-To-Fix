@@ -1,0 +1,939 @@
+                DougMenu Menuing Software Version 1.77
+                      Released December 14, 1994
+                  Revised Terms of Use March 31,1995
+    Program and documentation are copyright 1991-1995  Douglas Bell 
+
+[Revised Terms of Use for DougMenu v1.77]
+
+     This version of DougMenu is a freeware product.  It should be
+     distributed at no charge, besides that of a reasonable media fee 
+     when applicable.  It may also be distributed as part of a
+     published software collection by vendors who sell collections of 
+     shareware programs.  No one should ever charge a fee for the
+     program by itself.
+
+     Users are free to modify the DougMenu package for their own use
+     and are allowed to install a modified DougMenu package on any
+     number of computers within a single business or organization. 
+     However, any business or organization which does this should
+     retain at least one unaltered copy of the DougMenu distribution
+     package.
+
+     THERE IS NO WARRANTY, EXPRESSED OR IMPLIED, FOR DOUGMENU.  WHILE 
+     THE AUTHOR HAS ATTEMPTED TO PRODUCE AN ERROR FREE PROGRAM, THE
+     AUTHOR ASSUMES NO RESPONSIBILITY FOR ANY DAMAGE THAT THIS PROGRAM
+     MIGHT CAUSE.
+
+Contacting the Author]
+
+     I am always interested in hearing bug reports, feature requests, 
+     and things like that.  I can be reached in any of the following
+     ways:
+          email:         dm@wariat.org
+          telephone:     +1 216 371 7772
+          post:          Douglas Bell
+                         1726 Coventry Road #3
+                         Cleveland Heights, Ohio 44118-1130
+                         U.S.A.
+
+[Obtaining New Versions]
+
+     I have an official ftp site for DougMenu.  The newest versions of
+     DougMenu can be found on ftp.wariat.org in the /pub/dougmenu
+     directory.
+
+     There is also a DougMenu World Wide Web home page.  The URL for
+     this document is: http://www.wariat.org/dougmenu/dm.html.
+
+     Also, included at the end of this document is a DougMenu order
+     form.  This offers several plans where you pay me money, and I
+     make sure you have the newest version of DougMenu.
+     
+[Table of Contents]
+
+Terms of Use for DougMenu v1.77 . . . . . . . . . . . . . . . . . . .1
+  Contacting the Author . . . . . . . . . . . . . . . . . . . . . . .1
+  Obtaining New Versions. . . . . . . . . . . . . . . . . . . . . . .1
+What is Dougmenu? . . . . . . . . . . . . . . . . . . . . . . . . . .3
+  Features. . . . . . . . . . . . . . . . . . . . . . . . . . . . . .3
+  What Is New in Version 1.77 . . . . . . . . . . . . . . . . . . . .3
+Installing DougMenu . . . . . . . . . . . . . . . . . . . . . . . . .4
+  Configuring DougMenu. . . . . . . . . . . . . . . . . . . . . . . .4
+  Further Modifying DMENU.BAT . . . . . . . . . . . . . . . . . . . .5
+Starting a Menu Script. . . . . . . . . . . . . . . . . . . . . . . .5
+  Writing a Simple Menu Script. . . . . . . . . . . . . . . . . . . .6
+  What Do Menus Look Like When They Are Displayed?. . . . . . . . . .7
+  Positioning Menus & Choosing Menu Colors. . . . . . . . . . . . . .7
+Advanced Commands . . . . . . . . . . . . . . . . . . . . . . . . . .9
+  Parsing Commands. . . . . . . . . . . . . . . . . . . . . . . . . .9
+  External Commands . . . . . . . . . . . . . . . . . . . . . . . . 11
+  Execution Commands. . . . . . . . . . . . . . . . . . . . . . . . 16
+  Logging Out of Netware Servers. . . . . . . . . . . . . . . . . . 18
+Order Form. . . . . . . . . . . . . . . . . . . . . . . . . . . . . 19
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+This document assumes a certain degree of familiarity with MS-DOS
+based computing.  It is intended as a reference for a PC administrator
+instead of a tutorial for a neophyte user.  Information about
+obtaining a more complete manual is available at the end of this
+document.[What is Dougmenu?]
+
+     DougMenu is a simple, easy to use menuing system for MS-DOS
+     compatible computers.  DougMenu was originally created as a
+     replacement for the menu software that came with Novell Netware. 
+     Since then it has evolved into a powerful software package that
+     can be used on networked or stand alone PC's.
+
+     DougMenu requires 100k of disk space, 256k of memory, and MS-DOS 
+     version 3.3 or higher compatibility.
+
+[Features]
+
+     Here are some reasons why you might want to use Dougmenu: 
+     1.   No memory overhead when launching applications.
+     2.   Supports many different languages.
+     3.   Built-in screen saver that won't conflict with TSR programs.
+     4.   Can run TSR programs without fragmenting memory.
+     5.   Controls user access.
+     6.   Full mouse support.
+     7.   User input capabilities.
+     8.   Aware of Novell networks.
+     9.   Minimal batch file litter.
+     10.  Easily customized colors and layouts.
+     11.  Small, Fast, & Free!
+
+
+[What Is New In Version 1.77]
+
+     Well, there aren't any new script language commands in version
+     1.77, but there are many new things included with this release.
+
+     1.   I fixed the problem with nesting #if_username statements.
+     2.   I fixed the problem using the #if_exist statement in
+          executable text.
+     3.   I fixed the problem that caused menu scripts to be displayed
+          as the screen backdrop file when using the 1.2 pre-release
+          NLM Netware requester for DOS with menu scripts that had
+          #include commands looking at a network drives.  I'm sorry it
+          took so long to track this one down, but I had a devil of a 
+          time reproducing the problem.
+     4.   I made a nifty new documentation file.  I had to delay the
+          release of 1.77 two days because I was trying to make sure
+          this documentation looked at least somewhat professional. 
+          I'm starting to think that writing good documentation is
+          harder than writing good code. 
+     5.   I wanted to announce the WWW home page and ftp site.
+     6.   I also wanted to announce the new DougMenu registration
+          options, products and services.[Installing DougMenu]
+
+     Before you can use DougMenu, you have to install it.  Installing 
+     DougMenu is as simple as copying the distribution package files
+     into a directory on your computer or server.  
+
+     The file FILES.LST that comes in the DougMenu distribution
+     package lists all of files that should be in the package.  You
+     are not required to copy all the files into the directory if you 
+     don't want to do so.  See the [Terms of Use] section at the
+     beginning of this document for details.
+
+     There are four files which are crucial to the workings of
+     DougMenu.  Two files, DMENU.BAT and DOUGMENU.EXE come in the
+     distribution package.  The third is a menu script which you will 
+     need to create after installing DougMenu, and the fourth is a
+     temporary batch file which will be created by DougMenu.
+
+[Configuring DougMenu]
+
+     Once the DougMenu files have been placed in a directory, DougMenu
+     needs to be configured.  To configure DougMenu, edit the
+     DMENU.BAT batch file.  Two lines need to be adjusted to make
+     DougMenu work.  These lines are marked with the '*' character in 
+     the following listing:
+
+               @echo off
+               if %1.==. goto error
+          **   set t=c:\temp.fil
+               :loop
+          **   c:\menu\dougmenu.exe %1 %2 %3
+               if errorlevel==2 %t%
+               if errorlevel==1 goto quit
+               call %t%
+               goto loop
+               :error
+               echo No menu script was specified.
+               :quit
+               set t=
+
+     The "set t=" line tells DougMenu where it can make a temporary
+     batch file.  Change this line so that the 't' environment
+     variable is assigned a value which is a valid drive, path, and
+     filename on your computer system.  The name of the temporary file
+     name should end with the extension ".fil".  
+
+     The line that run DOUGMENU.EXE needs to know where DougMenu was
+     installed on your computer system.  Edit DMENU.BAT so that the
+     location of DOUGMENU.EXE is correctly indicated in the batch
+     file.[Further Modifying DMENU.BAT]
+
+     DMENU.BAT is just a DOS batch file and can be edited into many
+     different working configurations.  Feel free to change DMENU.BAT 
+     in any way that will help your system.  Here are some possible
+     configurations:
+
+     1)   If you want to make sure that a user goes to a specific
+          directory before running any application, insert a "cd"
+          command after the :loop label in the DMENU.BAT file.
+
+     2)   If you want to show a broadcast a message every time the
+          menu system is started, you could use the DOS "type" command
+          followed by a "pause" command at the beginning of the
+          DMENU.BAT file to do this.
+
+     3)   If you are using a Novell Netware network and you want to
+          consolidate temporary batch files into a single shared
+          directory on the server, place the connection number into a 
+          DOS environment variable in the server login script.  Then, 
+          use this variable in the file name of the temporary batch
+          file when setting the 't' environment variable.
+          (e.g. set t=u:\apps\menu\temp%connection%.fil )
+
+
+[Starting a Menu Script]
+
+     After DougMenu is configured for your system, you will need a
+     menu script.  Menu scripts are used by DOUGMENU.EXE to create a
+     user interface.  The DougMenu distribution package comes with a
+     sample menu script called SAMPLE.MNU.  To use this menu script,
+     run DMENU.BAT with a command line parameter that specifies the
+     drive, path, and file name of the menu script. (e.g. dmenu
+     u:\apps\menu\sample.mnu)  It is important to specify the drive
+     and path when starting a menu script.
+
+     You might have noticed that this menu script has the extension
+     ".MNU".  Menu scripts don't have to end in with this extension.
+     However, if DougMenu is given a menu script name without an
+     extension and it can't find the script file, DougMenu will try
+     looking for the same file again, but with the ".MNU" extension. 
+[Writing a Simple Menu Script]
+
+     A DougMenu menu script is plain text file that can be created
+     with any text editor.  Menu scripts are used by DougMenu to
+     display a user interface.
+
+     The basic building block of a DougMenu menu script is called a
+     menu structure.  All DougMenu menu scripts must contain at least 
+     one of these structures.  A menu structure begins with a
+     declaration line that starts with a '%', (e.g. %My First Menu).
+
+     Lines following the '%' menu declaration line are the body of the
+     menu structure.  In the body, there are lines that start right
+     away with text and there are lines which are indented and have
+     spaces or tabs before any text.  The non-indented lines in the
+     menu body are the "items" of the menu.  They will be displayed as
+     visible lines on the menu when the menu is displayed.  Each item 
+     line is usually followed with one or more indented lines of text. 
+     These sets of indented lines are called "blocks of executable
+     text" or just "executable text."
+
+     The content of the item lines should be descriptive so as to tell
+     a user what action they can expect if they select the item.  The 
+     blocks of executable text contain scripted actions associated
+     with the menu items.  The commands in the executable text are
+     usually just DOS batch file commands.  The following basic menu
+     script illustrates the declaration of a menu structure, menu
+     items, and blocks of executable text:
+
+     %My First Menu
+     My First Option
+       echo This was my first option
+       pause
+     Subtitle Option
+     WordPerfect 5.1
+       d:
+       cd \documents
+       c:\wp51\wp.exe
+
+     Notice that the second item, "Subtitle Option", is not followed
+     by any executable text.  When this is the case, the item will not
+     be selectable and will be displayed as a subtitle in the menu
+     window.
+
+     When a script is started, the first menu structure in the menu
+     script will be displayed.  Other menu structures can be accessed 
+     from the items in the first menu.  To create a link from an item 
+     to a menu, the executable text for the item should contain a line
+     that begins with a '%' character followed by the title of the
+     menu to be opened.  This is demonstrated in the following
+     listing:%The first menu
+     Launch another menu
+       %another menu
+     Another Option
+       echo This is normal executable text
+       pause
+
+     %Another Menu
+     Its Items
+       echo More batch file stuff.
+       pause
+
+     Items on secondary menus can open even more menus.  By linking
+     many menus together, menu scripts can become very large.  Menu
+     script size is only limited by free conventional memory.  A good 
+     rule of thumb is that your menu scripts should be no larger than
+     free conventional memory less 100k bytes.  This leaves plenty of 
+     room for some very large menu scripts on most systems. 
+
+     But while a script can become very large and can contain a very
+     large number of menu structures, the current display engine in
+     DougMenu limits the number of menus that can be viewed at one
+     time to 10 menu windows.  If a user wants to open another menu,
+     he will have to close one of the windows that is already open.  
+
+
+[What Do Menus Look Like When They Are Displayed?]
+
+     The easiest way to discover what menu windows look like when they
+     are displayed is to run a few sample menu scripts.  If you run
+     the SAMPLE.MNU menu script, you will see what the menu windows
+     look like, as well as see some other features of the display
+     screen such as the header box and the footer bar.  These things
+     should be fairly intuitive when you view the sample menu.
+
+
+[Positioning Menus & Choosing Menu Colors]
+
+     The default way that menu windows are displayed is with a blue
+     and white color scheme and centered in the middle of the screen. 
+     However when declaring a menu structure, optional parameters can 
+     be placed after the menu title on the declaration line to change 
+     the position or color scheme.  These parameters come after the
+     menu title and are offset by commas like this:
+
+     %Menu Title,<x_position>,<y_position>,<palette_number>
+
+     The <x_position> and <y_position> parameters will position the
+     upper left corner of the menu window relative to the upper left
+     corner of the screen.  There is an exception to this.  A value of
+     255 will center the menu with respect to that axis.  So the
+     following menu declaration:
+    %Horizontally Centered Menu,255,5
+
+     would cause the menu to be centered horizontally and be 5 lines
+     down from the top of the screen.  Since the centering is the
+     default behavior, the same effect could be created like this:
+
+     %Another Horizontally Centered Menu,,5
+
+     DougMenu limits the places where a menu can be placed.  Menu
+     windows cannot be located on the header box or on the footer bar. 
+     Menus cannot be located off the edge of the screen, either. 
+     DougMenu will try to place the menu as close as possible to the
+     requested position in these situations.
+
+     The positioning parameters can be omitted entirely if you just
+     want to specify the color palette.  The following example shows
+     how to set the palette for a menu without affecting where the
+     menu is positioned:
+
+     %Colored Menu,,,3
+
+     The <palette_number> parameter should be a value between 0 and 9.
+     The default blue and white color scheme is palette is 0. If no
+     palette is specified when a menu structure is declared, it will
+     be drawn using the default palette.
+
+     Palettes 8 and 9 are used for monochrome display adapters.  If
+     DougMenu detects a monochrome display adapter, it will use
+     palettes 8 and 9 for the menus and ignore the <palette_number>
+     parameter on all menus.
+[Advanced Commands]
+
+     DougMenu provides many advanced commands which can be used to
+     modify the user interface or to make a menu script more flexible. 
+     The advanced commands in DougMenu can be divided into three
+     categories; parsing commands, external commands, and execution
+     commands.
+
+
+[Parsing Commands]
+
+     Parsing commands affect the way that DOUGMENU.EXE reads a menu
+     script.  All parsing commands are evaluated as the menu script is
+     read and before any menus are displayed.  The action of parsing
+     commands depends on their location within the menu script.  All
+     parsing commands other than the semi-colon comments cannot be
+     indented.
+
+     ;    Semi-colons are used to delimit script comments.  DougMenu
+          will ignore semicolon characters and any text that follows
+          on the same line.  This can cause trouble with the DOS
+          "path" and "assign" commands.  See #comments and
+          #nocomments.
+
+     #comments
+          This command restores the comment behavior of semi-colons.  
+          See the #nocomments command.
+
+     #if <conditional statement>
+          The DougMenu #if statement is used to skip over or ignore
+          portions of a menu script based on a conditional statement. 
+          If the conditional statement is true, DOUGMENU.EXE continues
+          reading the menu script as if nothing happened.  If the
+          condition fails, DOUGMENU.EXE will ignore all subsequent
+          menu lines until it finds an #endif or an #else command,
+          after which it will resume parsing the menu script.
+
+          #if statements can be nested.  If a failed #if statement is 
+          followed by another #if statement, DougMenu will skip ahead 
+          one #endif statement for the nested #if command, and then
+          look for another #endif statement to close the first #if
+          command before resuming the script.
+
+          There are three ways in which the conditional statements can
+          be constructed.
+               #if <string> == <string>
+                    The parser will continue parsing the menu script
+                    if the two strings are identical.  DOS environment
+                    variables may be used in these strings.
+               #if <string> != <string>
+                    As above except the parser will continue parsing
+                    only if the two string are not equal.
+               #if <string>
+                    Will continue parsing the menu script if the
+                    string contains any text.
+     #if_member [!][servername/]<groupname>
+          The parser will continue parsing the menu script if the
+          computer is currently connected to a Netware server as a
+          member of the specified group.  If the group name is
+          preceded by an '!' character, parsing will continue only if 
+          the computer is not connected to a Netware server as a
+          member of the group.
+
+     #if_username [!][servername/]<username>
+          The parser will continue parsing the menu script if the
+          computer is currently connected to a Netware server as the
+          specified user.  If the specified user name is preceded by
+          an '!' character, parsing will continue only if the computer
+          is not connected to a Netware server as the user.
+          
+     #if_exist [!]<drive:\path\file>
+          The parser will continue parsing the menu script if the
+          specified directory or file exists.  If the parameter string
+          begins with an '!', the parser will continue parsing the
+          menu script only if the specified directory or file does not
+          exist.  To check for the existence of a drive letter, search
+          for a directory called '.' ( e.g. #if_exist d:. )
+
+     #endif
+          This is used to close an #if statement.  If it is
+          superfluous, it will be ignored.
+
+     #else
+          If the last #if statement failed, this will cause parsing to
+          continue at this point.  If the last #if statement was a
+          success, then this will make the parser skip forward until
+          the next #endif or #else statement is found.
+
+     #include = <filename>[.mnu]
+          This command causes the text of the specified file to be
+          parsed at this point as if it were part of the primary
+          script.  Once the text of the included file is parsed,
+          DOUGMENU.EXE will return to reading the original file. 
+          #included scripts can #include other scripts, but do not
+          nest scripts more than five levels deep.  If the menu script
+          file name can't be found, Dougmenu will look for the file
+          with a ".mnu" extension.  If the file still cannot be found 
+          an error message will be generated.
+
+     #include_if_exist = <filename>[.mnu]
+          As above accept no error message will be generated if the
+          file cannot be found.
+
+     #nocomments
+          This command will make DougMenu treat semicolons as normal
+          text instead of as comment delimiters.  Use this if you need
+          to put an "assign" or "path" command in a block of
+          executable text.  See the #comments command.
+[External Commands]
+
+     External commands provide a wide range of general functionality. 
+     It is recommended that all external commands be placed at the top
+     of the script to avoid confusion, although they can also be
+     placed between or after the menu structures.  Most external
+     commands that have text string or file name parameters will
+     evaluate any DOS environment variables found in the parameters.
+
+     Some external commands require color values.  Here is a list of
+     possible color values:
+             0   -   black         8   -   dark grey
+             1   -   blue          9   -   lt. blue
+             2   -   green         10  -   lt. green
+             3   -   cyan          11  -   lt. cyan
+             4   -   red           12  -   lt. red
+             5   -   magenta       13  -   lt. magenta
+             6   -   brown         14  -   yellow
+             7   -   lt.grey       15  -   white
+
+     Only the first 8 color values should be used as background
+     colors.  The second 8 colors repeat the first 8 colors but cause 
+     the foreground color to flash.  I didn't plan it this way. 
+     That's just how PC's like to work.
+
+     #backdrop color = <background_color>,<foreground_color>
+          This command accepts two color values.  These values will
+          change the color of the backdrop that is displayed behind
+          the menu windows.
+
+     #backdrop char = <char_code>
+          This command can be used to change the character that is
+          displayed in the backdrop.  Most DOS manuals include a list 
+          of character code values in an appendix.  Try using a value 
+          of 1 for an interesting effect.
+
+     #backdrop file = <filename>
+          This command can be used to display an ascii or ansi text
+          file as a backdrop for the DougMenu user interface.
+
+     #cascade [= <X_vector>,<Y_vector>]
+          This changes the default menu placement to 10,5 and causes
+          all menus to be 'stair stepped' or cascaded down from that
+          location.  The x_vector and y_vector determine how far each 
+          window will be offset from previous menu window.  The
+          default vector is 4,1.  This command can be followed by
+          "#default placement" to change the default position to
+          something other than 10,5.  This command should be located
+          before any menu structures.
+
+     #default placement = <X_Position>,<Y_Position>
+          This option sets the default placement of all menu windows. 
+          A position value of 255 will cause windows to be centered
+          with respect to that axis.  This command should be located
+          before any menu structures.#default palette = <palette_number>
+          The palette number changes the default palette for any menu 
+          structures parsed after this point in the script.  This
+          statement will be ignored if DougMenu detects a monochrome
+          display adapter.  This command should be located before any 
+          menu structures.
+
+     #display[,<x_position>,<y_position>,<palette_number>]
+       "Text to be displayed"
+       "Text to be displayed"
+       ...
+          This will display a text box on the DougMenu backdrop when
+          the user interface is started.  Text boxes are inert and
+          cannot be selected.  The #display should be followed with
+          lines of indented text which start and end with the quote
+          character.  The text block following the #display command
+          will be displayed in the box.  The display box will size
+          itself according to the number of lines and the longest line
+          of text.  Each line will be centered horizontally inside the
+          box. 
+
+     #error palette = <palette_number>
+          The <palette_number> parameter changes the palette for all
+          error message boxes.  The default error palette is 2.  This 
+          statement will be ignored on computers with monochrome
+          display adapters.
+
+     #f<number> = <string>
+       executable text
+       executable text
+       ...
+          This defines an action for a function key.  The number
+          parameter should be the number of the function key ( 1-10 ). 
+          When a function key is defined, a footer bar is added to the
+          DougMenu user interface on the bottom line of the screen. 
+          The string parameter will be used to display a description
+          of the function key on the footer bar.  This command should
+          be followed with lines of indented executable text as if it
+          were a menu item.
+
+     #footer color = <background_color>,<foreground_color>
+          This command accepts two color values.  These values will
+          change the color of the footer bar at the bottom of the
+          screen.  The footer bar will only be displayed if a function
+          key is defined with the "#f<number>" command.
+
+     #footer highlight = <background_color>,<foreground_color>
+          This command accepts two color values.  These values will
+          change the color of a selected item on the footer bar. See
+          the #palette command for possible color values.
+
+     #header message = <string>
+          The string in this statement will replace the DougMenu
+          version message in the header box.
+    #header palette = <palette_number>
+          The <palette_number> parameter changes the palette for the
+          header box.  The default header palette is 1.  This
+          statement will be ignored on computers with monochrome
+          display adapters.
+
+     #key <key_code>[,<extended_key_code>]
+       executable text
+       executable text
+       ...
+          This defines an action for keystrokes which have regular or 
+          extended DOS keyboard codes.  DOS keyboard codes are usually
+          listed in an appendix of most DOS manuals.  To use an
+          extended key code values, place the extended key code value 
+          after "0,".  This command should be followed with lines of
+          indented executable text as if it were a menu item.
+
+     #language
+          This command allows the DougMenu user interface to be
+          tailored to support languages other than American English.  
+          Several language modules come with DougMenu.  To use these
+          files, simply add their contents to your script or use the
+          #include command.
+
+          To create your own language module, translate the lines in
+          the ENGLISH.DML file.  Your #language module must have the
+          sample number of lines as the original language module.  Do 
+          not incorporate DOS environment variables into a language
+          module.
+
+          The last line on the language definition is the time/date
+          descriptor.  This line controls how the time and date string
+          will be displayed on the menus.  There are six descriptor
+          words that you can use in this line:
+               day_name            day_number
+               month_name          month_number
+               24_time             am_pm
+
+          The default string is:
+               day_name, month_name day_number, am_pm
+
+          This would display the time and date as:   
+               Friday, June 17, 1:31 pm
+
+          A possible alternative would be:
+               24_time - day_number/month_number
+
+          This would display the time and date as:
+               13:31 - 17/6
+
+          ***NOTE***  Do not make a time and date string that will
+          ever be longer than 35 characters in length for some
+          combination of time and date.
+
+          If you take the time to create a new language module I will 
+          include it in the next release of DougMenu if you email it
+          to me along with a brief description.  UUencode the file if 
+          necessary.
+
+     #message palette = <palette_number>
+          The <palette_number> parameter changes the default palette
+          for message boxes created with the #display command and
+          other non-error related message boxes.  The default message 
+          palette is normally 3.  This statement will be ignored on
+          computers with monochrome display adapters.
+
+     #noexit
+          Prevents exiting the menu system via the escape key.
+
+     #noreturn
+          Normally, after an action which requires a batch file is
+          executed, the menu script is parsed again and all windows
+          that were open when the item was executed are reopened. 
+          This command prevents the reopening of windows when the
+          computer returns to the menu program. 
+
+     #notime
+          Prevents the time and date from being displayed in the
+          header box.  The time and date will still be used in the
+          default screen saver message.#palette <palette_number> = c1, c2, c3, c4, c5, c6, c7
+          This command can be used to redefine any of the DougMenu
+          palettes, 0-9.  Each palette is composed of 7 color values.
+
+          c1 = background color for the window
+          c2 = foreground color for the item text in a window
+          c3 = foreground color for the title text in a window
+          c4 = foreground color for the border of a inactive window
+          c5 = foreground color for the border of an active window
+          c6 = selection bar foreground color
+          c7 = selection bar background color
+
+     #quickselect
+          Causes the items in menu windows to be displayed in an
+          enumerated fashion.  The items in windows can then be
+          selected and executed by pressing the number which
+          corresponds to the item.
+
+     #saver message = <string>
+          The string that is specified in this statement will replace 
+          the time and date for the built in screen saver.  See
+          #timer.
+
+     #shadow [= <background_color>,<foreground_color>]
+          This command will cause the active window on the screen to
+          have a shadow on the right and bottom side.  The optional
+          color value parameters can be used to specify the color of
+          the shadow.  The default color values for the shadow are 0,8
+          (grey on black).
+
+     #timer [= <minutes>]
+       optional executable text
+       optional executable text
+       ...
+          This command defines an action that will occur if DougMenu
+          its idle too long.  The default idle time is 10 minutes but 
+          this value can be specified using the <minutes> parameter.  
+          If this structure is followed by a block of executable text,
+          the block will be executed like normal executable text when 
+          the timer is triggered.  If this structure is not followed
+          by executable text, DougMenu will automatically enter screen
+          saver mode instead.  The screen will be blanked and the time
+          and date will be drawn on the screen once every minute.  See
+          #saver message.[Execution Commands]
+
+     Execution commands exist inside blocks of executable text.  The
+     commands will be indented with spaces or tabs, just like the rest
+     of the executable text.  These commands are going to be used
+     along with the batch file statements that commonly make up the
+     bulk of the item executable text.  However, except for the #if
+     family of commands and the #exit command, EXECUTION COMMANDS MUST
+     BE PLACED BEFORE ANY BATCH FILE TEXT.
+
+     %<menu_title>
+          Open a menu window that has the specified title.
+
+     #ask <variable_name>,<title>,[,<x_pos>,<y_pos>,<palette_number>]
+       "item name" = stuff to put in the variable
+       "a non-selectable subtitle"
+       "regular item with empty assignment" = 
+       ...     
+
+          The ask command creates a query window to receive user input
+          which it assigns to a DougMenu variable.  Up to 10 DougMenu 
+          variables can be assigned in the course of one item's
+          executable text.  Once a DougMenu variable is defined, it
+          cannot be redefined within the same block of executable
+          text.  If a user completes or aborts from a block of
+          executable text, all DougMenu variables are cleared. 
+          DougMenu variables are accessed just like DOS environment
+          variables.
+
+          There are two ways the #ask command can be used:
+
+          1)   If the next line following the #ask command begins with
+               a quote character, the query window will resemble a
+               menu window and will allow the user to select from a
+               list of items.  Each selectable item has an associated 
+               value that will be assigned to the DougMenu variable if
+               the item is chosen.  There are three format types for
+               the body lines of a query window.  An example of each
+               format type follows the #ask command prototype above.  
+
+          2)   If the #ask command is not followed by a line that
+               starts with a quote character, the #ask command will
+               open a query window that will allow the user to enter a
+               string.  The value the user enters will be assigned to 
+               the DougMenu variable name.#display[,<x_position>,<y_position>,<palette_number>]
+       "Text to be displayed"
+       "Text to be displayed"
+       ...
+          This command will display a text box when executed.  The box
+          will be filled with the quoted that directly following the
+          #display command line.  The window will size itself
+          according to the number of text lines and longest line of
+          text.  DougMenu variables and DOS environment variables can 
+          be used in the text.  Once the box is displayed, DougMenu
+          will wait for a key press before continuing.
+
+     #exit
+          When this command is encountered, two things can happen,
+          depending on the position of the #exit command in the
+          executable text.
+
+          If the #exit command was not preceded by any batch file
+          text, DOUGMENU.EXE stops and returns an errorlevel of 1 to
+          DMENU.BAT.  This should cause DMENU.BAT to take the user
+          back whatever started DMENU.BAT.  
+
+          If the #exit command was preceded by batch file text,
+          DOUGMENU.EXE makes a temporary batch file containing the
+          batch file text that was before the #exit command, and then 
+          returns an errorlevel of 2 to DMENU.BAT.  This should cause 
+          DMENU.BAT to launch the temporary batch file without the
+          CALL statement.  After the temporary batch file is
+          completed, the user will be returned to whatever started
+          DMENU.BAT.
+
+     #if <conditional statement>
+     #if_member [!][servername/]<group>
+     #if_username [!][servername/]<username>
+     #if_exist [!]<path>
+     #endif
+     #else
+          All of these function work like their parsing command
+          counterparts, but instead of controlling the parsing of the 
+          menu script, they control what statements in the executable 
+          text get read.  Also, these #if statement can use DougMenu
+          variables as well as DOS environment variables.
+
+     #floppy <variable_name>
+          Searches through all floppy drives to find a formatted
+          diskette.  The drive letter with a colon will by placed in
+          the DougMenu variable specified by the <variable_name>
+          parameter.  If no disk is found, an error message appears,
+          and then the user is returned to the menus.#logout
+          The computer is logged out of all Netware servers.  This
+          will not exit users from DougMenu.  This can cause critical 
+          drive mappings to disappear.  The execution of the
+          executable text will continue after this command.
+
+     #password <string>
+          The user is requested to enter a password.  If the password 
+          is incorrect, the user is informed and returned to the menu. 
+          If it is correct, the execution of the item continues.  The 
+          user input will not be displayed on the screen.
+
+     #reboot
+          This will immediately reboot the computer when executed.
+
+     #space <drive> <value>
+          This command checks a drive for free storage space and
+          compares the amount of available bytes in K with the <value>
+          parameter.  A value of 10 would mean to check the specified 
+          drive for 10k bytes of free space.  If there is sufficient
+          free space, the execution will continue past this command.  
+          If it is not, the user is informed of the lack of drive
+          space and returned to the menus. 
+
+[Logging Out of Netware Servers]
+
+     The #logout execution command provides a facility for
+     disconnecting from Netware servers and is often used in
+     conjunction with the #exit or #reboot command.  However, many
+     people have problems because they want to keep DMENU.BAT on the
+     server.  After the #logout command, all drive mappings are
+     removed and COMMAND.COM will generate a "batch file not found"
+     error message when you return to DOS.  To avoid this problem, you
+     can:
+
+     1)   If the temporary batch files are placed on a local drive,
+          the following executable text will work:
+               Logout Item
+                 logout  ;don't use a # before this logout
+                 #exit
+          This will create a batch file with the command logout in it 
+          and then the batch file will be run from the local drive.
+
+     2)   If the temporary batch files must be located on the server, 
+          DMENU.BAT and all temporary batch files could be located in 
+          the login directory on the server. 
+
+     I realize that many people consider these two solutions to be
+     less than optimal.  I will attempt to provide a more graceful
+     solution in the next release of DougMenu.  But wait, how will you
+     know when the next version of DougMenu is available?  Well,
+     register your copy and I'll notify you when it is.
+               
+                                 ORDER.TXT
+                                  (v1.77)
+                                     
+     The freely distributed DougMenu package is still and will
+     continue to be available at no charge.  But since I am trying to 
+     set myself up as an independent software developer, I need to get
+     money some how.  I am making the following services and products 
+     available with the hope that some people will find them to be
+     useful.  At the end of this document is an order form which can
+     be used to order these products. 
+     
+     DougMenu Registration
+          This service is available for anyone who wants to be sure
+          that they are notified when new DougMenu products are
+          available. People who purchase this service will be notified
+          via email or postal mail whenever new products become
+          available.  This service lasts for 24 months. (US$30)
+     
+     DougMenu Deluxe Registration
+          This service is just like the regular registration, but
+          instead of just notifying customers when new products become
+          available, I will send the new shareware and freeware
+          products to them on a diskette. (US$100)
+     
+     The DougMenu Manual
+          No more computer printouts, this is a bound 50+ page manual 
+          describing how to install, configure, and write menu scripts
+          for DougMenu.  It is much more extensive than the text file 
+          that come with DougMenu.  It comes with a diskette of sample
+          menu scripts. (US$70)
+     
+     DougMenu Source Code
+          I know.  I used to give this out for free.  I really can't
+          afford to do that any more.  But I am still willing to make 
+          it available.  The source code compiles with Borland C++ 3.1
+          and the Netware Client API. (US$100)
+     
+     DougMenu Support Service
+          I will answer questions about DougMenu installation,
+          configuration, and script writing via email or telephone for
+          customers who purchase this service.  I will also make
+          special customized versions of DougMenu available to these
+          clients.  This service lasts for 12 months. (US$50)
+     
+     
+     
+     *****************************************************************
+     *****************************************************************
+     *****                                                       *****
+     *****                  DougMenu Order Form                  *****
+     *****                        (1.77)                         *****
+     *****************************************************************
+     *****************************************************************
+     
+     Prod.#    Description                   Cost      Qty       Total
+     
+     DMREG1    DougMenu Registration         US$30     ___       _____
+     
+     DMREG2    DougMenu Deluxe Registration  US$100    ___       _____
+     
+     DMDSRC    DougMenu Source Code          US$100    ___       _____
+     
+     DMDMAN    DougMenu Manual               US$70     ___       _____
+     
+     DMSUPP    DougMenu Support Service      US$50     ___       _____
+     
+                                             Total Charge:    ________
+     
+     
+     Ohio residents must add 7% state sales tax if they buy the
+     manual.  All prices include shipping if applicable.  When anyone 
+     sends me money, I will send them a copy of the most recent
+     version of DougMenu.
+     
+     Make checks, money orders, or purchase orders payable to Douglas 
+     Bell and send them to:
+     
+               Douglas Bell
+               1726 Coventry Road #3
+               Cleveland Heights, Ohio 44118-1130
+               U.S.A.
+     
+     
+     Further inquiries can be directed to:
+     
+               email:         dm@wariat.org 
+               telephone:     +1 216 371 7772
+     

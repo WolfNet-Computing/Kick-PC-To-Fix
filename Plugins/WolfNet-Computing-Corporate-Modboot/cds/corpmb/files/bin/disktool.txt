@@ -1,0 +1,86 @@
+DISKTOOL, (C) 1999-2000, Bart Lagerweij.
+
+What does it do?
+----------------
+
+It performs various tests on all kind of harddisks, ATAPI/SCSI/RAID/... as
+long as the drive is under BIOS control (INT13/INT13 extensions).
+The test functions are:
+  - Seek test
+  - Quick read
+  - Random read
+  - Full read
+  - Random write/compare*
+  - Full write/compare*
+  - Logical block address test*
+  - Full erase*
+  - Spindle speed
+
+WARNING: the test functions marked by "*" are destructive, they overwrite data
+         on your disk.
+
+You can create/customize your own test-maps, and run whatever test functions
+you want. These test-maps can also be started by command-line parameters.
+
+For example, to start a test you've created called "mytest" for 3 loops on your
+first fixed disk, you should run "disktool -l=3 -s=80 mytest".
+
+Command line options
+--------------------
+
+Syntax: DISKTOOL <switches> <test>
+
+  switches:
+     -?           Help
+     -s:<drive>   Select the drive number to play with (in hex) normally the 
+                  first fixed disk is 80, the second one 81, and so on
+     -l:<loops>   Run test <loops> irritations
+     -d           Debug-mode
+     -v           Verbose mode (say more)
+     -x           Expert mode (enabled some advanced options)
+     -b           Batch mode, no questions asked, *use with caution*, it can 
+                  run a destructive test without asking!!!
+  
+  test:
+     The name of the test to run
+
+Is DISKTOOL freeware?
+---------------------
+Yes, DISKTOOL is freeware!
+
+What platforms are supported?
+-----------------------------
+
+DISKTOOL runs best in plane Dos. It will run in Windows 9x, but things get
+slowed down, best thing is to run it in Dos. You can very easily create a
+bootable floppy diskette, and run disktool from it.
+
+How do I install it?
+--------------------
+
+You don't install it. Just boot Dos (not windows) and run DISKTOOL.EXE
+
+Legal stuff
+-----------
+
+In no event shall the author be liable for any damages whatsoever (including
+without limitation, damages for loss of business profits, business
+interruption, loss of business information, or other pecuniary loss).
+In other words: USE THIS UTILITY AT YOUR OWN RISK!
+
+How can the author be reached
+-----------------------------
+
+The author can be reached by E-mail: bart@nu2.nu
+
+Where can I get the latest version?
+-----------------------------------
+
+For the latest version of DISKTOOL look on http://www.nu2.nu
+
+Version history
+---------------
+
+v1.3	Changed the device scan, now search from drive number 00h-0ffh. Using
+	INT13/AH=15h "Get Drive Type". Only accepting drive type 3 (fixed disk)
+v1.2	First public release

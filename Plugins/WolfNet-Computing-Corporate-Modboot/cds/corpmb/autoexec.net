@@ -1,0 +1,40 @@
+@echo off
+rem --------------------------------------------------------
+rem AUTOEXEC.NET, Copyright (c) 2002 Bart Lagerweij
+rem This program is free software, but WITHOUT ANY WARRANTY!
+rem See http://www.nu2.nu/license/ for more details.
+rem --------------------------------------------------------
+echo AUTOEXEC.NET: Starting...
+rem (mis)using cddrv to hold our driveletter
+rem you can change it if you want
+set cddrv=r:
+rem Set the drive letter to use for storing files
+set dmpdrv=z:
+rem Set your file server name
+set srv=yourserver
+echo AUTOEXEC.NET: Mapping drive %cddrv% to \\%srv%\corpmb
+net use %cddrv% \\%srv%\corpmb
+if errorlevel 1 goto _nuerr
+echo AUTOEXEC.NET: Mapping drive %dmpdrv% to \\%srv%\filedump
+echo AUTOEXEC.NET: Use drive %dmpdrv% for storing/loading images and files!
+net use %dmpdrv% \\%srv%\filedump
+if errorlevel 1 goto _nuerr
+if not exist %cddrv%\autorun.bat goto _nauto
+rem start autorun.bat
+%cddrv%
+cd \
+echo.
+echo About to launch "%cddrv%\autorun.bat"
+set srv=
+pause
+autorun.bat
+:_nuerr
+echo AUTOEXEC.NET: Cannot connect to server "%srv%".
+echo AUTOEXEC.NET: Run "msnet -c" and hit "map" to map to some other server....
+goto _end
+:_nauto
+echo AUTOEXEC.NET: %cddrv%\autorun.bat not found.
+rem flow into _end
+:_end
+set cddrv=
+set srv=

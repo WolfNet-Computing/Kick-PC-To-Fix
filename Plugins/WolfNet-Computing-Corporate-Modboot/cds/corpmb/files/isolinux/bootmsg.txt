@@ -1,0 +1,20 @@
+
+Corporate ModBoot
+Copyright (c) 2002 by Bart Lagerweij. All rights reserved.
+http://www.nu2.nu/corpmodboot
+
+Choose system/configuration to boot...
+Pressing [Enter] defaults to item "0"
+
+   0) Boot from first harddisk (drive 80h)
+
+   1) Boot Dos with CD-Rom support
+   2) Boot Dos with Network support
+   3) Start Memtest86 v3.0
+   4) Boot ERD Commander 2002
+
+   a) Boot from first floppy drive (drive 0h)
+   q) Skip CD-Rom boot (boot next device)
+
+Type selection at boot prompt
+Timeout: 20 seconds

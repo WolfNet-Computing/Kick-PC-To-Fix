@@ -1,0 +1,34 @@
+@echo off
+rem --------------------------------------------------------
+rem AUTOEXEC.NET, Copyright (c) 2002 Bart Lagerweij
+rem This program is free software, but WITHOUT ANY WARRANTY!
+rem See http://www.nu2.nu/license/ for more details.
+rem --------------------------------------------------------
+echo AUTOEXEC.NET: Starting...
+rem (mis)using cddrv to hold our driveletter
+rem you can change it if you want
+set cddrv=r:
+echo AUTOEXEC.NET: Mapping drive %cddrv% to \\cts_cd\bbcd
+net use %cddrv% \\cts_cd\bbcd
+if errorlevel 1 goto _nuerr
+echo AUTOEXEC.NET: Mapping drive z: to \\cts_cd\fix
+echo AUTOEXEC.NET: Use drive z: for storing images and files!
+net use z: \\cts_cd\fix
+if errorlevel 1 goto _nuerr
+if not exist %cddrv%\autorun.bat goto _nauto
+rem start autorun.bat
+%cddrv%
+cd \
+echo.
+echo About to launch "%cddrv%\autorun.bat"
+pause
+autorun.bat
+:_nuerr
+echo AUTOEXEC.NET: Cannot connect to server.
+echo AUTOEXEC.NET: Run "msnet -c" and hit "map" to map to some other server....
+goto _end
+:_nauto
+echo AUTOEXEC.NET: %cddrv%\autorun.bat not found.
+rem flow into _end
+:_end
+set cddrv=

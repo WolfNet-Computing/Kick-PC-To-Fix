@@ -1,4 +1,6 @@
 WolfNet-Boot-CD-Builder.exe
+*.iso
+*.img
 *.nsi
 thumbs.db
 builds/

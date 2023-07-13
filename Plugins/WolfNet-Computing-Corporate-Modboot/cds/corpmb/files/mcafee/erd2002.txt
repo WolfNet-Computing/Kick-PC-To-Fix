@@ -1,0 +1,20 @@
+Mcafee VirusScanning using ERD Commander 2002
+
+Click on [Start] -> [Console]
+Goto <x>:\mcafee (where <x> is the drive letter of you CD-Rom)
+    <x>:
+    cd \mcafee
+
+Just scan (all drives, default file extension only):
+    scan /adl
+
+Just scan (all drives, all files):
+    scan /adl /all
+
+Scan and clean (all drives, default file extension only):
+    scan /clean /adl
+
+Scan and clean (all drives, all files):
+    scan /clean /adl /all
+
+** Do not eject CD while scanning **

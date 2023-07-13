@@ -1,0 +1,44 @@
+[menu]
+menuitem=AUTO, Boot with emm386 (most compatible)
+menuitem=MAX, Boot with emm386 (max memory)
+menuitem=NOEMM, Boot without emm386
+menuitem=CLEAN, Clean boot
+menudefault=AUTO,5
+
+[AUTO]
+switches=/f
+break=off
+dos=high,umb
+files=20
+buffers=20
+lastdrive=z
+device=\bin\himem.sys /testmem:off /v
+device=\bin\emm386.exe /v x=d000-d8ff h=128 noems notr
+shell=\command.com /e:1024 /p
+devicehigh=\bin\ifshlp.sys
+
+[MAX]
+switches=/f
+break=off
+dos=high,umb
+files=20
+buffers=20
+lastdrive=z
+device=\bin\himem.sys /testmem:off /v
+device=\bin\emm386.exe /v h=128 noems
+shell=\command.com /e:1024 /p
+devicehigh=\bin\ifshlp.sys
+
+[NOEMM]
+switches=/f
+break=off
+dos=high,umb
+files=20
+buffers=20
+lastdrive=z
+device=\bin\himem.sys /testmem:off /v
+shell=\command.com /e:1024 /p
+device=\bin\ifshlp.sys
+
+[CLEAN]
+shell=\command.com /p
