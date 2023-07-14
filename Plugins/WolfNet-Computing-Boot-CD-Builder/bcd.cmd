@@ -1,6 +1,14 @@
 @echo off
+if not exist VERSION (
+	echo VERSION file doesn't exist!
+	echo Unknown version error.
+	goto _abort
+) else (
+	set /p bcd_version=<VERSION
+)
 echo.
-echo Bootable CD Builder
+echo Bootable CD/DVD Builder.
+echo Version: %bcd_version%
 echo Copyright (c) 2023 WolfNet Computing. All rights reserved.
 echo.
 verify other 2>nul

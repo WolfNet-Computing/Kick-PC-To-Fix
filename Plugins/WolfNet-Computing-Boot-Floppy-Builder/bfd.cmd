@@ -1,6 +1,14 @@
 @echo off
+if not exist VERSION (
+	echo VERSION file doesn't exist!
+	echo Unknown version error.
+	goto _abort
+) else (
+	set /p bfd_version=<VERSION
+)
 echo.
-echo Bootable Floppy Builder
+echo Bootable Floppy Builder.
+echo Version: %bfd_version%
 echo Copyright (c) 2023 WolfNet Computing. All rights reserved.
 echo.
 verify other 2>nul
