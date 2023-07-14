@@ -1,9 +1,7 @@
 @echo off
 echo.
-echo BFD, Build Floppy Disk, v1.1.8
-echo Copyright (c) 2022 John Wolfe. All rights reserved.
-echo This program is free software. Use and/or distribute it under the terms
-echo of the License.
+echo Bootable Floppy Builder
+echo Copyright (c) 2023 WolfNet Computing. All rights reserved.
 echo.
 verify other 2>nul
 setlocal enableextensions

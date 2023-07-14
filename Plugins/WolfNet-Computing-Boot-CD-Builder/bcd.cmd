@@ -1,6 +1,6 @@
 @echo off
 echo.
-echo Boot CD Builder
+echo Bootable CD Builder
 echo Copyright (c) 2023 WolfNet Computing. All rights reserved.
 echo.
 verify other 2>nul
