@@ -11,4 +11,7 @@ LICENSE.rtf
 
 # Directory Ignores.
 Installers/
-Wiki/
+./Plugins/WolfNet-Computing-Modboot/
+
+# Unfinished files. TEMPORARY IGNORES!
+MAKE_A_PLUGIN.md

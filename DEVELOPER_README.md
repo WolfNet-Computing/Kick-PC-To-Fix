@@ -32,5 +32,6 @@ As far as I can work out, there are 2 really easy ways to do this.
  1. For releasing your own version of the codebase under a **STRONGER** license or making commercial modifications:  
 		- Include the **ORIGINAL** source as an archive in your file and make a file called "CHANGES.md" and list **ANY** changes/modifications to the codebase in this file as well as the name of the archive.  
  2. For releasing changes under **THE SAME** license or making private changes:  
-		- Make a file called "CHANGES.md", list your name and **ANY** changes to the original code there.
-		- Add your name to the file "NOTICE.md" and add a brief description of your changes there too.
+		- Make a file called "CHANGES.md", list your name and **ANY** changes to the original code there.  
+		- Add your name to the file "NOTICE.md" and add a brief description of your changes there too.  
+ 3. Read the [Plugin how-to](./MAKE_A_PLUGIN.md).  
