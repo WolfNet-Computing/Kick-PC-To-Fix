@@ -8,6 +8,8 @@ WolfNet-Computing-Boot-Tools.nssp
 thumbs.db
 LICENSE.txt
 LICENSE.rtf
+bcd.cfg
+bfd.cfg
 
 # Directory Ignores.
 Installers/
