@@ -1,6 +1,6 @@
 # Readme for Developers that aren't associated with WolfNet Computing.  
   
-This is neccessary reading before making ANY EDITS TO OR RELEASES FROM the codebase.  
+This is essential reading before making ANY EDITS TO OR RELEASES FROM the codebase.  
   
 ## FAQ  
   
