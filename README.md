@@ -2,7 +2,7 @@
   
 ## Notices  
   
-DEVELOPER NOTICE: Please read the developer documentation [here](/DEVELOPER_README.md) before doing ANYTHING.
+DEVELOPER NOTICE: Please read the developer documentation [here](/DEVELOPER_README.md) before doing **anything**.
   
 IMPORTANT: The Apache License used is in the file "LICENSE.md" instead of "LICENSE" and the Copyright Notice is in the file "NOTICE.md" instead of "NOTICE". This is to make reading the files on GitHub easier.  
   
