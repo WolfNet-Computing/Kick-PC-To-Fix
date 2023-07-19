@@ -4,8 +4,8 @@ This is essential reading before making **ANY EDITS TO OR RELEASES FROM** the co
   
 ## FAQ  
   
- 1. Why use the Apache 2.0 License instead if the less restrictive GPL Licenses?  
-This is because the Apache Licenses protect the intellectual properties of non-profit organisations and companies better (IMHO) than the GPL Licenses do, the project **CAN'T BE USED IN A GPL V2 project** due to incompatibilities. Also if you look at the legality of the license then the Apache AND GPL v2 licenses can be updated to the GPL v3 at a later date. This means that if we wish to later we can upgrade to the GPL v3 License instead. Another reason is that the Solderpad Hardware license we use for our hardware projects is based on the Apache 2.0 Software license.   
+ 1. Why use the Apache 2.0 License instead of the less restrictive GPL Licenses?  
+This is because the Apache Licenses protect the intellectual properties of non-profit organisations and companies better (IMHO) than the GPL Licenses do, the project **CAN'T BE USED IN A GPL V2 project** due to incompatibilities. Also if you look at the legality of the license then the Apache 2.0 AND GPL v2 licenses can be updated to the GPL v3 at a later date. This means that if we wish to later we can upgrade to the GPL v3 License instead. Another reason is that the Solderpad Hardware license we use for our hardware projects is based on the Apache 2.0 Software license.   
   
  2. Why don't the plugins have their own license and copyright notice files?  
  This is in part due to the fact that Apache v2.0 Licenses are incompatible with GPL v2 licences. (See above.) This ensures that the plugins are covered under the same license and copyright notice that the parent project is.  
