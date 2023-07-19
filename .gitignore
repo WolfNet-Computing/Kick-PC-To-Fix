@@ -10,6 +10,5 @@ LICENSE.txt
 LICENSE.rtf
 
 # Directory Ignores.
-builds/
 Installers/
-ProjectFiles/
+Wiki/
