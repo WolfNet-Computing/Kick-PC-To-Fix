@@ -6,8 +6,8 @@
 # Available commands:
 #  n <name>          name
 #  f <arg>           format (quickformat if <arg> is "/q")
-#  it <type>         floppy type (for image only)
 #  b <label>         make bootable (should be right after format!)
+#  it <type>         floppy type (for image only)
 #  o <os>            OS to use e.g. md701 (HINT: Check out the sub-folders in the os folder!)
 #  i <f>             include other config file <f>
 #  c <f1> <f2>       copy <f1> to <f2>
@@ -72,7 +72,7 @@ d       cabs\drivers\ndis\*.cab lib\ndis etc\_msnet
 # -------------------------------------------------------------------------
 n       fd12
 f
-b       fd12
+b       freedos
 o	     fd12
 i        modboot.cfg
 c       cabs\utils.cab level0
