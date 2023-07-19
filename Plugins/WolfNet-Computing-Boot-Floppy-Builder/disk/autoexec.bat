@@ -1,9 +1,7 @@
 @echo off
 set prompt=$p$g
-echo MODBOOT v2.7, Bart's Modular Boot Disk, http://www.nu2.nu/bootdisk/modboot/
-echo Copyright (c) 2002 Bart Lagerweij. All rights reserved.
-echo This program is free software. Use and/or distribute it under the terms
-echo of the NU2 License (see nu2lic.txt or http://www.nu2.nu/license/).
+echo ModBoot - %~nx0, http://wolfnet-computing.com
+echo Copyright (c) 2022 WolfNet Computing. All rights reserved.
 echo.
 if not exist \bin\smartdrv.exe goto _nosdrv
 echo AUTOEXEC: Loading high smartdrv.exe
