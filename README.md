@@ -1,4 +1,7 @@
 # WolfNet-Computing-Boot-Tools  
+  
+IMPORTANT: The Apache License used is in the file "LICENSE.md" instead of "LICENSE" and the Copyright Notice is in the file "NOTICE.md" instead of "NOTICE". This is to make reading the files on GitHub easier.  
+  
 Download and install the current version of the program [available here](https://github.com/WolfNet-Computing/WolfNet-Computing-Boot-Tools/releases) to the suggested location and click either the shortcut on the desktop or in the start menu.  
   
 When installing, the following applies to the options chosen:  
