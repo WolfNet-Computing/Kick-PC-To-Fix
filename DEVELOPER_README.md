@@ -12,17 +12,17 @@ This is because the Apache Licenses protect the intellectual properties of non-p
   
  3. Can I contribute to the codebase or release my own version?  
  Sure, there's no restrictions as long as the license is followed. The requirements for a modified version to be released are as such:  
- - Include a file that lists ANY AND ALL modifications to the software.  
- - Include THE ORIGINAL copyright notice.  
- - Include a copy of the Apache Software Foundation 2.0 License file.  
- - Include a copy of the "NOTICE" (or in our case "NOTICE.md") file WITH ALL attribution notes.  
+		- Include a file that lists ANY AND ALL modifications to the software.  
+		- Include THE ORIGINAL copyright notice.  
+		- Include a copy of the Apache Software Foundation 2.0 License file.  
+		- Include a copy of the "NOTICE" (or in our case "NOTICE.md") file WITH ALL attribution notes.  
   
  4. So what CAN I do with the software?  
 There's not much of a limit on what you can do with the software, the (non-exhaustive) list is here:  
- - Use the software commercially.  
- - Alter the code. (Bear in mind ALL modifications MUST be listed but not necessarily released as source.) 
- - Distribute copies or modifications of the code.  
- - Sublicense the code (Re-release it under a stronger licence).  
- - Use patent claims.  
- - Place a warranty on the software.  
+		- Use the software commercially.  
+		- Alter the code. (Bear in mind ALL modifications MUST be listed but not necessarily released as source.) 
+		- Distribute copies or modifications of the code.  
+		- Sublicense the code (Re-release it under a stronger licence).  
+		- Use patent claims.  
+		- Place a warranty on the software.  
   
