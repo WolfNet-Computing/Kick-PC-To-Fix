@@ -2,7 +2,7 @@
   
 This is neccessary reading before making ANY EDITSTO OR RELEASES FROM the codebase.  
   
-## FAQ:  
+## FAQ  
   
  1. Why use the Apache 2.0 License instead if the less restrictive GPL Licenses?  
 This is because the Apache Licenses protect the intellectual properties of non-profit organisations and companies better (IMHO) than the GPL Licenses do, the project CAN'T BE USED IN A GPL V2 project dues to incompatibilities. Also if you look at the legality of the license then the Apache AND GPL v2 licenses can be updated to the GPL v3 at a later date. This means that if we wish to later we can upgrade to the GPL v3 License instead.   
@@ -26,3 +26,11 @@ There's not much of a limit on what you can do with the software, the (non-exhau
 		- Use patent claims.  
 		- Place a warranty on the software.  
   
+## Making changes and releasing your own version  
+  
+As far as I can work out, there are 2 really easy ways to do this.  
+ 1. For releasing your own version of the codebase under a STRONGER license or making commercial modifications:  
+		- Include the ORIGINAL source as an archive in your file and make a file called "CHANGES.md" and list ANY changes/modifications to the codebase in this file.  
+ 2. For releasing changes under THE SAME license or making private changes:  
+		- Make a file called "CHANGES.md", list your name and ANY changes to the original code there.
+		- Add your name to the file "NOTICE.md" and add a brief description of your changes there too.
