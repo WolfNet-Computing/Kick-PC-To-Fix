@@ -7,7 +7,7 @@ This is neccessary reading before making ANY EDITSTO OR RELEASES FROM the codeba
  1. Why use the Apache 2.0 License instead if the less restrictive GPL Licenses?  
 This is because the Apache Licenses protect the intellectual properties of non-profit organisations and companies better (IMHO) than the GPL Licenses do, the project CAN'T BE USED IN A GPL V2 project dues to incompatibilities. Also if you look at the legality of the license then the Apache AND GPL v2 licenses can be updated to the GPL v3 at a later date. This means that if we wish to later we can upgrade to the GPL v3 License instead.   
   
- 2. Why don't the plugins have their own license and copyright notice files?
+ 2. Why don't the plugins have their own license and copyright notice files?  
  This is in part due to the fact that Apache v2.0 Licenses are incompatible with GPL v2 licences. (See above.) This ensures that the plugins are covered under the same license and copyright notice that the parent project is.  
   
  3. Can I contribute to the codebase or release my own version?  
