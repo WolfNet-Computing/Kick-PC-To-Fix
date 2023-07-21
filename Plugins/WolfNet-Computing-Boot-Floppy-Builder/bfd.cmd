@@ -1,4 +1,5 @@
 @echo off
+
 if not exist VERSION (
 	echo VERSION file doesn't exist!
 	echo Unknown version error.
@@ -6,15 +7,18 @@ if not exist VERSION (
 ) else (
 	set /p bfd_version=<VERSION
 )
+
 echo.
 echo Bootable Floppy Builder.
 echo Version: %bfd_version%
 echo Copyright (c) 2023 WolfNet Computing. All rights reserved.
 echo.
+
 verify other 2>nul
 setlocal enableextensions
 if errorlevel 1 goto _noext
 if not "%_4VER%" == "" goto _4nt
+
 rem to current drive and path
 %~d0
 cd "%~dp0"
@@ -24,21 +28,24 @@ for %%i in (bin\bfi.exe bin\bchoice.exe bin\cabarc.exe) do if not exist %%i (
 echo BFD: File "%%i" not found
 goto _abort)
 if exist bfd.ok goto _ok
+
 echo.
 echo * IMPORTANT NOTICE *
 echo.
 echo This program uses some files from Microsoft Windows 98 which are protected by 
 echo copyright. You must have a valid Windows 98 license before using these files. 
 echo When you do not have a valid license for Windows 98 but you do have one for 
-echo Windows 95 or msdos 6 you should replace the files in the directory os\md701\ 
-echo with your own files.
+echo Windows 95 or msdos 6 you should create an OS plugin with your own licensed files or
+echo if you have no microsoft licenses then use FreeDOS.
 echo.
 echo If you have read and understood the information above you can press the 
 echo "c" key to continue.
 echo.
+
 bin\bchoice /c:ca /d:a Continue or Abort?
 if errorlevel 1 goto _abort
 echo OK > bfd.ok
+
 :_ok
 set bfd_name=
 set bfd_cname=
@@ -53,6 +60,7 @@ set bfd_la=
 set bfd_bi=
 set bfd_ok=
 set bfd_or=
+
 :_arg
 if "%1" == "" goto _start
 rem if "%1" == "-o" goto _os
@@ -62,38 +70,47 @@ if "%1" == "-n" goto _nop
 if "%1" == "-i" goto _img
 if "%bfd_name%" == "" goto _name
 if "%bfd_target%" == "" goto _target
+
 :_next
 shift
 goto _arg
+
 :_img
 shift
 if "%1" == "" goto _usage
 set bfd_img=%1
 goto _next
+
 :_deb
 set bfd_deb=1
 goto _next
+
 :_nop
 set bfd_nop=1
 goto _next
+
 :_name
 if "%1" == "" goto _usage
 set bfd_name=%1
 goto _next
+
 :_target
 if "%1" == "" goto _usage
 set bfd_target=%1
 goto _next
+
 :_os
 shift
 if "%1" == "" goto _usage
 set bfd_os=%1
 goto _next
+
 :_type
 shift
 if "%1" == "" goto _usage
 set bfd_type=%1
 goto _next
+
 :_start
 if "%bfd_name%" == "" goto _usage
 rem defaults values
@@ -101,6 +118,7 @@ rem if "%bfd_os%" == "" set bfd_os=md701
 if "%bfd_type%" == "" set bfd_type=144
 if "%bfd_img%" == "" if "%bfd_target%" == "" set bfd_target=a:
 echo BFD: Building "%bfd_name%"
+
 :_cfgredo
 if exist bfd.cfg goto _cfgok
 	if exist bfd.sam (
@@ -108,22 +126,28 @@ if exist bfd.cfg goto _cfgok
 		ren bfd.sam bfd.cfg
 		goto _cfgredo)
 	echo BFD: Could not find bfd.cfg
+
 :_cfgok
 if "%bfd_img%" == "" goto _noimg
 rem image mode
 echo BFD: Target image file "%bfd_img%"
 set bfd_target=%temp%\$bfd$
 goto _pass1
+
 :_noimg
 rem no image
 echo BFD: Target drive "%bfd_target%"
+
 :_pass1
 rem parsing bfd.cfg file
 echo BFD: Parsing config file "bfd.cfg"
 for /f "eol=# tokens=1,2,3,4" %%i in (bfd.cfg) do call :_bline %%i %%j %%k %%l
 if not "%bfd_err%" == "" goto _abort
-rem parsing any cds\xx\bfd.cfg file(s)
-for /d %%i in (cds\*.*) do call :_cdscfg %%i
+rem parsing any cds\*\bfd.cfg file(s)
+for /d %%i in (.\cds\*\bfd.cfg) do call :_cdscfg %%i
+if not "%bfd_err%" == "" goto _abort
+rem parsing any plugin\*.cfg file(s)
+for %%i in (plugin\*.cfg) do call :_plugcfg %%i
 if not "%bfd_err%" == "" goto _abort
 if "%bfd_ok%" == "" goto _ndone
 if "%bfd_img%" == "" goto _done
@@ -145,38 +169,61 @@ echo BFD: Remove directory "%bfd_target%"
 rmdir /s /q %bfd_target%
 if not exist %bfd_target%\nul goto _done
 goto _abort
+
 :_ndone
 echo BFD: "%bfd_name%" is an invalid name!
 echo BFD: You must specify one of the following names:
 for /f "eol=# tokens=1,2,3,4" %%i in (bfd.cfg) do call :_bline3 %%i %%j %%k %%l
-rem listing any cds\xx\bfd.cfg file(s)
-for /d %%i in (cds\*.*) do call :_cdscfg2 %%i
+rem listing any cds\*\bfd.cfg file(s)
+for /d %%i in (cds\*\bfd.cfg) do call :_cdscfg2 %%i
+rem listing any plugin '.cfg' file(s)
+for %%i in (plugin\*.cfg) do call :_plugcfg2 %%i
 goto _abort
+
 :_cdscfg2
 if not "%bfd_err%" == "" goto :eof
 if not exist %1\bfd.cfg goto :eof
 echo BFD: Additional names from "%1\bfd.cfg"
 for /f "eol=# tokens=1,2,3,4" %%j in (%1\bfd.cfg) do call :_bline3 %%j %%k %%l %%m
 goto :eof
+
+:_plugcfg2
+if not "%bfd_err%" == "" goto :eof
+if not exist %1 goto :eof
+echo BFD: Additional names from "%1"
+for /f "eol=# tokens=1,2,3,4" %%j in (%1) do call :_bline3 %%j %%k %%l %%m
+goto :eof
+
 :_done
 if not "%bfd_img%" == "" echo BFD: Image "%bfd_img%" created.
 echo BFD: Done!
 goto _end
+
 :_cdscfg
 if not "%bfd_err%" == "" goto :eof
 if not exist %1\bfd.cfg goto :eof
 echo BFD: Including config file "%1\bfd.cfg"
 for /f "eol=# tokens=1,2,3,4" %%j in (%1\bfd.cfg) do call :_bline %%j %%k %%l %%m
 goto :eof
+
+:_plugcfg
+if not "%bfd_err%" == "" goto :eof
+if not exist %1 goto :eof
+echo BFD: Including config file "%1"
+for /f "eol=# tokens=1,2,3,4" %%j in (%1) do call :_bline %%j %%k %%l %%m
+goto :eof
+
 :_bline3
 if not "%bfd_deb%" == "" echo debug: line=[%1] [%2] [%3]
 if not "%bfd_err%" == "" goto :eof
 if "%1" == "n" goto _cmd3n
 if "%1" == "N" goto _cmd3n
 goto :eof
+
 :_cmd3n
 echo %2
 goto :eof
+
 :_bline
 if not "%bfd_deb%" == "" echo debug: line=[%1] [%2] [%3]
 if not "%bfd_err%" == "" goto :eof
@@ -204,14 +251,15 @@ if "%1" == "i" goto _cmd_i
 if "%1" == "I" goto _cmd_i
 if "%1" == "it" goto _cmd_it
 if "%1" == "IT" goto _cmd_it
-
 echo BFD: Unknown command "%1"
 set bfd_err=1
 goto :eof
+
 :_cmd_it
 set bfd_type=%2
 echo BFD: Image type set to "%bfd_type%"
 goto :eof
+
 :_cmd_i
 if not exist %2 (
 	echo BFD: Include file "%2" not found
@@ -219,6 +267,7 @@ if not exist %2 (
 	goto :eof)
 for /f "eol=# tokens=1,2,3,4" %%i in (%2) do call :_bline %%i %%j %%k %%l
 goto :eof
+
 :_cmd_o
 set bfd_os=%2
 echo BFD: Operating system "%bfd_os%"
@@ -238,25 +287,30 @@ if not "%bfd_bootable%" == "" (
 	if errorlevel 1 (set bfd_err=1& goto :eof)
 	goto _cmd_b2)
 goto :eof
+
 :_cmd_b
 set bfd_bootable=1
 goto :eof
+
 :_cmd_bi
 rem image
 rem bin\mkbt.exe os\%bfd_os%\bootsect.bin %bfd_img%
 rem if errorlevel 1 (set bfd_err=1& goto :eof)
 set bfd_bi=os\%bfd_os%\bootsect.bin
+
 :_cmd_b2
 if exist os\%bfd_os%\io.sys goto _ms
 if exist os\%bfd_os%\ibmbio.com goto _ibm
 if exist os\%bfd_os%\kernel.sys goto _fd
 rem any other "non-Dos" OS? Maybe NT? bail out
 goto :eof
+
 :_cmd_f
 if not "%bfd_img%" == "" goto _cmd_fi
 echo BFD: Formatting drive "%bfd_target%" extra arguments "%2"
 rem type is disk
 if "%bfd_nop%" == "1" goto _format
+
 :_again
 echo.
 echo BFD: Insert floppy to format in drive %bfd_target%
@@ -267,11 +321,13 @@ if errorlevel 1 (
 	set bfd_err=1
 	goto :eof)
 echo.
+
 :_format
 echo BFD: Formatting...
 format %bfd_target% %2 /u /backup /v:
 if errorlevel 1 goto _again
 goto :eof
+
 :_cmd_fi
 rem image
 rem zap temp target
@@ -281,11 +337,13 @@ rmdir /s /q %bfd_target%
 if not exist %bfd_target%\nul goto _cmd_fi3
 set bfd_err=1
 goto :eof
+
 :_cmd_fi3
 echo BFD: Create directory "%bfd_target%"
 mkdir %bfd_target%
 if not exist %bfd_target%\nul set bfd_err=1
 goto :eof
+
 :_cmd_c
 echo BFD: Copying "%2" to "%bfd_target%\%3"
 copy %2 %bfd_target%\%3 >nul
@@ -293,6 +351,7 @@ if not errorlevel 1 goto :eof
 echo BFD: Copy returned an error
 set bfd_err=1
 goto :eof
+
 rem t - try to copy (if exists)
 :_cmd_t
 if not exist %2 goto :eof
@@ -302,10 +361,12 @@ if not errorlevel 1 goto :eof
 echo BFD: Copy returned an error
 set bfd_err=1
 goto :eof
+
 :_cmd_d
 echo BFD: Copy driver file(s) "%2" to "%bfd_target%\%3"
 for %%i in (%2) do call :_cmd_dd %%i %3 %4
 goto :eof
+
 :_cmd_dd
 echo BFD: Copying file "%1" to "%bfd_target%\%2"
 copy %1 %bfd_target%\%2 >nul
@@ -313,6 +374,7 @@ if not errorlevel 1 goto _cmd_da
 echo BFD: Copy returned an error
 set bfd_err=1
 goto :eof
+
 :_cmd_da
 echo BFD: Adding driver info to index "%bfd_target%\%3"
 if exist %temp%\ndis.* del %temp%\ndis.*
@@ -323,6 +385,7 @@ if exist %bfd_target%\%3.nic goto _cmd_pn
 echo ; This file is used to manual> %bfd_target%\%3.nic
 echo ; select a network driver>> %bfd_target%\%3.nic
 echo :_ndis "Select Network driver..." [x]>> %bfd_target%\%3.nic
+
 :_cmd_pn
 if exist %bfd_target%\%3.pci goto _cmd_pp
 echo ; PCI map file (created by bfd.cmd)> %bfd_target%\%3.pci
@@ -335,10 +398,12 @@ if exist %temp%\ndis.pci type %temp%\ndis.pci >> %bfd_target%\%3.pci
 if exist %temp%\ndis.txt type %temp%\ndis.txt >> %bfd_target%\%3.nic
 if exist %temp%\ndis.* del %temp%\ndis.*
 goto :eof
+
 :_cmd_n
 set bfd_cname=%2
 if not "%bfd_deb%" == "" echo debug: name set to "%bfd_cname%"
 goto :eof
+
 :_cmd_m
 if exist %bfd_target%\%2\nul goto _cmd_me
 echo BFD: Make directory "%bfd_target%\%2"
@@ -347,9 +412,11 @@ if not errorlevel 1 goto :eof
 echo BFD: mkdir returned an error
 set bfd_err=1
 goto :eof
+
 :_cmd_me
 echo BFD: Directory "%bfd_target%\%2" already exists
 goto :eof
+
 :_ms
 echo BFD: Copying MS-Dos boot files
 call :_bline c os\%bfd_os%\io.sys
@@ -360,6 +427,7 @@ if not "%bfd_err%" == "" goto :eof
 call :_bline c os\%bfd_os%\command.com
 if not "%bfd_err%" == "" goto :eof
 goto _label
+
 :_ibm
 echo BFD: Copying DR-Dos boot files
 call :_bline c os\%bfd_os%\ibmbio.com
@@ -370,6 +438,7 @@ if not "%bfd_err%" == "" goto :eof
 call :_bline c os\%bfd_os%\command.com
 if not "%bfd_err%" == "" goto :eof
 goto _label
+
 :_fd
 echo BFD: Copying FreeDos boot files
 call :_bline c os\%bfd_os%\kernel.sys
@@ -377,17 +446,20 @@ if not "%bfd_err%" == "" goto :eof
 set bfd_or=kernel.sys
 call :_bline c os\%bfd_os%\command.com
 if not "%bfd_err%" == "" goto :eof
+
 :_label
 if not "%bfd_img%" == "" goto _imglabel
 echo BFD: Label
 if not "%2" == "" label %bfd_target% %2
 if "%2" == "" label %bfd_target% modboot
 goto :eof
+
 :_imglabel
 if not "%2" == "" set bfd_la=%2
 if "%2" == "" set bfd_la=modboot
 bin\mkbt.exe -x os\%bfd_os%\bootsect.bin %bfd_target%
 goto :eof
+
 :_cmd_x
 echo BFD: XCopying "%2" to "%bfd_target%\%3"
 xcopy %2\*.* %bfd_target%\%3 /s /e /i
@@ -395,6 +467,7 @@ if not errorlevel 1 goto :eof
 echo BFD: XCopy returned an error
 set bfd_err=1
 goto :eof
+
 :_usage
 echo.
 echo Usage: bfd [-d] [-i file] [-t type] name [target]
@@ -411,18 +484,22 @@ echo.
 echo This program uses the following files (located in the "bin" directory):
 echo - Cabinet Tool (cabarc.exe) by Microsoft Corp.
 goto _end
+
 :_4nt
 echo BFD: Cannot run with 4NT! Use the normal command interperter (cmd.exe)
 goto _abort
 rem flow into _abort
+
 :_noext
 echo BFD: Unable to enable extensions.
 rem flow into _abort
+
 :_abort
 if "%bfd_img%" == "" goto _abort1
 if exist %bfd_img% (
 	echo BFD: Removing "%bfd_img%"
 	del %bfd_img%)
+
 :_abort1
 echo BFD: Aborted...
 echo.
@@ -431,9 +508,11 @@ endlocal
 set rv=1
 pause
 goto _end2
+
 :_end
 rem set errorlevel to 0
 endlocal
 set rv=0
+
 :_end2
 echo BFD: Exiting with return value %rv%

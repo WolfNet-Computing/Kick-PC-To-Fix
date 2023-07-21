@@ -1,9 +1,4 @@
 @echo off
-rem --------------------------------------------------------
-rem AUTOEXEC.NET, Copyright (c) 2002 Bart Lagerweij
-rem This program is free software, but WITHOUT ANY WARRANTY!
-rem See http://www.nu2.nu/license/ for more details.
-rem --------------------------------------------------------
 echo AUTOEXEC.NET: Starting...
 rem (mis)using cddrv to hold our driveletter
 rem you can change it if you want

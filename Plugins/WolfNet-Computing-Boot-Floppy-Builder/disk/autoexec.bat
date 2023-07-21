@@ -1,7 +1,7 @@
 @echo off
 set prompt=$p$g
-echo ModBoot - %~nx0, http://wolfnet-computing.com
-echo Copyright (c) 2022 WolfNet Computing. All rights reserved.
+echo ModBoot - autoexec.bat, http://wolfnet-computing.com
+echo Copyright (c) 2022-2023 WolfNet Computing. All rights reserved.
 echo.
 if not exist \bin\smartdrv.exe goto _nosdrv
 echo AUTOEXEC: Loading high smartdrv.exe
@@ -28,6 +28,7 @@ if errorlevel 8 set srcdrv=i:
 if errorlevel 9 set srcdrv=j:
 :_nobdrv
 rem if empty assume "a:"
+echo assumed we are on the A: drive
 if "%srcdrv%" == "" set srcdrv=a:
 echo AUTOEXEC: Booted drive is %srcdrv%
 if exist \kernel.sys set os=fd
@@ -36,9 +37,8 @@ if not exist %srcdrv%\bin\extract.exe goto _abort
 rem The ramdisk drive
 set ramdrv=q:
 if exist %srcdrv%\diskid.txt type diskid.txt
-rem
-path=%srcdrv%\bin;%srcdrv%\
-rem
+if exist %srcdrv%\logo.sys PATH=%ramdrv%\windows;%ramdrv%\msdos71;%ramdrv%\bin;%ramdrv%;%srcdrv%\windows;%PATH%;%srcdrv%\bin;%srcdrv%\
+if not exist %srcdrv%\logo.sys PATH=%ramdrv%\bin;%ramdrv%\;%srcdrv%\bin;%srcdrv%
 if "%config%" == "CLEAN" goto _end
 if "%config%" == "3" goto _end
 rem
@@ -56,7 +56,8 @@ goto _abort
 :_extracok
 rem Setup the ramdisk
 if exist %ramdrv%\bin\extract.exe goto _skipcp
-rem load a 8MB ramdisk
+if not exist %srcdrv%\bin\xmsdsk.exe goto _abort
+rem load a 16MB ramdisk
 echo AUTOEXEC: Setting up Ramdisk at drive %ramdrv%
 xmsdsk 16384 %ramdrv% /y /t
 if errorlevel 1 goto _ramok
