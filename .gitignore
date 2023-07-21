@@ -13,3 +13,4 @@ bfd.cfg
 
 # Directory Ignores.
 Installers/
+Plugins/OS_win311/
