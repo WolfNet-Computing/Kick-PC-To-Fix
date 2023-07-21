@@ -1,4 +1,5 @@
 @echo off
+
 if not exist VERSION (
 	echo VERSION file doesn't exist!
 	echo Unknown version error.
@@ -6,15 +7,18 @@ if not exist VERSION (
 ) else (
 	set /p bcd_version=<VERSION
 )
+
 echo.
 echo Bootable CD/DVD Builder.
 echo Version: %bcd_version%
 echo Copyright (c) 2023 WolfNet Computing. All rights reserved.
 echo.
+
 verify other 2>nul
 setlocal enableextensions
 if errorlevel 1 goto _noext
 if not "%_4VER%" == "" goto _4nt
+
 rem to current drive and path
 %~d0
 cd "%~dp0"
@@ -26,7 +30,7 @@ for %%i in (bin\bchoice.exe bin\cdrecord.exe bin\cygwin1.dll bin\mkisofs.exe) do
 	echo BCD: File "%%i" not found.
 	goto _abort)
 set bcd_name=
-set bcd_deb=
+set bcd_deb=1
 set bcd_noburn=
 set bcd_spd=
 set bcd_cmd=
@@ -119,16 +123,16 @@ echo BCD: Processing bootdisk config file "cds\%bcd_name%\bootdisk.cfg"
 set rv=
 for /f "eol=# tokens=1,2" %%i in (cds\%bcd_name%\bootdisk.cfg) do call :_bflop %%i %%j
 if not "%bcd_err%" == "" goto _abort
-:_bdcfg
 
+:_bdcfg
 rem call some "custom" script
 if "%bcd_call%" == "" goto _norun0
 if not exist cds\%bcd_name%\%bcd_call% goto _norun0
 echo BCD: Calling custom batchfile "cds\%bcd_name%\%bcd_call%"
 call cds\%bcd_name%\%bcd_call%
 if "%rv%" == "1" goto _abort
-:_norun0
 
+:_norun0
 if "%bcd_boot%" == "" goto _noboot
 rem replace bootfile '\' with '/'
 set bcd_boot=%bcd_boot:\=/%
@@ -419,7 +423,7 @@ goto :eof
 if "%bcd_err%" == "1" goto :eof
 if exist cds\%bcd_name%\files\%2 goto _biext
 echo BCD: Bootimage "%2" does not exist, let's create it now!
-call bfd.cmd %1 -i cds\%bcd_name%\files\%2
+call bfd.cmd -i cds\%bcd_name%\files\%2 %1
 if "%rv%" == "1" set bcd_err=1
 goto :eof
 :_biext

@@ -25,8 +25,9 @@ cd "%~dp0"
 if "%1" == "" goto _usage
 echo BFD: Checking for required files...
 for %%i in (bin\bfi.exe bin\bchoice.exe bin\cabarc.exe) do if not exist %%i (
-echo BFD: File "%%i" not found
-goto _abort)
+	echo BFD: File "%%i" not found
+	goto _abort
+)
 if exist bfd.ok goto _ok
 
 echo.
@@ -53,7 +54,7 @@ set bfd_target=
 set bfd_os=
 set bfd_img=
 set bfd_type=
-set bfd_deb=
+set bfd_deb=1
 set bfd_nop=
 set bfd_err=
 set bfd_la=
@@ -462,7 +463,7 @@ goto :eof
 
 :_cmd_x
 echo BFD: XCopying "%2" to "%bfd_target%\%3"
-xcopy %2\*.* %bfd_target%\%3 /s /e /i
+echo xcopy %2\*.* %bfd_target%\%3 /S /E /I
 if not errorlevel 1 goto :eof
 echo BFD: XCopy returned an error
 set bfd_err=1
@@ -498,7 +499,12 @@ rem flow into _abort
 if "%bfd_img%" == "" goto _abort1
 if exist %bfd_img% (
 	echo BFD: Removing "%bfd_img%"
-	del %bfd_img%)
+	del %bfd_img%
+)
+if exist %bfd_target% (
+	echo BFD: Removing "%bfd_target%"
+	rmdir -fR %bfd_target%
+)
 
 :_abort1
 echo BFD: Aborted...
