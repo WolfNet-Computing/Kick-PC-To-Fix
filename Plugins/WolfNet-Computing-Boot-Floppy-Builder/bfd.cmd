@@ -1,4 +1,5 @@
 @echo off
+set %bfd_deb%=1
 
 if not exist VERSION (
 	echo VERSION file doesn't exist!
@@ -54,9 +55,7 @@ set bfd_target=
 set bfd_os=
 set bfd_img=
 set bfd_type=
-set bfd_deb=1
 set bfd_nop=
-set bfd_err=
 set bfd_la=
 set bfd_bi=
 set bfd_ok=
@@ -114,7 +113,7 @@ goto _next
 
 :_start
 if "%bfd_name%" == "" goto _usage
-rem defaults values
+rem default values
 rem if "%bfd_os%" == "" set bfd_os=md701
 if "%bfd_type%" == "" set bfd_type=144
 if "%bfd_img%" == "" if "%bfd_target%" == "" set bfd_target=a:
@@ -142,14 +141,20 @@ echo BFD: Target drive "%bfd_target%"
 :_pass1
 rem parsing bfd.cfg file
 echo BFD: Parsing config file "bfd.cfg"
-for /f "eol=# tokens=1,2,3,4" %%i in (bfd.cfg) do call :_bline %%i %%j %%k %%l
-if not "%bfd_err%" == "" goto _abort
+for /F "eol=# tokens=1,2,3,4" %%i in (bfd.cfg) do call :_bline %%i %%j %%k %%l
+if defined bfd_err goto _abort
 rem parsing any cds\*\bfd.cfg file(s)
-for /d %%i in (.\cds\*\bfd.cfg) do call :_cdscfg %%i
-if not "%bfd_err%" == "" goto _abort
+for /D %%i in (cds\*.*) do (
+	echo BFD: Calling ":_cdscfg %%i"
+	call :_cdscfg %%i
+	if defined bfd_err goto _abort
+)
 rem parsing any plugin\*.cfg file(s)
-for %%i in (plugin\*.cfg) do call :_plugcfg %%i
-if not "%bfd_err%" == "" goto _abort
+for %%i in (plugin\*.cfg) do (
+	echo BFD: Calling ":_plugcfg %%i"
+	call :_plugcfg %%i
+	if defined bfd_err goto _abort
+)
 if "%bfd_ok%" == "" goto _ndone
 if "%bfd_img%" == "" goto _done
 rem create the image file
@@ -169,30 +174,36 @@ if not exist %bfd_target%\nul goto _done
 echo BFD: Remove directory "%bfd_target%"
 rmdir /s /q %bfd_target%
 if not exist %bfd_target%\nul goto _done
-goto _abort
+goto _end
 
 :_ndone
 echo BFD: "%bfd_name%" is an invalid name!
 echo BFD: You must specify one of the following names:
-for /f "eol=# tokens=1,2,3,4" %%i in (bfd.cfg) do call :_bline3 %%i %%j %%k %%l
+for /F "eol=# tokens=1,2,3,4" %%i in (bfd.cfg) do call :_bline3 %%i %%j %%k %%l
 rem listing any cds\*\bfd.cfg file(s)
-for /d %%i in (cds\*\bfd.cfg) do call :_cdscfg2 %%i
+for /D %%i in (cds\*.*) do (
+	echo BFD: Calling ":_cdscfg2 %%i"
+	call :_cdscfg2 %%i
+)
 rem listing any plugin '.cfg' file(s)
-for %%i in (plugin\*.cfg) do call :_plugcfg2 %%i
+for %%i in (plugin\*.cfg) do (
+	echo BFD: Calling ":_plugcfg2 %%i"
+	call :_plugcfg2 %%i
+)
 goto _abort
 
 :_cdscfg2
-if not "%bfd_err%" == "" goto :eof
+if defined bfd_err goto :eof
 if not exist %1\bfd.cfg goto :eof
 echo BFD: Additional names from "%1\bfd.cfg"
-for /f "eol=# tokens=1,2,3,4" %%j in (%1\bfd.cfg) do call :_bline3 %%j %%k %%l %%m
+for /F "eol=# tokens=1,2,3,4" %%j in (%1\bfd.cfg) do call :_bline3 %%j %%k %%l %%m
 goto :eof
 
 :_plugcfg2
-if not "%bfd_err%" == "" goto :eof
+if defined bfd_err goto :eof
 if not exist %1 goto :eof
 echo BFD: Additional names from "%1"
-for /f "eol=# tokens=1,2,3,4" %%j in (%1) do call :_bline3 %%j %%k %%l %%m
+for /F "eol=# tokens=1,2,3,4" %%j in (%1) do call :_bline3 %%j %%k %%l %%m
 goto :eof
 
 :_done
@@ -201,22 +212,22 @@ echo BFD: Done!
 goto _end
 
 :_cdscfg
-if not "%bfd_err%" == "" goto :eof
+if defined bfd_err goto :eof
 if not exist %1\bfd.cfg goto :eof
 echo BFD: Including config file "%1\bfd.cfg"
-for /f "eol=# tokens=1,2,3,4" %%j in (%1\bfd.cfg) do call :_bline %%j %%k %%l %%m
+for /F "eol=# tokens=1,2,3,4" %%j in (%1\bfd.cfg) do call :_bline %%j %%k %%l %%m
 goto :eof
 
 :_plugcfg
-if not "%bfd_err%" == "" goto :eof
+if defined bfd_err goto :eof
 if not exist %1 goto :eof
 echo BFD: Including config file "%1"
-for /f "eol=# tokens=1,2,3,4" %%j in (%1) do call :_bline %%j %%k %%l %%m
+for /F "eol=# tokens=1,2,3,4" %%j in (%1) do call :_bline %%j %%k %%l %%m
 goto :eof
 
 :_bline3
-if not "%bfd_deb%" == "" echo debug: line=[%1] [%2] [%3]
-if not "%bfd_err%" == "" goto :eof
+if defined bfd_deb echo debug: line=[%1] [%2] [%3]
+if defined bfd_err goto :eof
 if "%1" == "n" goto _cmd3n
 if "%1" == "N" goto _cmd3n
 goto :eof
@@ -226,8 +237,8 @@ echo %2
 goto :eof
 
 :_bline
-if not "%bfd_deb%" == "" echo debug: line=[%1] [%2] [%3]
-if not "%bfd_err%" == "" goto :eof
+if defined bfd_deb echo debug: line=[%1] [%2] [%3]
+if defined bfd_err goto :eof
 if "%1" == "n" goto _cmd_n
 if "%1" == "N" goto _cmd_n
 if not "%bfd_cname%" == "%bfd_name%" goto :eof
@@ -266,7 +277,7 @@ if not exist %2 (
 	echo BFD: Include file "%2" not found
 	set bfd_err=1
 	goto :eof)
-for /f "eol=# tokens=1,2,3,4" %%i in (%2) do call :_bline %%i %%j %%k %%l
+for /F "eol=# tokens=1,2,3,4" %%i in (%2) do call :_bline %%i %%j %%k %%l
 goto :eof
 
 :_cmd_o
@@ -280,7 +291,7 @@ if not exist os\%2 (
 	echo BFD: OS Folder "%2" not found
 	set bfd_err=1
 	goto :eof)
-for /f "eol=# tokens=1,2,3,4" %%i in (%2.cfg) do call :_bline %%i %%j %%k %%l
+for /F "eol=# tokens=1,2,3,4" %%i in (%2.cfg) do call :_bline %%i %%j %%k %%l
 if not "%bfd_bootable%" == "" (
 	if not "%bfd_img%" == "" goto _cmd_bi
 	echo BFD: Installing bootsector from "os\%bfd_os%\bootsect.bin"
@@ -402,51 +413,50 @@ goto :eof
 
 :_cmd_n
 set bfd_cname=%2
-if not "%bfd_deb%" == "" echo debug: name set to "%bfd_cname%"
+if defined bfd_deb echo debug: name set to "%bfd_cname%"
 goto :eof
 
 :_cmd_m
-if exist %bfd_target%\%2\nul goto _cmd_me
-echo BFD: Make directory "%bfd_target%\%2"
-mkdir "%bfd_target%\%2"
+echo BFD: Attempt to make directory "%bfd_target%\%2"
+if not exist %bfd_target%\%2\nul (
+	mkdir "%bfd_target%\%2"
+) else (
+	echo BFD: Directory "%bfd_target%\%2" already exists
+)
 if not errorlevel 1 goto :eof
 echo BFD: mkdir returned an error
 set bfd_err=1
 goto :eof
 
-:_cmd_me
-echo BFD: Directory "%bfd_target%\%2" already exists
-goto :eof
-
 :_ms
 echo BFD: Copying MS-Dos boot files
 call :_bline c os\%bfd_os%\io.sys
-if not "%bfd_err%" == "" goto :eof
+if defined bfd_err goto :eof
 set bfd_or=io.sys
 call :_bline c os\%bfd_os%\msdos.sys
-if not "%bfd_err%" == "" goto :eof
+if defined bfd_err goto :eof
 call :_bline c os\%bfd_os%\command.com
-if not "%bfd_err%" == "" goto :eof
+if defined bfd_err goto :eof
 goto _label
 
 :_ibm
-echo BFD: Copying DR-Dos boot files
+echo BFD: Copying Dr-DOS boot files
 call :_bline c os\%bfd_os%\ibmbio.com
-if not "%bfd_err%" == "" goto :eof
+if defined bfd_err goto :eof
 set bfd_or=ibmbio.sys
 call :_bline c os\%bfd_os%\ibmdos.com
-if not "%bfd_err%" == "" goto :eof
+if defined bfd_err goto :eof
 call :_bline c os\%bfd_os%\command.com
-if not "%bfd_err%" == "" goto :eof
+if defined bfd_err goto :eof
 goto _label
 
 :_fd
 echo BFD: Copying FreeDos boot files
 call :_bline c os\%bfd_os%\kernel.sys
-if not "%bfd_err%" == "" goto :eof
+if defined bfd_err goto :eof
 set bfd_or=kernel.sys
 call :_bline c os\%bfd_os%\command.com
-if not "%bfd_err%" == "" goto :eof
+if defined bfd_err goto :eof
 
 :_label
 if not "%bfd_img%" == "" goto _imglabel
@@ -463,7 +473,7 @@ goto :eof
 
 :_cmd_x
 echo BFD: XCopying "%2" to "%bfd_target%\%3"
-echo xcopy %2\*.* %bfd_target%\%3 /S /E /I
+xcopy %2\*.* %bfd_target%\%3\ /S /E /I
 if not errorlevel 1 goto :eof
 echo BFD: XCopy returned an error
 set bfd_err=1
@@ -500,10 +510,6 @@ if "%bfd_img%" == "" goto _abort1
 if exist %bfd_img% (
 	echo BFD: Removing "%bfd_img%"
 	del %bfd_img%
-)
-if exist %bfd_target% (
-	echo BFD: Removing "%bfd_target%"
-	rmdir -fR %bfd_target%
 )
 
 :_abort1

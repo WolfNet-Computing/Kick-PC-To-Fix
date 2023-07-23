@@ -1,17 +1,17 @@
 @echo off
 
-if not exist VERSION (
+if not exist BCD.VERSION (
 	echo VERSION file doesn't exist!
 	echo Unknown version error.
 	goto _abort
 ) else (
-	set /p bcd_version=<VERSION
+	set /p bcd_version=<BCD.VERSION
 )
 
 echo.
 echo Bootable CD/DVD Builder.
 echo Version: %bcd_version%
-echo Copyright (c) 2023 WolfNet Computing. All rights reserved.
+echo Copyright (c) 2022-2023 WolfNet Computing. All rights reserved.
 echo.
 
 verify other 2>nul
@@ -30,7 +30,7 @@ for %%i in (bin\bchoice.exe bin\cdrecord.exe bin\cygwin1.dll bin\mkisofs.exe) do
 	echo BCD: File "%%i" not found.
 	goto _abort)
 set bcd_name=
-set bcd_deb=1
+set bcd_deb=
 set bcd_noburn=
 set bcd_spd=
 set bcd_cmd=
@@ -51,46 +51,55 @@ set bcd_call=
 set bcd_src=
 set bcd_err=
 if exist %temp%\$bcd$.tm? del %temp%\$bcd$.tm?
+
 :_arg
-if "%1" == "" goto _start
-if "%1" == "-d" goto _deb
-if "%1" == "-b" goto _noburn
-if "%1" == "-s" goto _speed
-if "%1" == "-bab" goto _bldall
-if "%bcd_name%" == "" goto _name
+	if "%1" == "" goto _start
+	if "%1" == "-d" goto _deb
+	if "%1" == "-b" goto _noburn
+	if "%1" == "-s" goto _speed
+	if "%1" == "-bab" goto _bldall
+	if "%bcd_name%" == "" goto _name
+	
 :_next
-shift
-goto _arg
+	shift
+	goto _arg
+	
 :_deb
-set bcd_deb=1
-goto _next
+	set bcd_deb=1
+	goto _next
+
 :_noburn
-set bcd_noburn=1
-goto _next
+	set bcd_noburn=1
+	goto _next
+	
 :_speed
-shift
-set bcd_spd=%1
-if "%bcd_spd%" GTR "50" (
-	echo BCD: Ignoring invalid speed argument "%bcd_spd%", must be between 1-50.
-	set bcd_spd=
-	goto _next)
-if "%bcd_spd%" LSS "1" (
-	echo BCD: Ignoring invalid speed argument "%bcd_spd%", must be between 1-50.
-	set bcd_spd=)
-echo BCD: Speed set to "%bcd_spd%"
-goto _next
+	shift
+	set bcd_spd=%1
+	if "%bcd_spd%" GTR "50" (
+		echo BCD: Ignoring invalid speed argument "%bcd_spd%", must be between 1-50.
+		set bcd_spd=
+		goto _next)
+	if "%bcd_spd%" LSS "1" (
+		echo BCD: Ignoring invalid speed argument "%bcd_spd%", must be between 1-50.
+		set bcd_spd=)
+	echo BCD: Speed set to "%bcd_spd%"
+	goto _next
+
 :_name
-set bcd_name=%1
-goto _next
+	set bcd_name=%1
+	goto _next
+
 :_start
-if not exist cds\%bcd_name%\nul goto _nodir
+	if not exist cds\%bcd_name%\nul goto _nodir
+
 :_cfgredo
-if exist bcd.cfg goto _cfgok
-	if exist bcd.sam (
-		echo BCD: Renaming bcd.sam into bcd.cfg
-		ren bcd.sam bcd.cfg
-		goto _cfgredo)
-	echo BCD: Could not find bcd.cfg
+	if exist bcd.cfg goto _cfgok
+		if exist bcd.sam (
+			echo BCD: Renaming bcd.sam into bcd.cfg
+			ren bcd.sam bcd.cfg
+			goto _cfgredo)
+		echo BCD: Could not find bcd.cfg
+	
 :_cfgok
 echo BCD: Processing (main) config file "bcd.cfg"
 for /f "eol=# tokens=1*" %%i in (bcd.cfg) do (
@@ -329,135 +338,147 @@ if errorlevel 1 goto _end
 goto _media
 
 :_chkdev
-if not "%bcd_dev%" == "" goto :eof
-if exist %temp%\$bcd$.tm3 del %temp%\$bcd$.tm3
-echo BCD: Get drive capabilities for device %bcd_tmp%
-bin\cdrecord.exe dev=%bcd_tmp% -prcap > %temp%\$bcd$.tmp 2>&1
-if errorlevel 1 goto :eof
-if "%bcd_deb%" == "" goto _chkdev1
-echo debug: drive capabilities output from device %bcd_tmp%
-type %temp%\$bcd$.tmp
-echo debug: End of drive capabilities output
-echo debug: Looking for "%*"
+	if not "%bcd_dev%" == "" goto :eof
+	if exist %temp%\$bcd$.tm3 del %temp%\$bcd$.tm3
+	echo BCD: Get drive capabilities for device %bcd_tmp%
+	bin\cdrecord.exe dev=%bcd_tmp% -prcap > %temp%\$bcd$.tmp 2>&1
+	if errorlevel 1 goto :eof
+	if "%bcd_deb%" == "" goto _chkdev1
+	echo debug: drive capabilities output from device %bcd_tmp%
+	type %temp%\$bcd$.tmp
+	echo debug: End of drive capabilities output
+	echo debug: Looking for "%*"
 :_chkdev1
-findstr /L "/C:%*" %temp%\$bcd$.tmp >%temp%\$bcd$.tm3
-for /f %%j in (%temp%\$bcd$.tm3) do set bcd_dev=%bcd_tmp%
-goto :eof
+	findstr /L "/C:%*" %temp%\$bcd$.tmp >%temp%\$bcd$.tm3
+	for /f %%j in (%temp%\$bcd$.tm3) do set bcd_dev=%bcd_tmp%
+	goto :eof
 :_bline
-if not "%bcd_deb%" == "" echo debug: cmd=[%bcd_cmd%] arg=[%bcd_arg%] err=[%bcd_err%]
-if not "%bcd_err%" == "" goto :eof
-if /I "%bcd_cmd%" == "bootfile" (
-	set bcd_boot=%bcd_arg%
-	echo BCD: Bootfile set to "%bcd_arg%"
-	goto :eof)
-if /I "%bcd_cmd%" == "volumeid" (
-	set bcd_volid=%bcd_arg%
-	echo BCD: Volumeid set to "%bcd_arg%"
-	goto :eof)
-if /I "%bcd_cmd%" == "volumeset" (
-	set bcd_vset=%bcd_arg%
-	echo BCD: Volumeset set to "%bcd_arg%"
-	goto :eof)
-if /I "%bcd_cmd%" == "preparer" (
-	set bcd_prep=%bcd_arg%
-	echo BCD: Preparer set to "%bcd_arg%"
-	goto :eof)
-if /I "%bcd_cmd%" == "publisher" (
-	set bcd_publ=%bcd_arg%
-	echo BCD: Publisher set to "%bcd_arg%"
-	goto :eof)
-if /I "%bcd_cmd%" == "application" (
-	set bcd_appid=%bcd_arg%
-	echo BCD: Application set to "%bcd_arg%"
-	goto :eof)
-if /I "%bcd_cmd%" == "system" (
-	set bcd_sysid=%bcd_arg%
-	echo BCD: System set to "%bcd_arg%"
-	goto :eof)
-if /I "%bcd_cmd%" == "mkisofsargs" (
-	set bcd_isofs=%bcd_arg%
-	echo BCD: Mkisofsargs set to "%bcd_arg%"
-	goto :eof)
-if /I "%bcd_cmd%" == "cdrecordargs" (
-	set bcd_cdr=%bcd_arg%
-	echo BCD: Cdrecordargs set to "%bcd_arg%"
-	goto :eof)
-if /I "%bcd_cmd%" == "call" (
-	set bcd_call=%bcd_arg%
-	echo BCD: Call set to "%bcd_arg%"
-	goto :eof)
-if /I "%bcd_cmd%" == "addpath" (
-	set bcd_pth=%bcd_arg%
-	echo BCD: Add path set to "%bcd_arg%"
-	goto :eof)
-echo BCD: unknown keyword "%bcd_cmd%"
-set bcd_err=1
-goto :eof
-:_bldall
-echo BCD: Build all bootimages!
-set bcd_cnt=0
-for /d %%i in (cds\*.*) do call :_ball %%i
-echo BCD: %bcd_cnt% boot disk(s) were built.
-goto _end
-:_ball
-if not "%bcd_err%" == "" goto :eof
-echo BCD: Processing CD "%1"
-rem process bootdisk.cfg file
-if not exist %1\bootdisk.cfg goto _bdcfg2
-echo BCD: Processing bootdisk config file "%1\bootdisk.cfg"
-set rv=
-for /f "eol=# tokens=1,2" %%j in (%1\bootdisk.cfg) do call :_bflopo %1 %%j %%k
-if not "%bcd_err%" == "" goto _abort
-:_bdcfg2
-goto :eof
-:_bflopo
-if "%bcd_err%" == "1" goto :eof
-echo BCD: Creating bootimage "%3"
-call bfd.cmd %2 -i %1\files\%3 -t 288
-if "%rv%" == "1" (
+	if not "%bcd_deb%" == "" echo debug: cmd=[%bcd_cmd%] arg=[%bcd_arg%] err=[%bcd_err%]
+	if not "%bcd_err%" == "" goto :eof
+	if /I "%bcd_cmd%" == "bootfile" (
+		set bcd_boot=%bcd_arg%
+		echo BCD: Bootfile set to "%bcd_arg%"
+		goto :eof)
+	if /I "%bcd_cmd%" == "volumeid" (
+		set bcd_volid=%bcd_arg%
+		echo BCD: Volumeid set to "%bcd_arg%"
+		goto :eof)
+	if /I "%bcd_cmd%" == "volumeset" (
+		set bcd_vset=%bcd_arg%
+		echo BCD: Volumeset set to "%bcd_arg%"
+		goto :eof)
+	if /I "%bcd_cmd%" == "preparer" (
+		set bcd_prep=%bcd_arg%
+		echo BCD: Preparer set to "%bcd_arg%"
+		goto :eof)
+	if /I "%bcd_cmd%" == "publisher" (
+		set bcd_publ=%bcd_arg%
+		echo BCD: Publisher set to "%bcd_arg%"
+		goto :eof)
+	if /I "%bcd_cmd%" == "application" (
+		set bcd_appid=%bcd_arg%
+		echo BCD: Application set to "%bcd_arg%"
+		goto :eof)
+	if /I "%bcd_cmd%" == "system" (
+		set bcd_sysid=%bcd_arg%
+		echo BCD: System set to "%bcd_arg%"
+		goto :eof)
+	if /I "%bcd_cmd%" == "mkisofsargs" (
+		set bcd_isofs=%bcd_arg%
+		echo BCD: Mkisofsargs set to "%bcd_arg%"
+		goto :eof)
+	if /I "%bcd_cmd%" == "cdrecordargs" (
+		set bcd_cdr=%bcd_arg%
+		echo BCD: Cdrecordargs set to "%bcd_arg%"
+		goto :eof)
+	if /I "%bcd_cmd%" == "call" (
+		set bcd_call=%bcd_arg%
+		echo BCD: Call set to "%bcd_arg%"
+		goto :eof)
+	if /I "%bcd_cmd%" == "addpath" (
+		set bcd_pth=%bcd_arg%
+		echo BCD: Add path set to "%bcd_arg%"
+		goto :eof)
+	echo BCD: unknown keyword "%bcd_cmd%"
 	set bcd_err=1
-	goto :eof)
-set /a bcd_cnt=%bcd_cnt%+1
-goto :eof
+	goto :eof
+	
+:_bldall
+	echo BCD: Build all bootimages!
+	set bcd_cnt=0
+	for /d %%i in (cds\*) do call :_ball %%i
+	echo BCD: %bcd_cnt% boot disk(s) were built.
+	goto _end
+	
+:_ball
+	if not "%bcd_err%" == "" goto :eof
+	echo BCD: Processing CD/DVD "%1"
+	rem process bootdisk.cfg file
+	if not exist %1\bootdisk.cfg goto _bdcfg2
+	echo BCD: Processing bootdisk config file "%1\bootdisk.cfg"
+	set rv=
+	for /f "eol=# tokens=1,2" %%j in (%1\bootdisk.cfg) do call :_bflopo %1 %%j %%k
+	if not "%bcd_err%" == "" goto _abort
+	
+:_bdcfg2
+	goto :eof
+	
+:_bflopo
+	if "%bcd_err%" == "1" goto :eof
+	echo BCD: Creating bootimage "%3"
+	call bfd.cmd -i %1\files\%3 %2
+	if "%rv%" == "1" (
+		set bcd_err=1
+		goto :eof)
+	set /a bcd_cnt=%bcd_cnt%+1
+	goto :eof
+	
 :_bflop
-if "%bcd_err%" == "1" goto :eof
-if exist cds\%bcd_name%\files\%2 goto _biext
-echo BCD: Bootimage "%2" does not exist, let's create it now!
-call bfd.cmd -i cds\%bcd_name%\files\%2 %1
-if "%rv%" == "1" set bcd_err=1
-goto :eof
+	if "%bcd_err%" == "1" goto :eof
+	if exist cds\%bcd_name%\files\%2 goto _biext
+	echo BCD: Bootimage "%2" does not exist, let's create it now!
+	call bfd.cmd -i cds\%bcd_name%\files\%2 %1
+	if "%rv%" == "1" set bcd_err=1
+	goto :eof
+	
 :_biext
-echo BCD: Bootimage "%2" already exists, skip creation
-goto :eof
+	echo BCD: Bootimage "%2" already exists, skip creation
+	goto :eof
+	
 :_nodir
-echo BCD: CD "%bcd_name%" does not exist...
-echo BCD: You must specify one of the following names:
-for /d %%i in (cds\*.*) do echo %%~ni
-goto _end4
+	echo BCD: CD "%bcd_name%" does not exist...
+	echo BCD: You must specify one of the following names:
+	for /d %%i in (cds\*.*) do echo %%~ni
+	goto _end4
+	
 :_usage
-echo Usage: bcd [-d] [-b] [-s nn] name
-echo        bcd -bab
-echo.
-echo   name    : name of the CD to build
-echo   -a      : build all ISO9660 image files
-echo   -d      : print debug messages
-echo   -b      : burning disabled (only create ISO image)
-echo   -s nn   : set burning speed
-echo   -bab    : build all bootimages for all CD's
-echo             (using CD's bootdisk.cfg)
-echo.
-echo Returns environment variable "rv", 0 if succesfull, 1 if error
-echo.
-echo This program uses the following files (located in the "bin" directory):
-echo - Mkisofs and Cdrecord by Joerg Schilling (GNU-GPL license). 
-echo - Nero Aspi Library (wnaspi32.dll) by Ahead Software AG (abandonware)
-goto _end4
+	echo 	Usage:	
+	echo 			bcd [-d] [-b] [-s nn] name
+	echo        	bcd -bab
+	echo.
+	echo   name    : name of the CD to build
+	echo   -a      : build all ISO9660 image files
+	echo   -d      : print debug messages
+	echo   -b      : burning disabled (only create ISO image)
+	echo   -s nn   : set burning speed
+	echo   -bab    : build all bootimages for all CD's
+	echo             (using CD's bootdisk.cfg)
+	echo.
+	echo Returns environment variable "rv", 0 if succesfull, 1 if error
+	echo.
+	echo This program uses the following files (located in the "bin" directory):
+	echo - Mkisofs and Cdrecord by Joerg Schilling (GNU-GPL license). 
+	echo - Nero Aspi Library (wnaspi32.dll) by Ahead Software AG (abandonware)
+	goto _end4
+	
 :_4nt
 	echo BFD: Cannot run with 4NT! Use the normal command interperter (cmd.exe)
 	goto _abort
+	
 :_noext
 	echo BCD: Unable to enable extensions.
 	rem flow into _abort
+	
 :_abort
 	if exist %temp%\%bcd_name%.iso (
 		echo BCD: Aborting, removing ISO file "%temp%\%bcd_name%.iso"
@@ -496,11 +517,14 @@ goto _end4
 		echo BCD: Removing ISO file "%temp%\%bcd_name%.iso"
 		del %temp%\%bcd_name%.iso
 	)
+
 :_end2
 	rem set return value to 0
 	endlocal
 	set rv=0
+
 :_end3
 	if exist %temp%\$bcd$.tm? del %temp%\$bcd$.tm?
+
 :_end4
 	echo BCD: Exiting with return value %rv%
