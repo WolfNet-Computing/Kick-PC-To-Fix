@@ -58,6 +58,11 @@ if exist modboot-cd.cfg goto _cfgok
 	echo mb: Could not find modboot-cd.cfg
 
 :_menu
+for /D %%i in (%~dp0) do (
+	for /F "eol=# tokens=1,2,3,4" %%j in (%%i\modboot-cd.cfg) do call :_bline2 %%j %%k %%l %%m
+	if defined mb_err goto _abort
+)
+for /F "eol=# tokens=1,2,3,4" %%i in (%1\modboot-cd.cfg) do call :_bline2 %%i %%j %%k %%l
 /bin/Wselect.exe items.tmp "Modboot CD" "$item" "Select Configuration:" /menu /hc=#CC0000 /cmdCenter /ontop
 if %errorlevel%==0 (
 	echo Please make a selection!
@@ -65,11 +70,12 @@ if %errorlevel%==0 (
 )
 if %errorlevel%==1 set FirstItem=1
 if %errorlevel%==2 set SecondItem=1
+rm -f items.tmp
 echo mb: Building "%mb_name%"
 rem parsing any modboot-cd.cfg file(s) in the same dir as this file
 for /D %%i in (%~dp0) do (
 	echo mb: Calling ":_modcfg %%i"
-	call :_cdscfg %%i
+	call :_modcfg %%i
 	if defined mb_err goto _abort
 )
 if "%mb_ok%" == "" goto _ndone
@@ -114,6 +120,17 @@ goto :eof
 
 :_cmd3n
 echo %2
+goto :eof
+
+:_bline2
+if defined mb_deb echo debug: line=[%1] [%2] [%3]
+if defined mb_err goto :eof
+if "%1" == "n" goto _cmd2n
+if "%1" == "N" goto _cmd2n
+goto :eof
+
+:_cmd2n
+echo %2>items.tmp
 goto :eof
 
 :_bline
