@@ -501,16 +501,10 @@ goto _media
 			echo BCD: Creating non-existent 'builds' directory.
 			mkdir builds
 		)
-		pushd builds
 		set "bcddate=%DATE:/=-%"
-		echo !bcddate!
-		set "bcdtime=%TIME::=-%"
-		echo !bcdtime!
-		set "filename=%bcd_name%.!bcddate!_!bcdtime!.iso"
-		echo !filename!
+		set "filename=%bcd_name%.!bcddate!.iso"
 		xcopy %temp%\%bcd_name%.iso !filename!* /Q /Y /J /Z
-		popd
-		echo BCD: Copied ISO file from "%temp%\%bcd_name%.iso" to ".\builds\!filename!"
+		echo BCD: Copied ISO file from "%temp%\%bcd_name%.iso" to "!filename!"
 		goto _end2
 	)
 	if exist %temp%\%bcd_name%.iso (

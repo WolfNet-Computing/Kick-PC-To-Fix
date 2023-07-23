@@ -24,7 +24,7 @@
 n       cdrom
 f
 b       cdrom
-o	  md701
+o	  	md701
 i       modboot.cfg
 c       cabs\utils.cab level0
 c       cabs\os\%bfd_os%\dos.cab level1
