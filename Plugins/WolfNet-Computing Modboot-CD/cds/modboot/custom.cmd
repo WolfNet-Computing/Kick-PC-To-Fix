@@ -50,10 +50,6 @@ set mb_deb=1
 goto _next
 
 :_start
-
-
-:_cfgredo
-echo mb: Building "%mb_name%"
 if exist modboot-cd.cfg goto _cfgok
 	if exist mb.sam (
 		echo mb: Renaming modboot-cd.sam into modboot-cd.cfg
@@ -61,18 +57,15 @@ if exist modboot-cd.cfg goto _cfgok
 		goto _cfgredo)
 	echo mb: Could not find modboot-cd.cfg
 
-:_cfgok
-if "%mb_img%" == "" goto _noimg
-rem image mode
-echo mb: Target image file "%mb_img%"
-set mb_target=%temp%\$mb$
-goto _pass1
-
-:_noimg
-rem no image
-echo mb: Target drive "%mb_target%"
-
-:_pass1
+:_menu
+/bin/Wselect.exe items.tmp "Modboot CD" "$item" "Select Configuration:" /menu /hc=#CC0000 /cmdCenter /ontop
+if %errorlevel%==0 (
+	echo Please make a selection!
+	goto _menu
+)
+if %errorlevel%==1 set FirstItem=1
+if %errorlevel%==2 set SecondItem=1
+echo mb: Building "%mb_name%"
 rem parsing any modboot-cd.cfg file(s) in the same dir as this file
 for /D %%i in (%~dp0) do (
 	echo mb: Calling ":_modcfg %%i"
