@@ -1,0 +1,37 @@
+# -------------------------------------------------------------------------
+# Configuration file for modboot-cd.cmd
+#
+# format: <command> <arg1> <arg2> <arg3>
+#
+# Available commands:
+#  n <name>          name
+#  i <f>             include other config file <f>
+#  c <f1> <f2>       copy <f1> to <f2>
+#  t <f1> <f2>       (try) copy, when <f1> exists, no warning if fails
+#  d <f1> <f2> <f3>  copy a driver (.cab) file from <f1> to <f2>
+#                    and add driver to pre-built index <f3>
+#  x <dir1> <dir2>   xcopy dir1 to dir2 (incl. subdirs)
+#  m <dir>           make directory
+# -------------------------------------------------------------------------
+
+# -------------------------------------------------------------------------
+# WfW 3.11 boot disk
+# -------------------------------------------------------------------------
+n       wfw311
+i       modboot.cfg
+c       cabs\utils.cab level0
+c       cabs\os\%bfd_os%\dos.cab level1
+c       cabs\doskey.cab level1
+c       cabs\mouse.cab level2
+c       cabs\help.cab level2
+c       cabs\cdrom.cab level3
+m       lib
+c       cabs\mscdex.cab lib
+c       cabs\aspi.cab lib
+c       cabs\aspicd.cab lib
+c       cabs\atapicd.cab lib
+c       cabs\eltorito.cab lib
+c       cabs\cdautrun.cab lib
+c       cabs\vc.cab lib
+m       lib\aspi
+c       cabs\drivers\aspi\*.cab lib\aspi
