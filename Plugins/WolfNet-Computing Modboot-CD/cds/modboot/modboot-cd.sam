@@ -18,7 +18,6 @@
 # WfW 3.11 boot disk
 # -------------------------------------------------------------------------
 n       wfw311
-i       modboot.cfg
 c       cabs\utils.cab level0
 c       cabs\os\%bfd_os%\dos.cab level1
 c       cabs\doskey.cab level1
