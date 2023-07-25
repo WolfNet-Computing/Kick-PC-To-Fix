@@ -10,4 +10,4 @@ if not exist VERSION (
 echo Setting up environment for WolfNet Computing Boot Tools...
 echo You're running version: %version%
 endlocal
-cmd /Q /T:0A /E:ON /V:ON /S /K "set PATH=%~dp0;%PATH% && cd %~dp0"
+cmd /T:0A /E:ON /V:ON /S /K "set PATH=%~dp0;%PATH% && cd %~dp0"

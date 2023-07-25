@@ -25,27 +25,16 @@ rem to current drive and path
 cd "%~dp0"
 if "%1" == "" goto _usage
 echo BFD: Checking for required files...
-for %%i in (bin\bfi.exe bin\bchoice.exe bin\cabarc.exe) do if not exist %%i (
+for %%i in (bin\bfi.exe bin\cabarc.exe bin\mkbt.exe bin\Wbox.exe) do if not exist %%i (
 	echo BFD: File "%%i" not found
 	goto _abort
 )
 if exist bfd.ok goto _ok
 
-echo.
-echo * IMPORTANT NOTICE *
-echo.
-echo This program uses some files from Microsoft Windows 98 which are protected by 
-echo copyright. You must have a valid Windows 98 license before using these files. 
-echo When you do not have a valid license for Windows 98 but you do have one for 
-echo Windows 95 or msdos 6 you should create an OS plugin with your own licensed files or
-echo if you have no microsoft licenses then use FreeDOS.
-echo.
-echo If you have read and understood the information above you can press the 
-echo "c" key to continue.
-echo.
-
-bin\bchoice /c:ca /d:a Continue or Abort?
-if errorlevel 1 goto _abort
+:_notice
+bin\Wbox.exe "* IMPORTANT NOTICE *"  "This program uses some files from Microsoft Windows 98 which are protected by ^copyright. You must have a valid Windows 98 license before using these files. ^When you do not have a valid license for Windows 98 but you do have one for ^Windows 95 or msdos 6 you should create an OS plugin with those licensed files or ^if you have no microsoft licenses then use FreeDOS. ^If you have read and understood the information above you can click ^continue." "Continue;Quit" /OT /DB=2 /TL=7 /FS=12 /BG=#444444
+if %errorlevel% equ 0 goto _notice
+if %errorlevel% equ 2 goto _abort
 echo OK > bfd.ok
 
 :_ok

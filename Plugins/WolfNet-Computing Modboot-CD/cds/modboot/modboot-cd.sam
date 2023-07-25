@@ -17,20 +17,23 @@
 # -------------------------------------------------------------------------
 # WfW 3.11 boot disk
 # -------------------------------------------------------------------------
-n       wfw311
-c       cabs\utils.cab level0
-c       cabs\os\%bfd_os%\dos.cab level1
-c       cabs\doskey.cab level1
-c       cabs\mouse.cab level2
-c       cabs\help.cab level2
-c       cabs\cdrom.cab level3
-m       lib
-c       cabs\mscdex.cab lib
-c       cabs\aspi.cab lib
-c       cabs\aspicd.cab lib
-c       cabs\atapicd.cab lib
-c       cabs\eltorito.cab lib
-c       cabs\cdautrun.cab lib
-c       cabs\vc.cab lib
-m       lib\aspi
-c       cabs\drivers\aspi\*.cab lib\aspi
+n      wfw311
+m		level0
+c      cabs\utils.cab level0
+m		level1
+c      cabs\doskey.cab level1
+m		level2
+c      cabs\mouse.cab level2
+c      cabs\help.cab level2
+m		level3
+c      cabs\cdrom.cab level3
+m     lib
+c      cabs\mscdex.cab lib
+c      cabs\aspi.cab lib
+c      cabs\aspicd.cab lib
+c      cabs\atapicd.cab lib
+c      cabs\eltorito.cab lib
+c      cabs\cdautrun.cab lib
+c      cabs\vc.cab lib
+m     lib\aspi
+c      cabs\drivers\aspi\*.cab lib\aspi
