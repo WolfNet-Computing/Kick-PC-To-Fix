@@ -1,4 +1,4 @@
-@echo off
+@echo on
 
 if not exist MODBOOT-CD.VERSION (
 	echo VERSION file doesn't exist!
@@ -87,7 +87,7 @@ set mb_cfg=%~n0.cfg
 	if %errorlevel% gtr 0 (
 		if %errorlevel% lss %_entry_quit% (
 			set mb_name=!_menu_item[%errorlevel%]!
-			echo !_menu_item[%errorlevel%]!
+			call :_nuke_dir
 		)
 	)
 	if %errorlevel% equ %_entry_quit% (
@@ -98,13 +98,14 @@ set mb_cfg=%~n0.cfg
 		goto _abort1
 	)
 	echo MB-CD: Building "%mb_name%" from "cds\%bcd_name%\%mb_cfg%"
-	rem parsing %mb_cfg% file
 	echo MB-CD: Using config file cds\%bcd_name%\%mb_cfg%
+	rem parsing %mb_cfg% file
 	for /F "eol=# tokens=1,2,3,4" %%i in (cds\%bcd_name%\%mb_cfg%) do call :_bline %%i %%j %%k %%l
 	if defined mb_err (goto _abort)
 	if "%mb_ok%" == "" (goto _ndone)
-	if "%mb_img%" == "" (goto _done)
-	goto _abort
+	if not "%mb_img%" == "" (echo MB-CD: Image "%mb_img%" created.)
+	echo MB-CD: Done!
+	goto _end
 
 :_ndone
 	echo MB-CD: "%mb_name%" is an invalid name!
@@ -113,6 +114,7 @@ set mb_cfg=%~n0.cfg
 	if not exist cds\%bcd_name%\%mb_cfg% (goto :eof)
 	echo MB-CD: Additional names from cds\%bcd_name%\%mb_cfg%
 	for /F "eol=# tokens=1,2,3,4" %%j in (cds\%bcd_name%\%mb_cfg%) do call :_bline2 %%j %%k %%l %%m
+	call :_nuke_dir
 	goto _abort
 
 :_done
@@ -239,6 +241,33 @@ rem t - try to copy (if exists)
 	echo MB-CD: XCopy returned an error
 	set mb_err=1
 	goto :eof
+	
+:_nuke_dir
+	if exist *.tmp (
+		if defined mb_deb (echo DEBUG: Removing any and all ".tmp" files from "cds\%bcd_name%\files")
+		del /F /Q cds\%bcd_name%\*.tmp
+	)
+	if exist cds\%bcd_name%\files\level0\nul (
+		if defined mb_deb (echo DEBUG: Removing level0 directory from "cds\%bcd_name%\files")
+		rmdir /S /Q cds\%bcd_name%\files\level0
+	)
+	if exist cds\%bcd_name%\files\level1\nul (
+		if defined mb_deb (echo DEBUG: Removing level1 directory from "cds\%bcd_name%\files")
+		rmdir /S /Q cds\%bcd_name%\files\level1
+	)
+	if exist cds\%bcd_name%\files\level2\nul (
+		if defined mb_deb (echo DEBUG: Removing level2 directory from "cds\%bcd_name%\files")
+		rmdir /S /Q cds\%bcd_name%\files\level2
+	)
+	if exist cds\%bcd_name%\files\level3\nul (
+		if defined mb_deb (echo DEBUG: Removing level3 directory from "cds\%bcd_name%\files")
+		rmdir /S /Q cds\%bcd_name%\files\level3
+	)
+	if exist cds\%bcd_name%\files\lib\nul (
+		if defined mb_deb (echo DEBUG: Removing lib directory from "cds\%bcd_name%\files")
+		rmdir /S /Q cds\%bcd_name%\files\lib
+	)
+	goto :eof
 
 :_4nt
 	echo MB-CD: Cannot run with 4NT! Use the normal command interperter (cmd.exe)
@@ -266,30 +295,6 @@ rem t - try to copy (if exists)
 	goto _end2
 
 :_end
-	if exist *.tmp (
-		if defined mb_deb (echo DEBUG: Removing any and all ".tmp" files from "cds\%bcd_name%\files")
-		del /F /Q cds\%bcd_name%\*.tmp
-	)
-	if exist cds\%bcd_name%\files\level0\nul (
-		if defined mb_deb (echo DEBUG: Removing level0 directory from "cds\%bcd_name%\files")
-		rmdir /S /Q cds\%bcd_name%\files\level0
-	)
-	if exist cds\%bcd_name%\files\level1\nul (
-		if defined mb_deb (echo DEBUG: Removing level1 directory from "cds\%bcd_name%\files")
-		rmdir /S /Q cds\%bcd_name%\files\level1
-	)
-	if exist cds\%bcd_name%\files\level2\nul (
-		if defined mb_deb (echo DEBUG: Removing level2 directory from "cds\%bcd_name%\files")
-		rmdir /S /Q cds\%bcd_name%\files\level2
-	)
-	if exist cds\%bcd_name%\files\level3\nul (
-		if defined mb_deb (echo DEBUG: Removing level3 directory from "cds\%bcd_name%\files")
-		rmdir /S /Q cds\%bcd_name%\files\level3
-	)
-	if exist cds\%bcd_name%\files\lib\nul (
-		if defined mb_deb (echo DEBUG: Removing lib directory from "cds\%bcd_name%\files")
-		rmdir /S /Q cds\%bcd_name%\files\lib
-	)
 	rem set errorlevel to 0
 	endlocal
 	set rv=0

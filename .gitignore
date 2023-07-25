@@ -2,6 +2,7 @@
 *.iso
 *.img
 *.nsi
+*Setup.exe
 
 # File Ignores.
 WolfNet-Computing-Boot-Tools.nssp
@@ -12,5 +13,5 @@ bcd.cfg
 bfd.cfg
 
 # Directory Ignores.
-Installers/
 Plugins/OS_win311/
+Plugins/WolfNet-Computing-NetBoot-Disc
