@@ -183,13 +183,12 @@ rem t - try to copy (if exists)
 	goto :eof
 
 :_cmd_d
-	if defined mb_deb (echo DEBUG: Copy driver file(s) "%2" to "cds\%bcd_name%\files\%3")
 	for %%i in (%2) do call :_cmd_dd %%i %3 %4
 	goto :eof
 
 :_cmd_dd
-	if defined mb_deb (echo DEBUG: Copying file "%1" to "cds\%bcd_name%\files\%2")
-	copy %1 "cds\%bcd_name%\files\%2" >nul
+	if defined mb_deb (echo DEBUG: Copying driver file "%1" to "cds\%bcd_name%\files\%2")
+	copy %1 cds\%bcd_name%\files\%2 >nul
 	if not errorlevel 1 (goto _cmd_da)
 	echo MB-CD: Copy returned an error
 	set mb_err=1

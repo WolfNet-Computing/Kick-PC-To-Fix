@@ -30,4 +30,3 @@ c      cabs\msnwlink.cab lib
 m     	lib\ndis
 m      etc
 d      cabs\drivers\ndis\*.cab lib\ndis etc\_msnet
-#c   		etc\msnet\autoexec.net etc\autoexec.net
