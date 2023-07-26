@@ -1,4 +1,4 @@
-@echo on
+@echo off
 
 if not exist MODBOOT-CD.VERSION (
 	echo VERSION file doesn't exist!
@@ -176,7 +176,7 @@ rem t - try to copy (if exists)
 :_cmd_t
 	if not exist %2 (goto :eof)
 	if defined mb_deb (echo DEBUG: Copying "%2" to "cds\%bcd_name%\files\%3")
-	copy "%2 cds\%bcd_name%\files\%3" >nul
+	copy %2 "cds\%bcd_name%\files\%3" >nul
 	if not errorlevel 1 (goto :eof)
 	echo MB-CD: Copy returned an error
 	set mb_err=1
@@ -236,7 +236,7 @@ rem t - try to copy (if exists)
 
 :_cmd_x
 	if defined mb_deb (echo DEBUG: XCopying "%2" to "cds\%bcd_name%\files\%3")
-	xcopy %2\*.* cds\%bcd_name%\files\%3\ /S /E /I
+	xcopy %2\*.* cds\%bcd_name%\files\%3 /S /E /I
 	if not errorlevel 1 (goto :eof)
 	echo MB-CD: XCopy returned an error
 	set mb_err=1

@@ -5,7 +5,6 @@
 #
 # Available commands:
 #  n <name>          name
-#  k <description>   Description of the disk, used instead of the name if defined
 #  i <f>             include other config file <f>
 #  c <f1> <f2>       copy <f1> to <f2>
 #  t <f1> <f2>       (try) copy, when <f1> exists, no warning if fails
@@ -18,18 +17,17 @@
 # -------------------------------------------------------------------------
 # modboot test boot disk
 # -------------------------------------------------------------------------
-n      	mbtest
-k	Modboot Test
-m	level0
-m	level1
-m	level2
-m	level3
-c       cabs\msnet.cab level3
+n      mbtest
+m		level0
+m		level1
+m		level2
+m		level3
+c      cabs\msnet.cab level3
 m    	lib
-c       cabs\msclient.cab lib
-c       cabs\mstcp.cab lib
-c       cabs\msnwlink.cab lib
-m       lib\ndis
-m       etc
-d       cabs\drivers\ndis\*.cab lib\ndis etc\_msnet
-#c      	etc\msnet\autoexec.net etc\autoexec.net
+c      cabs\msclient.cab lib
+c      cabs\mstcp.cab lib
+c      cabs\msnwlink.cab lib
+m     	lib\ndis
+m      etc
+d      cabs\drivers\ndis\*.cab lib\ndis etc\_msnet
+#c   		etc\msnet\autoexec.net etc\autoexec.net
