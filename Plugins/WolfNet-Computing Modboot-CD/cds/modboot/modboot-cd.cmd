@@ -93,12 +93,12 @@ set mb_cfg=%~n0.cfg
 	if %errorlevel% equ %_entry_quit% (
 		goto _end
 	)
-	if %errorlevel% gtr %mb_count% (
+	if %errorlevel% gtr %_entry_quit% (
 		echo MB-CD: Menu selection doesn't match a menu entry.
 		goto _abort1
 	)
 	echo MB-CD: Building "%mb_name%" from "cds\%bcd_name%\%mb_cfg%"
-	echo MB-CD: Using config file cds\%bcd_name%\%mb_cfg%
+	echo MB-CD: Using config file "cds\%bcd_name%\%mb_cfg%"
 	rem parsing %mb_cfg% file
 	for /F "eol=# tokens=1,2,3,4" %%i in (cds\%bcd_name%\%mb_cfg%) do call :_bline %%i %%j %%k %%l
 	if defined mb_err (goto _abort)
