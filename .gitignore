@@ -20,3 +20,4 @@ bfd.cfg
 # Directory Ignores.
 Plugins/OS_win311/
 Plugins/WolfNet-Computing-NetBoot-Disc
+Plugins/WolfNet-Computing-Boot-USB-Builder
