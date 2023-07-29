@@ -2,6 +2,8 @@
   
 ## Notices  
   
+LICENSING: The apache license doesn't cover **anything** in the 'bin', 'cds', 'cabs' or 'os' directories. These have their own licenses. At the command line, type 'bcd /?' or 'bfd /?' to find out more about the external files used and their licensing conditions.  
+  
 DEVELOPER NOTICE: Please read the developer documentation [here](/DEVELOPER_README.md) before doing **anything**.
   
 IMPORTANT: The Apache License used is in the file "LICENSE.md" instead of "LICENSE" and the Copyright Notice is in the file "NOTICE.md" instead of "NOTICE". This is to make reading the files on GitHub easier.  
