@@ -2,6 +2,11 @@
 *.iso
 *.img
 *.nsi
+*.001
+*.002
+*.003
+*.004
+*.005
 *Setup.exe
 
 # File Ignores.
@@ -15,8 +20,3 @@ bfd.cfg
 # Directory Ignores.
 Plugins/OS_win311/
 Plugins/WolfNet-Computing-NetBoot-Disc
-*.005
-*.001
-*.002
-*.003
-*.004
