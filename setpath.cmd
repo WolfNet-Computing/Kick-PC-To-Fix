@@ -1,4 +1,6 @@
 @echo off
+cls
+title WolfNet Computing Boot Tools
 setlocal
 if not exist VERSION (
 	echo VERSION file doesn't exist!

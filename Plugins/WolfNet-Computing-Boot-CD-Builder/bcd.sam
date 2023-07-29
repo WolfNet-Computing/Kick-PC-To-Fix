@@ -12,7 +12,7 @@
 publisher WolfNet-Computing
 
 # Set Volume application
-application WNBT/MKISOFS
+application WCBT/MKISOFS
 
 # Set Volume ID
 # volumeid <string>

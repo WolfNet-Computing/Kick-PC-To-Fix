@@ -24,11 +24,12 @@ rem to current drive and path
 cd "%~dp0"
 if "%1" == "" goto _usage
 if "%1" == "-all" for /D %%G in (".\cds\*") do call %0 -b %%~nG
-if "%1" == "-all" goto _end2
+if "%1" == "-all" goto _end
 echo BCD: Checking for required files:
-for %%i in (bin\bchoice.exe bin\cdrecord.exe bin\cygwin1.dll bin\mkisofs.exe) do if not exist %%i (
+for %%i in (bin\bchoice.exe bin\cdrecord.exe bin\cygwin1.dll bin\mkisofs.exe bin\FileToSave.exe) do if not exist %%i (
 	echo BCD: File "%%i" not found.
-	goto _abort)
+	goto _abort
+)
 set bcd_name=
 set bcd_deb=
 set bcd_noburn=
@@ -112,13 +113,15 @@ echo BCD: Processing (CD) config file "cds\%bcd_name%\bcd.cfg"
 for /f "eol=# tokens=1*" %%i in (cds\%bcd_name%\bcd.cfg) do (
 	set bcd_cmd=%%i
 	set bcd_arg=%%j
-	call :_bline)
+	call :_bline
+)
 if not "%bcd_err%" == "" goto _abort
 :_nocfg
 rem
 if "%bcd_isofs%" == "" (
 	echo BCD: No mkisofs options, adding "-J -N"
-	set bcd_isofs=-J -N)
+	set bcd_isofs=-J -N
+)
 if not "%bcd_volid%" == "" set bcd_isofs=%bcd_isofs% -volid "%bcd_volid%"
 if not "%bcd_prep%" == "" set bcd_isofs=%bcd_isofs% -p "%bcd_prep%"
 if not "%bcd_publ%" == "" set bcd_isofs=%bcd_isofs% -P "%bcd_publ%"
@@ -156,7 +159,7 @@ for %%i in (%bcd_tmp%) do if "%%~xi" == ".bin" (
 	set bcd_isofs=%bcd_isofs% -no-emul-boot -boot-load-size 4)
 for %%i in (%bcd_tmp%) do if "%%~nxi" == "isolinux.bin" (
 	echo BCD: Bootfile is ISOLINUX adding "-boot-info-table"
-	set bcd_isofs=%bcd_isofs% -boot-info-table)
+	set bcd_isofs=%bcd_isofs% -boot-info-table -allow-leading-dots -allow-multidot -l -relaxed-filenames -no-iso-translate)
 for %%i in (%bcd_tmp%) do if not "%%~xi" == ".bin" goto _nont
 findstr /I "setupldr.bin" %bcd_tmp% > %temp%\$bcd$.tmp 2>&1
 for /f %%j in (%temp%\$bcd$.tmp) do goto _nont
@@ -165,9 +168,10 @@ for /f %%j in (%temp%\$bcd$.tmp) do goto _nont
 :_nont
 for %%i in (%bcd_tmp%) do (
 	set bcd_isofs=%bcd_isofs% -hide %%~nxi
-	echo BCD: Hidding boot image in ISO9660 adding "-hide %%~nxi")
-echo BCD: Hidding boot catalog in ISO9660 adding "-hide boot.catalog"
-set bcd_isofs=%bcd_isofs% -hide boot.catalog
+	echo BCD: Hidding boot image in ISO9660 adding "-hide %%~nxi"
+)
+echo BCD: Hidding boot catalog in ISO9660 adding "-hide boot.cat"
+set bcd_isofs=%bcd_isofs% -hide boot.cat
 echo %bcd_isofs% > %temp%\$bcd$.tm2
 findstr "/C:-J " %temp%\$bcd$.tm2 > %temp%\$bcd$.tmp 2>&1
 for /f %%i in (%temp%\$bcd$.tmp) do goto _joliet
@@ -176,18 +180,21 @@ goto _nojol
 	for %%i in (%bcd_tmp%) do (
 		echo BCD: Hidding boot image in Joliet adding "-hide-joliet %%~nxi"
 		set bcd_isofs=%bcd_isofs% -hide-joliet %%~nxi)
-	echo BCD: Hidding boot catalog in Joliet adding "-hide-joliet boot.catalog"
-	set bcd_isofs=%bcd_isofs% -hide-joliet boot.catalog
+	echo BCD: Hidding boot catalog in Joliet adding "-hide-joliet boot.cat"
+	set bcd_isofs=%bcd_isofs% -hide-joliet boot.cat
 :_nojol
 :_noboot
 :_norun1
 echo BCD: Creating ISO image file (running mkisofs.exe)
-echo BCD: Arguments; %bcd_isofs% -v -o %temp%\%bcd_name%.iso cds\%bcd_name%\files %bcd_pth%
-bin\mkisofs.exe %bcd_isofs% -v -o %temp%\%bcd_name%.iso cds\%bcd_name%\files %bcd_pth%
+bin\FileToSave.exe "set _save_location=" "~\*.iso" "Where do you want to save the ISO file?" "%bcd_name%.iso" /overwritePrompt > %temp%\temp.cmd
+call %temp%\temp.cmd
+echo BCD: Arguments; %bcd_isofs% -v -c boot.cat -o %_save_location% cds\%bcd_name%\files %bcd_pth%
+bin\mkisofs.exe %bcd_isofs% -v -c boot.cat -o %_save_location% cds\%bcd_name%\files %bcd_pth%
 if errorlevel 1 (
 	echo BCD: mkisofs.exe returned an error...
-	goto _abort)
-echo BCD: ISO file "%temp%\bcd.iso" created.
+	goto _abort
+)
+echo BCD: ISO file %_save_location% created.
 if not "%bcd_noburn%" == "" goto _end
 if exist bin\wnaspi32.dll goto _wnaspok
 echo BCD: File "bin\wnaspi32.dll" is missing, please download it from
@@ -202,7 +209,8 @@ bin\cdrecord.exe -scanbus > %temp%\$bcd$.tmp 2>&1
 if errorlevel 1 (
 	echo BCD: "cdrecord -scanbus" returned an error! Burning not possible!
 	set bcd_noburn=1
-	goto _end)
+	goto _end
+)
 findstr /I "/C:cd-rom" %temp%\$bcd$.tmp > %temp%\$bcd$.tm2
 for /f %%i in (%temp%\$bcd$.tm2) do goto _devfnd
 echo BCD: No CD-Rom type devices found! Burning not possible!
@@ -215,32 +223,38 @@ set bcd_dev=
 echo BCD: Looking for a CD-RW drive:
 for /f "delims=	" %%i in (%temp%\$bcd$.tm2) do (
 	set bcd_tmp=%%i
-	call :_chkdev Does write CD-RW media)
+	call :_chkdev Does write CD-RW media
+)
 if not "%bcd_dev%" == "" goto _devok
 echo BCD: Looking for a CD-R drive:
 for /f "delims=	" %%i in (%temp%\$bcd$.tm2) do (
 	set bcd_tmp=%%i
-	call :_chkdev Does write CD-R media)
+	call :_chkdev Does write CD-R media
+)
 if not "%bcd_dev%" == "" goto _devok
 echo BCD: Looking for a DVD-RAM drive:
 for /f "delims=	" %%i in (%temp%\$bcd$.tm2) do (
 	set bcd_tmp=%%i
-	call :_chkdev Does write DVD-R media)
+	call :_chkdev Does write DVD-R media
+)
 if not "%bcd_dev%" == "" goto _devok
 echo BCD: Looking for a DVD-R drive:
 for /f "delims=	" %%i in (%temp%\$bcd$.tm2) do (
 	set bcd_tmp=%%i
-	call :_chkdev Does write DVD-RAM media)
+	call :_chkdev Does write DVD-RAM media
+)
 if not "%bcd_dev%" == "" goto _devok
 if "%bcd_dev%" == "" (
 	echo BCD: No CD writer device found! Burning not possible!
 	set bcd_noburn=1
-	goto _end)
+	goto _end
+)
 :_devok
 echo BCD: Found writer device at "%bcd_dev%".
 if "%bcd_cdr%" == "" (
 	echo BCD: No cdrecord options, adding "-data -eject"
-	set bcd_cdr=-data -eject)
+	set bcd_cdr=-data -eject
+)
 echo BCD: Checking driver specific options
 echo BCD: Running "cdrecord.exe dev=%bcd_dev% -checkdrive driveropts=help"
 bin\cdrecord.exe dev=%bcd_dev% -checkdrive driveropts=help >%temp%\$bcd$.tmp 2>&1
@@ -317,8 +331,8 @@ goto _media
 set bcd_tmp=
 if not "%bcd_spd%" == "" set bcd_tmp=speed=%bcd_spd%
 echo BCD: Burning CD-Rom (running cdrecord.exe)
-echo BCD: Arguments; dev=%bcd_dev% %bcd_tmp% -v %bcd_cdr% %temp%\%bcd_name%.iso
-bin\cdrecord.exe dev=%bcd_dev% %bcd_tmp% -v %bcd_cdr% %temp%\%bcd_name%.iso
+echo BCD: Arguments; dev=%bcd_dev% %bcd_tmp% -v %bcd_cdr% %_save_location%
+bin\cdrecord.exe dev=%bcd_dev% %bcd_tmp% -v %bcd_cdr% %_save_location%
 if errorlevel 1 (
 	echo BCD: cdrecord returned an error:
 	goto _abort)
@@ -449,12 +463,13 @@ goto _media
 	echo BCD: CD "%bcd_name%" does not exist...
 	echo BCD: You must specify one of the following names:
 	for /d %%i in (cds\*.*) do echo %%~ni
-	goto _end4
+	goto _end3
 	
 :_usage
-	echo 	Usage:	
-	echo 			bcd [-d] [-b] [-s nn] name
-	echo        	bcd -bab
+	echo   Usage:	
+	echo   bcd [-d] [-b] [-s nn] name
+	echo   bcd -bab
+	echo   bcd -all
 	echo.
 	echo   name    : name of the CD to build
 	echo   -a      : build all ISO9660 image files
@@ -468,8 +483,9 @@ goto _media
 	echo.
 	echo This program uses the following files (located in the "bin" directory):
 	echo - Mkisofs and Cdrecord by Joerg Schilling (GNU-GPL license). 
-	echo - Nero Aspi Library (wnaspi32.dll) by Ahead Software AG (abandonware)
-	goto _end4
+	echo - Nero Aspi Library (wnaspi32.dll) by Ahead Software AG (abandonware).
+	echo - FileToSave.exe by Horst Schaeffer (Freeware).
+	goto _end3
 	
 :_4nt
 	echo BFD: Cannot run with 4NT! Use the normal command interperter (cmd.exe)
@@ -480,9 +496,9 @@ goto _media
 	rem flow into _abort
 	
 :_abort
-	if exist %temp%\%bcd_name%.iso (
-		echo BCD: Aborting, removing ISO file "%temp%\%bcd_name%.iso"
-		del %temp%\%bcd_name%.iso
+	if exist %_save_location% (
+		echo BCD: Aborting, removing ISO file %_save_location%
+		del %_save_location%
 	)
 	echo BCD: Aborted...
 	echo.
@@ -490,35 +506,15 @@ goto _media
 	endlocal
 	set rv=1
 	pause
-	goto _end3
+	goto _end2
 
 :_end
-	if not exist %temp%\%bcd_name%.iso goto _end2
-	if not "%bcd_noburn%" == "" (
-		echo BCD: Burning disabled, so moving ISO file "%temp%\%bcd_name%.iso" to working directory.
-		echo BCD: You can use this ISO file to record with your favorite recording program.
-		if not exist builds\ (
-			echo BCD: Creating non-existent 'builds' directory.
-			mkdir builds
-		)
-		set "bcddate=%DATE:/=-%"
-		set "filename=%bcd_name%.!bcddate!.iso"
-		xcopy %temp%\%bcd_name%.iso !filename!* /Q /Y /J /Z
-		echo BCD: Copied ISO file from "%temp%\%bcd_name%.iso" to "!filename!"
-		goto _end2
-	)
-	if exist %temp%\%bcd_name%.iso (
-		echo BCD: Removing ISO file "%temp%\%bcd_name%.iso"
-		del %temp%\%bcd_name%.iso
-	)
-
-:_end2
 	rem set return value to 0
 	endlocal
 	set rv=0
 
-:_end3
+:_end2
 	if exist %temp%\$bcd$.tm? del %temp%\$bcd$.tm?
 
-:_end4
+:_end3
 	echo BCD: Exiting with return value %rv%
