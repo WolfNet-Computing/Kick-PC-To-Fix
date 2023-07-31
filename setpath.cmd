@@ -1,6 +1,8 @@
 @echo off
-cls
+%~d0
+cd "%~dp0"
 title WolfNet Computing Boot Tools
+cls
 setlocal
 if not exist VERSION (
 	echo VERSION file doesn't exist!

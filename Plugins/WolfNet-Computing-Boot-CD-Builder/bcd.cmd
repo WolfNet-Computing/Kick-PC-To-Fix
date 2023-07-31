@@ -1,5 +1,9 @@
 @echo off
 
+rem to current drive and path
+%~d0
+cd "%~dp0"
+
 if not exist BCD.VERSION (
 	echo VERSION file doesn't exist!
 	echo Unknown version error.
@@ -16,12 +20,10 @@ echo.
 
 verify other 2>nul
 setlocal enableextensions
+setlocal enabledelayedexpansion
 if errorlevel 1 goto _noext
 if not "%_4VER%" == "" goto _4nt
 
-rem to current drive and path
-%~d0
-cd "%~dp0"
 if "%1" == "" goto _usage
 if "%1" == "-all" for /D %%G in (".\cds\*") do call %0 -b %%~nG
 if "%1" == "-all" goto _end

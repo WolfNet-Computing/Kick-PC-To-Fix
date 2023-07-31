@@ -1,5 +1,8 @@
 @echo off
-set %bfd_deb%=1
+
+rem to current drive and path
+%~d0
+cd "%~dp0"
 
 if not exist VERSION (
 	echo VERSION file doesn't exist!
@@ -17,12 +20,10 @@ echo.
 
 verify other 2>nul
 setlocal enableextensions
+setlocal enabledelayedexpansion
 if errorlevel 1 goto _noext
 if not "%_4VER%" == "" goto _4nt
 
-rem to current drive and path
-%~d0
-cd "%~dp0"
 if "%1" == "" goto _usage
 echo BFD: Checking for required files...
 for %%i in (bin\bfi.exe bin\cabarc.exe bin\mkbt.exe bin\Wbox.exe) do if not exist %%i (
