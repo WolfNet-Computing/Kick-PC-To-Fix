@@ -19,3 +19,16 @@ When installing, the following applies to the options chosen:
  - Boot Floppy Builder: Contains files for building bootable Floppy Discs.  
  - Corporate ModBoot: The same as ModBoot except this is aimed more towards businesses, companies and organisations.  
  - NetBoot: A bigger boot disc based on the Boot CD/DVD Builder that uses ISOLINUX and iPXE to boot from either the local filesystem or a remote (TFTP or HTTP/HTTPS) server.  
+  
+## Usage  
+  
+The program is 4 powershell scripts. There's the main script that runs the powershell prompt, the BFD script for building floppy disks, the BCD script for building CDs or DVDs and the BUSBD script for building USB flash drives.  
+
+The main script **must be run with administrator privileges**. You can do this by right-clicking the shortcut and clicking 'Show more options', then clicking 'Run as Administrator'. This is for the BUSBD script, as it requires elevated privileges.  
+**Alternative: Right-click the shortcut, click 'Show more options', then click 'Properties', click 'Advanced', click 'Run as Administrator', click 'OK' and then 'OK'. Now when you double-click the shortcut it automatically runs with elevated privileges**  
+  
+The main script is run whenever the shortcut is clicked and is used to run the other scripts.  
+ - For BFD type `.\bfd [options] [name]`  
+ - For BCD type `.\bcd [options] [name]`  
+ - For BUSBD type `.\busbd [options] [name]`  
+  
