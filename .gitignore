@@ -1,4 +1,5 @@
 # Wildcard ignores.
+*.ignore
 *.iso
 *.img
 *.nsi
