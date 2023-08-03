@@ -24,8 +24,8 @@ When installing, the following applies to the options chosen:
   
 The program is 4 powershell scripts. There's the main script that runs the powershell prompt, the BFD script for building floppy disks, the BCD script for building CDs or DVDs and the BUSBD script for building USB flash drives.  
 
-The main script **must be run with administrator privileges**. You can do this by right-clicking the shortcut and clicking 'Show more options', then clicking 'Run as Administrator'. This is for the BUSBD script, as it requires elevated privileges.  
-**Alternative: Right-click the shortcut, click 'Show more options', then click 'Properties', click 'Advanced', click 'Run as Administrator', click 'OK' and then 'OK'. Now when you double-click the shortcut it automatically runs with elevated privileges**  
+The main script **must be run with administrator privileges**. You can do this by right-clicking the shortcut and clicking 'Run as Administrator'. This is for the BUSBD script, as it requires elevated privileges.  
+**Alternative: Right-click the shortcut, then click 'Properties', click 'Advanced', click 'Run as Administrator', click 'OK' and then 'OK'. Now when you double-click the shortcut it automatically runs with elevated privileges**  
   
 The main script is run whenever the shortcut is clicked and is used to run the other scripts.  
  - For BFD type `.\bfd [options] [name]`  
