@@ -195,9 +195,9 @@ function Parse-Configuration {
 }
 
 function Parse-ConfigFile {
-	#If ($bcd_deb -ne $null) {
+	If ($bcd_deb -ne $null) {
         Write-Host "DEBUG: cmd=[$($args[0])] arg=[$($args[1])] err=[$bcd_err]"
-    #}
+    }
 	If ($bcd_err -eq 1) { Abort }
 	If ($($args[0]) -eq "bootfile") {
 		Set-Variable -Name bcd_boot -Value $($args[1]) -Scope Script
@@ -258,7 +258,7 @@ function Parse-ConfigFile {
 function ParseAndCount-BootConfigFile {
 	If ($bcd_err -eq 1) { Break }
 	Write-Host "BCD: Creating bootimage '$($args[2])'"
-	bfd.cmd -i $($args[0])\files\$($args[2]) $($args[1])
+	.\bfd -i $($args[0])\files\$($args[2]) $($args[1])
 	If ($rv -eq 1) {
 		Set-Variable -Name bcd_err -Value 1
 		Break
@@ -273,7 +273,7 @@ function Parse-BootConfigFile {
         Break
     }
 	Write-Host "BCD: Bootimage '$($args[1])' does not exist, let's create it now!"
-	bfd.cmd -i cds\%bcd_name%\files\$($args[1]) $($args[0])
+	.\bfd -i cds\%bcd_name%\files\$($args[1]) $($args[0])
 	If ($rv -eq 1) {
         Set-Variable -Name bcd_err -Value 1
     }

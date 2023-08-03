@@ -54,7 +54,6 @@ ForEach ($item in "bin\bchoice.exe","bin\cdrecord.exe","bin\cygwin1.dll","bin\mk
     }
 }
 
-Set-Variable -Name bcd_deb -Value 1
 For ($i = 0; $i -lt $args.Length; $i++) {
 	If ($args[$i] -eq "-d") {
 		Set-Variable -Name bcd_deb -Value 1
