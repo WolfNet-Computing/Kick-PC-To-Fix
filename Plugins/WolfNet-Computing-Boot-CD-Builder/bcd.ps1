@@ -56,7 +56,7 @@ ForEach ($item in "bin\bchoice.exe","bin\cdrecord.exe","bin\cygwin1.dll","bin\mk
 
 For ($i = 0; $i -lt $args.Length; $i++) {
 	If ($args[$i] -eq "-d") {
-		Set-Variable -Name bcd_deb -Value 1
+		Set-Variable -Name bcd_deb -Value 1 -Scope Script
 	}
 	ElseIf ($args[$i] -eq "-b") {
 		Write-Host "BCD: Build image only!"
