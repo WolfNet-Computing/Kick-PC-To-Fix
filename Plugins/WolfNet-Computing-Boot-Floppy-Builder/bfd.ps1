@@ -7,7 +7,7 @@ If (-not (Test-Path -Path BFD.VERSION -PathType Leaf)) {
 	Write-Error "Unknown version error."
 }
 Else {
-	Set-Variable -Name bfd_version -Value (Get-Content -Path BFD.VERSION)
+	$bfd_version = (Get-Content -Path BFD.VERSION)
 }
 
 Write-Host "`n"
@@ -17,6 +17,11 @@ Write-Host "Copyright (c) 2022-2023 WolfNet Computing. All rights reserved."
 Write-Host "`n"
 
 If ($args[0] -eq $null) { Show-Help }
+
+If (Test-Path -Path $($env:temp + '\_bcd_')) {
+	Write-Host "BFD: Removing '$env:temp\_bcd_'"
+	Remove-Item -Path $($env:temp + '\_bcd_') -Recurse
+}
 
 If (-not (Test-Path -Path "bfd.cfg" -PathType Leaf)) {
 	If (Test-Path -Path "bfd.sam" -PathType Leaf) {
@@ -40,34 +45,34 @@ If (-not (Test-Path -Path bfd.ok -PathType Leaf)) {
     If ($LASTEXITCODE -eq 0) { Abort }
     If ($LASTEXITCODE -eq 2) { Remove-MSDOS }
     If ($LASTEXITCODE -eq 3) { Abort }
-    Write-Host "OK" > bfd.ok
+    Write-Host "OK" > bfd.ok | Out-Null
 }
 
 For ($i = 0; $i -lt $args.Length; $i++) {
 	If ($($args[$i]) -eq "-d") {
-		Set-Variable -Name bfd_deb -Value 1 -Scope Script
+		$bfd_deb = 1
 	}
 	ElseIf ($($args[$i]) -eq "-n") {
-		Set-Variable -Name bfd_nop -Value 1 -Scope Script
+		$bfd_nop = 1
 	}
 	ElseIf ($($args[$i]) -eq "-i") {
-        Set-Variable -Name bfd_img -Value $($args[($local:i + 1)]) -Scope Script
-		Set-Variable -Name i -Value ($local:i + 1)
+        $bfd_img = $($args[($i + 1)])
+		$i = ($i + 1)
 	}
 	ElseIf ($($args[$i]) -eq "-o") {
-        Set-Variable -Name bfd_os -Value $($args[($local:i + 1)]) -Scope Script
-		Set-Variable -Name i -Value ($local:i + 1)
+        $bfd_os = $($args[($i + 1)])
+		$i = ($i + 1)
 	}
     ElseIf ($($args[$i]) -eq "-t") {
-        Set-Variable -Name bfd_type -Value $($args[($local:i + 1)]) -Scope Script
-		Set-Variable -Name i -Value ($local:i + 1)
+        $bfd_type = $($args[($i + 1)])
+		$i = ($i + 1)
     }
     ElseIf ($($args[$i]) -eq "-target") {
-        Set-Variable -Name bfd_target -Value $($args[($local:i + 1)]) -Scope Script
-		Set-Variable -Name i -Value ($local:i + 1)
+        $bfd_target = $($args[($i + 1)])
+		$i = ($i + 1)
     }
-	ElseIf ((Test-Name $($args[$local:i])) -eq $true) {
-		Set-Variable -Name bfd_name -Value $($args[($local:i)]) -Scope Script
+	ElseIf ((Test-Name $($args[$i])) -eq $true) {
+		$bfd_name = $($args[($i)])
     }
     Else {
         Write-Host "BFD: Unknown parameter '$($args[$i])' at position '$i'"
@@ -76,57 +81,46 @@ For ($i = 0; $i -lt $args.Length; $i++) {
 }
 
 If ($bfd_name -eq $null)  { Show-Help }
-If ($bfd_type -eq $null)  { Set-Variable -Name bfd_type -Value 144 }
-If (($bfd_img -eq $null) -and ($bfd_target -eq $null))  { Set-Variable -Name bfd_target -Value "a:" }
+If ($bfd_type -eq $null)  { $bfd_type = 144 }
+If (($bfd_img -eq $null) -and ($bfd_target -eq $null))  { $bfd_target = "a:" }
 Write-Host "BFD: Building '$bfd_name'"
 If ($bfd_img -eq $null) {
     Write-Host "BFD: Target drive '$bfd_target'"
 }
 Else {
     Write-Host "BFD: Target image file '$bfd_img'"
-    Set-Variable -Name bfd_target -Value "$env:temp\_bfd_"
-    New-Item -Path $(Split-Path -Path $bfd_target -Parent) -name $(Split-Path -Path $bfd_target -Leaf) -ItemType "directory"
+    $bfd_target = "$env:temp\_bfd_"
+    New-Item -Path $env:temp -name "_bfd_" -ItemType "directory"
 }
 
 Write-Host "BFD: Calling 'Parse-Configuration bfd.cfg'"
 Parse-Configuration "bfd.cfg"
-If ($bfd_err -ne $null) { Abort }
+If ($bfd_err -eq 1) { Abort }
 If (Test-Path -Path "plugin") {
     ForEach ($file in (Get-ChildItem -Path "plugin" -File -Include "*.cfg" )) {
 	    Write-Host "BFD: Calling 'Parse-Configuration $file'"
 	    Parse-Configuration "$file"
-	    If ($bfd_err -ne $null) { Abort }
+	    If ($bfd_err -eq 1) { Abort }
     }
 }
-<# If (Test-Path -Path "cds") {
-    ForEach ($directory in (Get-ChildItem -Path "cds" -Directory -Name)) {
-	    Write-Host "BFD: Calling 'Parse-Configuration cds\$directory\bfd.cfg'"
-	    Parse-Configuration "cds\$directory\bfd.cfg"
-	    If ($bfd_err -ne $null) { Abort }
-    }
-} #>
 
 If ($bfd_img -eq $null) { Done }
 
 Write-Host "BFD: Creating image '$bfd_img'"
 If ($bfd_la -ne $null) {
-    Add-VarToOptions "-l"
-    Add-VarToOptions "$bfd_la"
+    Add-VarToOptions "-l=$($bfd_la)"
 }
 If ($bfd_bi -ne $null) {
-    Add-VarToOptions "-b"
-    Add-VarToOptions "$bfd_bi"
+    Add-VarToOptions "-b=$($bfd_bi)"
 }
 If ($bfd_or -ne $null) {
-    Add-VarToOptions "-o"
-    Add-VarToOptions "$bfd_or"
+    Add-VarToOptions "-o=$($bfd_or)"
 }
 If ($bfd_type -ne $null) {
-    Add-VarToOptions "-t"
-    Add-VarToOptions "$bfd_type"
+    Add-VarToOptions "-t=$($bfd_type)"
 }
-Write-Host "BFD: Running bfi -f=$bfd_img $bfd_options $bfd_target"
-bin\bfi.exe -f=$bfd_img $bfd_options $bfd_target
+Write-Host "BFD: Running bfi -f=$($bfd_img) $bfd_options $bfd_target"
+bin\bfi.exe -f=$($bfd_img) $bfd_options $bfd_target
 If ($LASTEXITCODE -eq 1) { Abort }
 If (-not (Test-Path -Path $bfd_target)) { Done }
 Write-Host "BFD: Remove directory '$bfd_target'"

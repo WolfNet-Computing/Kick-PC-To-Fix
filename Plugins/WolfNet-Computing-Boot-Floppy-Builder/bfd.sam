@@ -16,6 +16,11 @@
 #                    and add driver to pre-built index <f3>
 #  x <dir1> <dir2>   xcopy dir1 to dir2 (incl. subdirs)
 #  m <dir>           make directory
+#
+# Variables:
+#  Variables are supported but can only be written internally. If you want to change the bfd_os variable,
+#  you must use the 'o' command but you can read the bfd_os variable by enclosing it in '<' and '>' like so:
+#  <bfd_os>
 # -------------------------------------------------------------------------
 
 # -------------------------------------------------------------------------
@@ -24,10 +29,10 @@
 n       cdrom
 f
 b       cdrom
-o	  	md701
+o	md701
 i       modboot.cfg
 c       cabs\utils.cab level0
-c       cabs\os\%bfd_os%\dos.cab level1
+c       cabs\os\<bfd_os>\dos.cab level1
 c       cabs\doskey.cab level1
 c       cabs\mouse.cab level2
 c       cabs\help.cab level2
@@ -49,10 +54,10 @@ c       cabs\drivers\aspi\*.cab lib\aspi
 n       msnet
 f
 b       msnet
-o	  	 md701
-i      	 modboot.cfg
+o	md701
+i      	modboot.cfg
 c       cabs\utils.cab level0
-c       cabs\os\%bfd_os%\dos.cab level1
+c       cabs\os\<bfd_os>\dos.cab level1
 c       cabs\doskey.cab level1
 c       cabs\help.cab level2
 c       cabs\mouse.cab level2
@@ -73,15 +78,15 @@ d       cabs\drivers\ndis\*.cab lib\ndis etc\_msnet
 n       fd12
 f
 b       freedos
-o	     fd12
-i        modboot.cfg
+o	fd12
+i       modboot.cfg
 c       cabs\utils.cab level0
-c       cabs\os\%bfd_os%\dos.cab level1
+c       cabs\os\<bfd_os>\dos.cab level1
 c       cabs\doskey.cab level1
 c       cabs\mouse.cab level2
 c       cabs\help.cab level2
 c       cabs\cdrom.cab level3
-m      lib
+m      	lib
 c       cabs\shsucdx.cab lib
 c       cabs\aspi.cab lib
 c       cabs\aspicd.cab lib
