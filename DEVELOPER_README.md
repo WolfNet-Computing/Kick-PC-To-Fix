@@ -20,7 +20,7 @@ This is because the Apache Licenses protect the intellectual properties of non-p
  4. So what CAN I do with the software?  
 There's not much of a limit on what you can do with the software, the (non-exhaustive) list is here:  
 		- Use the software commercially.  
-		- Alter the code. (Bear in mind **ALL** modifications **MUST** be listed but not necessarily released as source.) 
+		- Alter the code. (Bear in mind **ALL MODIFICATIONS MUST BE LISTED** but not necessarily released as source.) 
 		- Distribute copies or modifications of the code.  
 		- Sublicense the code (Re-release it under a stronger licence).  
 		- Use patent claims.  
