@@ -36,7 +36,7 @@ If (($($args[0]) -eq $null)) {
 }
 
 Write-Host "BUSBD: Checking For required files:"
-ForEach ($item in "bin\dd.exe","bin\FileToSave.exe","bin\syslinux.exe","bin\Wbusy.exe","bin\Wfolder2.exe","bin\Winput.exe","bin\Wprompt.exe") {
+ForEach ($item in "bin\syslinux.exe","bin\Wbusy.exe","bin\Wprompt.exe") {
     If (-not (Test-Path -Path $item -PathType Leaf)) {
 	    Write-Error ("BUSBD: File $item not found.")
 	    Abort
@@ -44,14 +44,14 @@ ForEach ($item in "bin\dd.exe","bin\FileToSave.exe","bin\syslinux.exe","bin\Wbus
 }
 
 For ($i = 0; $i -lt $args.Length; $i++) {
-	If ($args[$i] -eq "-d") {
+	If ($($args[$i]) -eq "-d") {
 		Set-Variable -Name busbd_deb -Value 1
 	}
-	ElseIf ($args[$i] -eq "-l") {
+	ElseIf ($($args[$i]) -eq "-l") {
 		Set-Variable -Name busbd_label -Value $($args[($script:i + 1)])
 		Set-Variable -Name i -Value ($i++)
 	}
-	ElseIf ($args[0] -eq "-bab") {
+	ElseIf ($($args[0]) -eq "-bab") {
 		Write-Host "BUSBD: Build all bootdrives!"
 		Set-Variable -Name busbd_cnt -Value 0
 		ForEach ($item in (Get-ChildItem -Path ".\usbs\" -Directory)) {
@@ -60,8 +60,8 @@ For ($i = 0; $i -lt $args.Length; $i++) {
 		Write-Host ("BUSBD: $busbd_cnt boot disk(s) were built...")
 		End1
 	}
-	ElseIf (Test-Path -Path "$($args[$i])") {
-		Set-Variable -Name "busbd_name" -Value $($args[$i]) -Scope Script
+	ElseIf (Test-Path -Path "usbs\$($args[$i])") {
+		Set-Variable -Name "busbd_name" -Value $($args[$i])
 	}
 }
 
@@ -98,7 +98,12 @@ If (Test-Path -Path usbs\$busbd_name\bootdisk.cfg -PathType Leaf) {
 
 If ((-not ($busbd_call -eq $null)) -and (Test-Path -Path "usbs\$busbd_name\$busbd_call" -PathType Leaf)) {
     Write-Host "BUSBD: Calling custom batchfile 'usbs\$busbd_name\$busbd_call'..."
-    . "usbs\$busbd_name\$busbd_call"
+	If ($busbd_call.EndsWith(".ps1")) {
+		. "usbs\$busbd_name\$busbd_call"
+	}
+	Else {
+		Invoke-Command "usbs\$busbd_name\$busbd_call"
+	}
     If ($rv -eq 1) { Abort }
 }
 
@@ -124,8 +129,8 @@ bin\Wprompt.exe "Are you sure you want to continue?" "This program will now wipe
 If ($LASTEXITCODE -eq 2) { End1 }
 bin\Wbusy.exe "Building Drive" "Building drive '$_drive_name' from your files at '.\usbs\$busbd_name\files'..." /marquee /noclose
 Set-Variable -Name _wbusy_active -Value 1
-Write-Host "`n" | Format ($_drive_name.TrimEnd('\')) /FS:NTFS /V:$busbd_label /Q
-bin\syslinux.exe -m -a $busbd_syslinux -i ($_drive_name.TrimEnd('\'))
+Write-Host "`n" | Format $($_drive_name.TrimEnd('\')) /FS:NTFS /V:$busbd_label /Q
+bin\syslinux.exe -m -a $busbd_syslinux -i $($_drive_name.TrimEnd('\'))
 xcopy .\usbs\$busbd_name\files\ $_drive_name /H /S /E /I /F
 If ($busbd_path -ne $null) {
 	xcopy $busbd_path $_drive_name /H /S /E /I /F /Y
