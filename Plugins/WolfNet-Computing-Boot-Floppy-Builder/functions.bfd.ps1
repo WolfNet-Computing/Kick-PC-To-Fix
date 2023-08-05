@@ -267,18 +267,18 @@ function _cmd_t {
 }
 
 function _cmd_d {
-    Write-Host "BFD: Copy driver file(s) '$($args[0])' to '$global:bfd_target\$($args[1])'"
-    ForEach ($file in $($args[0])) { _cmd_dd $file $($args[1]) $($args[2]) }
+    Write-Host "BFD: Copy driver file(s) '$($args[0])' to '$bfd_target\$($args[1])'"
+    ForEach ($file in $($args[0])) { _cmd_dd $file $($args[1]) $($args[2]) $($args[3])}
 }
 
 function _cmd_dd {
     Write-Host "BFD: Copying file '$($args[0])' to '$bfd_target\$($args[1])'"
     Copy-Item -Path $($args[0]) -Destination "$bfd_target\$($args[1])" | Out-Null
-    _cmd_da
+    _cmd_da $($args[0]) $($args[2])
 }
 
 function _cmd_da {
-    Write-Host "BFD: Adding driver info to index '$bfd_target\$($args[1])'"
+    Write-Host "BFD: Adding driver info to index '$bfd_target\$($args[1]).nic'"
     If (Test-Path -Path "$env:temp\ndis.*" -PathType Leaf) { Remove-Item -Path "$env:temp\ndis.*" }
     bin\cabarc.exe -o "x" "$($args[0]) ndis.*" "$env:temp\"
     If (Test-Path -Path "$bfd_target\$($args[1]).nic" -PathType Leaf) { _cmd_pn }
@@ -289,10 +289,10 @@ function _cmd_da {
 
 function _cmd_pn {
     If (exist $bfd_target\$($args[0]).pci) { _cmd_pp }
-    Write-Host "; PCI map file (created by bfd.cmd)" > $bfd_target\$($args[0]).pci
+    Write-Host "; PCI map file (created by bfd.cmd)" > $("$bfd_target\$args[0].pci")
     _cmd_pp
-    If (exist "$env:temp\ndis.pci") { type $env:temp\ndis.pci >> $bfd_target\$($args[0]).pci }
-    If (exist "$env:temp\ndis.txt") { type $env:temp\ndis.txt >> $bfd_target\$($args[0]).nic }
+    If (exist "$env:temp\ndis.pci") { type $env:temp\ndis.pci >> "$bfd_target\$($args[0]).pci "}
+    If (exist "$env:temp\ndis.txt") { type $env:temp\ndis.txt >> "$bfd_target\$($args[0]).nic "}
     If (exist "$env:temp\ndis.*") { del $env:temp\ndis.* } 
 }
 
