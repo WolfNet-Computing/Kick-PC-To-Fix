@@ -1,0 +1,26 @@
+
+
+
+
+
+
+  +---------------------------------+
+   | John Wolfe's Mighty Bootable CD |
+  +---------------------------------+
+
+   0) Boot from first harddisk (drive 80h)
+
+   1) Boot Dos with CD-Rom support (MS-DOS)
+   2) Boot Dos with Network support (MS-DOS)
+   3) Offline NT Password & Registry Editor, Bootdisk (linux)
+   4) Tom's RTBT "The most Linux on one floppy disk." (linux)
+   5) Emergency CD (linux)
+   6) SMART for Hard Drives (linux)
+   7) Damn Small Linux (linux)
+   8) Install DOS 7.1 (MS-DOS)
+
+   a) Boot from first floppy drive (drive 0h)
+   q) Skip CD-Rom boot (boot next device)
+
+Type selection at boot prompt
+Timeout: 30 seconds

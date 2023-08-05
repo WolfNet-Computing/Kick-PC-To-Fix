@@ -1,0 +1,20 @@
+#
+# Main busbd.cfg file
+# 
+# The options below can also be used in the usbs\<usbname>\busbd.cfg
+# Values in usbs\<usbname>\busbd.cfg will override the values below...
+
+# The bootfile that is used for building the USB.
+# Normally not set in main busbd.cfg but in the usbs\<usbname>\busbd.cfg file
+# bootfile <file>
+
+# Additional arguments to add to syslinux.exe
+# syslinuxargs <options>
+
+# Call a sub batchfile to check for some files or do whatever you like
+call custom.cmd #here is a comment
+
+# Additional path arguments for mkisofs
+# addpath <path1> [<path2> ...]
+# For example if you wish to add some files to more than 1 USB
+# addpath extra\totalcmd
