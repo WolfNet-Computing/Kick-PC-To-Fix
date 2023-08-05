@@ -400,7 +400,6 @@ function Abort1 {
     Write-Host "BFD: Aborted..."
     Write-Host "`n"
     $rv = 1
-    Read-Host -Prompt "Press the [Enter] key to continue..."
     End2
 }
 
