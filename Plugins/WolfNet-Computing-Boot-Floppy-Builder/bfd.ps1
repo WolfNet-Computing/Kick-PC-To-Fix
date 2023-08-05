@@ -18,9 +18,9 @@ Write-Host "`n"
 
 If ($args[0] -eq $null) { Show-Help }
 
-If (Test-Path -Path $($env:temp + '\_bcd_')) {
-	Write-Host "BFD: Removing '$env:temp\_bcd_'"
-	Remove-Item -Path $($env:temp + '\_bcd_') -Recurse
+If (Test-Path -Path $($env:temp + '\_bfd_')) {
+	Write-Host "BFD: Removing '$env:temp\_bfd_'"
+	Remove-Item -Path $($env:temp + '\_bfd_') -Recurse
 }
 
 If (-not (Test-Path -Path "bfd.cfg" -PathType Leaf)) {
@@ -71,7 +71,7 @@ For ($i = 0; $i -lt $args.Length; $i++) {
         $bfd_target = $($args[($i + 1)])
 		$i = ($i + 1)
     }
-	ElseIf ((Test-Name $($args[$i])) -eq $true) {
+	ElseIf (Test-Name $($args[$i])) {
 		$bfd_name = $($args[($i)])
     }
     Else {
@@ -90,12 +90,11 @@ If ($bfd_img -eq $null) {
 Else {
     Write-Host "BFD: Target image file '$bfd_img'"
     $bfd_target = "$env:temp\_bfd_"
-    New-Item -Path $env:temp -name "_bfd_" -ItemType "directory"
+    New-Item -Path "$env:temp\_bfd_" -ItemType Directory
 }
 
 Write-Host "BFD: Calling 'Parse-Configuration bfd.cfg'"
 Parse-Configuration "bfd.cfg"
-If ($bfd_err -eq 1) { Abort }
 If (Test-Path -Path "plugin") {
     ForEach ($file in (Get-ChildItem -Path "plugin" -File -Include "*.cfg" )) {
 	    Write-Host "BFD: Calling 'Parse-Configuration $file'"
@@ -120,7 +119,7 @@ If ($bfd_type -ne $null) {
     Add-VarToOptions "-t=$($bfd_type)"
 }
 Write-Host "BFD: Running bfi -f=$($bfd_img) $bfd_options $bfd_target"
-bin\bfi.exe -f=$($bfd_img) $bfd_options $bfd_target
+bin\bfi.exe -v -f="$($bfd_img)" $bfd_options "$($bfd_target)\"
 If ($LASTEXITCODE -eq 1) { Abort }
 If (-not (Test-Path -Path $bfd_target)) { Done }
 Write-Host "BFD: Remove directory '$bfd_target'"

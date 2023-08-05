@@ -17,18 +17,18 @@ function Show-Help {
 }
 
 function Remove-MSDOS {
-	Remove-Item -Path /S /Q cabs\os\md* -Recurse
-	Remove-Item -Path  /S /Q os\md* -Recurse
-	Remove-Item -Path /Q cabs\ms*.cab
-    Return
+	Write-Host "BFD: Removing MS-DOS and related files..."
+	Remove-Item -Path "cabs\os\md*\*" -Recurse
+	Remove-Item -Path  "s\md*\*" -Recurse
+	Remove-Item -Path "cabs\ms*.cab"
 }
 
 function Add-VarToOptions {
-    If ($bfd_options -eq $null) {
-        $bfd_options = @($($args[0]))
+    If ($global:bfd_options -eq $null) {
+        $global:bfd_options = @($($args[0]))
     }
     Else {
-        $bfd_options += $($args[0])
+        $global:bfd_options += $($args[0])
     }
 }
 
@@ -65,23 +65,23 @@ function Test-Name {
 
 function Parse-Configuration {
     ForEach ($line in $(Get-Content -Path $($args[0]))) {
-        If ((-not ($line.StartsWith("#"))) -and (-not ($line -eq ''))) {
-            $line = $line.split('#')
-            $line[0]=$line[0] -replace "\s+",' '
-            $_a, $_b, $_c, $_d = $line[0].split(' ')
-            $_b = Filter-Vars $_b
+        If ((-not ($line.StartsWith("#"))) -and ($line -ne '')) {
+            $line = $line.Split('#')
+            $_str = $($line[0] -Replace "\s+"," ")
+            $_a, $_b, $_c, $_d = $_str.split(" ")
+            $_b = $(Filter-Vars $_b)
             If ($bfd_deb -ne $null) { Write-Host "DEBUG: _a =[$_a] _b=[$_b] _c=[$_c] _d=[$_d]" }
-            Parse-Command $_a $_b $_c $_d
+            If(-not (Parse-Command $_a $_b $_c $_d)) { Write-Host "BFD: Hit an error while parsing command..."; Abort }
         }
     }
 }
 
 function Filter-Vars {
     If ($bfd_os -ne $null) {
-        Return $args[0].Replace("<bfd_os>", $bfd_os)
+        Return $($args[0] -Replace '<os>',$bfd_os)
     }
     Else {
-        Return $args[0]
+        Return $($args[0])
     }
 }
 
@@ -97,97 +97,84 @@ function Invalid-Name {
         }
     }
     ForEach ($file in $(Get-ChildItem -Path "plugin" -Include "*.cfg")) {
-        Write-Host "BFD: Calling 'List-Names $file'"
-	    List-Names $file
+        Write-Host "BFD: Additional names from '$($args[0])'"
+		ForEach ($line in $(Get-Content -Path $file)) {
+			If ((-not ($line.StartsWith("#"))) -and (-not ($line -eq ''))) {
+				$line = $line.split('#')
+				$line[0] = $($line[0] -replace "\s+",' ')
+				$_a, $_b, $_c, $_d = $line[0].split(' ')
+				If ($bfd_deb -ne $null) { Write-Host "DEBUG: _a =[$_a] _b=[$_b] _c=[$_c] _d=[$_d]" }
+				Parse-Names $_a $_b $_c $_d
+			}
+		}
     }
     Abort
 }
 
-function List-Names {
-    If ($bfd_err -eq 1) { Return }
-    If (-not (Test-Path -Path "$($args[0])" -PathType Leaf)) { Return }
-    Write-Host "BFD: Additional names from '$($args[0])'"
-    ForEach ($line in $(Get-Content -Path "$($args[0])")) {
-        If ((-not ($line.StartsWith("#"))) -and (-not ($line -eq ''))) {
-            $line = $line.split('#')
-            $line[0] = $($line[0] -replace "\s+",' ')
-            $_a, $_b, $_c, $_d = $line[0].split(' ')
-            If ($bfd_deb -ne $null) { Write-Host "DEBUG: _a =[$_a] _b=[$_b] _c=[$_c] _d=[$_d]" }
-            Parse-Names $_a $_b $_c $_d
-        }
-    }
-}
-
 function Parse-Names {
-    If ($bfd_deb -ne $null) { Write-Host "DEBUG: line = [$($args[0])] [$($args[1])] [$($args[2])]" }
-    If ($bfd_err -eq 1) { Return }
+    If ($global:bfd_deb -ne $null) { Write-Host "DEBUG: line = [$($args[0])] [$($args[1])] [$($args[2])]" }
     If ($($args[0]) -eq "n") { Write-Host $($args[1]) }
 }
 
 function Parse-Command {
-    If ($bfd_deb -ne $null) { Write-Host DEBUG: line = [$($args[0])] [$($args[1])] [$($args[2])] [$($args[3])] }
-    If ($bfd_err -eq 1) { Return }
+    If ($global:bfd_deb -ne $null) { Write-Host DEBUG: line = [$($args[0])] [$($args[1])] [$($args[2])] [$($args[3])] }
     If ($($args[0]) -eq "n") {
-        _cmd_n $args[1] $args[2] $args[3]
-        Return
+        _cmd_n $($args[1]) $($args[2]) $($args[3])
+        Return $true
     }
-    If ($bfd_cname -ne $bfd_name) { Return }
-    $bfd_ok = 1
-    If ($args[0] -eq "c") {
-        _cmd_c $args[1] $args[2] $args[3]
-        Return
+    If ($bfd_cname -ne $bfd_name) { Return $true }
+    If ($($args[0]) -eq "c") {
+        _cmd_c $($args[1]) $($args[2]) $($args[3])
+        Return $true
     }
-    If ($args[0] -eq "t") {
-        _cmd_t $args[1] $args[2] $args[3]
-        Return
+    If ($($args[0]) -eq "t") {
+        _cmd_t $($args[1]) $($args[2]) $($args[3])
+        Return $true
     }
-    If ($args[0] -eq "x") {
-        _cmd_x $args[1] $args[2] $args[3]
-        Return
+    If ($($args[0]) -eq "x") {
+        _cmd_x $($args[1]) $($args[2]) $($args[3])
+        Return $true
     }
-    If ($args[0] -eq "f") {
-        _cmd_f $args[1] $args[2] $args[3]
-        Return
+    If ($($args[0]) -eq "f") {
+        _cmd_f $($args[1]) $($args[2]) $($args[3])
+        Return $true
     }
-    If ($args[0] -eq "m") {
-        _cmd_m $args[1] $args[2] $args[3]
-        Return
+    If ($($args[0]) -eq "m") {
+        _cmd_m $($args[1]) $($args[2]) $($args[3])
+        Return $true
     }
-    If ($args[0] -eq "b") {
-        _cmd_b $args[1] $args[2] $args[3]
-        Return
+    If ($($args[0]) -eq "b") {
+        _cmd_b $($args[1]) $($args[2]) $($args[3])
+        Return $true
     }
-    If ($args[0] -eq "d") {
-        _cmd_d $args[1] $args[2] $args[3]
-        Return
+    If ($($args[0]) -eq "d") {
+        _cmd_d $($args[1]) $($args[2]) $($args[3])
+        Return $true
     }
-    If ($args[0] -eq "o") {
-        Write-Host "Hit an 'o'"
-        _cmd_o $args[1] $args[2] $args[3]
-        Return
+    If ($($args[0]) -eq "o") {
+        _cmd_o $($args[1]) $($args[2]) $($args[3])
+        Return $true
     }
-    If ($args[0] -eq "i") {
-        _cmd_i $args[1] $args[2] $args[3]
-        Return
+    If ($($args[0]) -eq "i") {
+        _cmd_i $($args[1]) $($args[2]) $($args[3])
+        Return $true
     }
-    If ($args[0] -eq "it") {
-        _cmd_it $args[1] $args[2] $args[3]
-        Return
+    If ($($args[0]) -eq "it") {
+        _cmd_it $($args[1]) $($args[2]) $($args[3])
+        Return $true
     }
-    Write-Host "BFD: Unknown command '$args[0]'"
-    $bfd_err = 1
-    Return
+    Write-Host "BFD: Unknown command '$($args[0])'"
+    Return $false
 }
 
 function _cmd_it {
-    $bfd_type = $args[0]
+    $global:bfd_type = $args[0]
     Write-Host "BFD: Image type set to '$bfd_type'"
 }
 
 function _cmd_i {
     If (-not (Test-Path -Path $($args[0]))) {
 	    Write-Host "BFD: Include file '$($args[0])' not found"
-	    $bfd_err = 1
 	    Return
     }
     Parse-Configuration $args[0]
@@ -198,21 +185,18 @@ function _cmd_o {
     Write-Host "BFD: Operating system '$bfd_os'"
     If (-not (Test-Path -Path "$($args[0]).cfg")) {
 	    Write-Host "BFD: OS include file '$($args[0]).cfg' not found"
-	    $bfd_err = 1
 	    Return
     }
     If (-not (Test-Path -Path "os\$($args[0])")) {
 	    Write-Host "BFD: OS Folder '$($args[0])' not found"
-	    $bfd_err = 1
 	    Return
     }
     ForEach ($file in $($args[0]).cfg) { Parse-Command "$file.cfg" }
-    If ("$bfd_bootable" -ne $null) {
-	    If ($bfd_img -ne $null) { _cmd_bi }
+    If ($global:bfd_bootable -ne $null) {
+	    If ($global:bfd_img -ne $null) { _cmd_bi }
 	    Write-Host "BFD: Installing bootsector from 'os\$bfd_os\bootsect.bin'"
-	    bin\mkbt.exe -x "os\$bfd_os\bootsect.bin" $bfd_target
+	    bin\mkbt.exe -x "os\$bfd_os\bootsect.bin" $global:bfd_target
 	    If ($LASTEXITCODE -eq 1) {
-            $bfd_err = 1
             Return
         }
 	    _cmd_b2
@@ -224,19 +208,19 @@ function _cmd_b {
 }
 
 function _cmd_bi {
-    $bfd_bi = "os\$bfd_os\bootsect.bin"
+    $bfd_bi = "os\$global:bfd_os\bootsect.bin"
 }
 
 function _cmd_b2 {
-    If (Test-Path -Path "os\$bfd_os\io.sys" -PathType Leaf) { MSDOS }
-    If (Test-Path -Path "os\$bfd_os\ibmbio.com" -PathType Leaf) { IBM }
-    If (Test-Path -Path "os\$bfd_os\kernel.sys" -PathType Leaf) { FD }
+    If (Test-Path -Path "os\$global:bfd_os\io.sys" -PathType Leaf) { MSDOS }
+    If (Test-Path -Path "os\$global:bfd_os\ibmbio.com" -PathType Leaf) { IBM }
+    If (Test-Path -Path "os\$global:bfd_os\kernel.sys" -PathType Leaf) { FD }
 }
 
 function _cmd_f {
-    If ($bfd_img -ne $null) { _cmd_fi }
+    If ($global:bfd_img -ne $null) { _cmd_fi }
     Write-Host "BFD: Formatting drive '$bfd_target' extra arguments '$($args[0])'"
-    If ($bfd_nop -eq 1) { _format }
+    If ($global:bfd_nop -eq 1) { _format }
 }
 
 function _again {
@@ -246,7 +230,6 @@ function _again {
     Write-Host "`n"
     bin\bchoice /c:ca /d:c Press C or Enter to continue or A to Abort?
     If ($LASTEXITCODE -eq 1) {
-	    $bfd_err = 1
 	    Return
     }
     Write-Host "`n"
@@ -255,52 +238,43 @@ function _again {
 
 function _format {
     Write-Host "BFD: Formatting..."
-    format $bfd_target $($args[0]) /u /backup /v:
+    format $global:bfd_target $($args[0]) /u /backup /v:
     If ($LASTEXITCODE -eq 1) { _again }
 }
 
 function _cmd_fi {
-    If (-not (Test-Path -Path $bfd_target)) { _cmd_fi3 }
-    Write-Host "BFD: Remove directory '$bfd_target'"
-    Remove-Item -Path $bfd_target -Recurse
-    If (-not (Test-Path -Path $bfd_target)) { _cmd_fi3 }
-    $bfd_err = 1
+    If (-not (Test-Path -Path $global:bfd_target)) { _cmd_fi2 }
+    Write-Host "BFD: Remove directory '$global:bfd_target'"
+    Remove-Item -Path "$global:bfd_target\*" -Recurse
+    If (-not (Test-Path -Path $global:bfd_target)) { _cmd_fi2 }
 }
 
-function _cmd_fi3 {
-    Write-Host "BFD: Create directory '$bfd_target'"
-    New-Item -Name $(Split-Path -Path $bfd_target -Leaf) -Path $(Split-Path -Path $bfd_target -Parent) -ItemType "directory"
-    If (-not (Test-Path -Path $bfd_target)) { $bfd_err = 1 }
+function _cmd_fi2 {
+    Write-Host "BFD: Create directory '$global:bfd_target'"
+    New-Item -Name $(Split-Path -Path $global:bfd_target -Leaf) -Path $(Split-Path -Path $global:bfd_target -Parent) -ItemType "directory"
+    If (-not (Test-Path -Path $global:bfd_target)) { Abort }
 }
 
 function _cmd_c {
-    Write-Host "BFD: Copying '$($args[0])' to '$bfd_target\$($args[1])'"
-    Copy-Item -Path $args[0] -Destination "$bfd_target\$($args[1])\" -Container:$false -Recurse
-    If ($LASTEXITCODE -ne 1) { Return }
-    Write-Host "BFD: Copy returned an error"
-    $bfd_err = 1
+    Write-Host "BFD: Copying '$($args[0])' to '$($bfd_target)\$($args[1])\'"
+    Copy-Item -Path "$($args[0])" -Destination "$bfd_target\$($args[1])\" -Container:$false
 }
 
 function _cmd_t {
     If (-not (Test-Path -Path "$($args[0])" -PathType Any)) { Return }
-    Write-Host "BFD: Copying $($args[0]) to '$bfd_target\$($args[1])'"
-    Copy-Item -Path "$($args[0])" -Destination "$bfd_target\$($args[1])" -Container:$false -Recurse | Out-Null
-    If ($LASTEXITCODE -ne 1) { Return }
-    Write-Host "BFD: Copy returned an error"
-    $bfd_err = 1
+    Write-Host "BFD: Copying $($args[0]) to '$global:bfd_target\$($args[1])'"
+    Copy-Item -Path "$($args[0])" -Destination "$global:bfd_target\$($args[1])" -Container:$false
 }
 
 function _cmd_d {
-    Write-Host "BFD: Copy driver file(s) '$($args[0])' to '$bfd_target\$($args[1])'"
+    Write-Host "BFD: Copy driver file(s) '$($args[0])' to '$global:bfd_target\$($args[1])'"
     ForEach ($file in $($args[0])) { _cmd_dd $file $($args[1]) $($args[2]) }
 }
 
 function _cmd_dd {
     Write-Host "BFD: Copying file '$($args[0])' to '$bfd_target\$($args[1])'"
-    Copy -Path $($args[0]) -Destination "$bfd_target\$($args[1])" | Out-Null
-    If ($LASTEXITCODE -ne 1) { _cmd_da }
-    Write-Host "BFD: Copy returned an error"
-    $bfd_err = 1
+    Copy-Item -Path $($args[0]) -Destination "$bfd_target\$($args[1])" | Out-Null
+    _cmd_da
 }
 
 function _cmd_da {
@@ -320,35 +294,24 @@ function _cmd_pn {
     If (exist "$env:temp\ndis.pci") { type $env:temp\ndis.pci >> $bfd_target\$($args[0]).pci }
     If (exist "$env:temp\ndis.txt") { type $env:temp\ndis.txt >> $bfd_target\$($args[0]).nic }
     If (exist "$env:temp\ndis.*") { del $env:temp\ndis.* } 
-    Return
 }
 
 function _cmd_pp {
     If (-not (Test-Path -Path "$env:temp\ndis.txt" -PathType Leaf)) {
 	    Write-Host "BFD: Driver '$($args[0])' does not have a ndis.txt file"
-	    $bfd_err = 1
-	    Return
     }
 }
 
 function _cmd_n {
-    $bfd_cname = $($args[0])
-    If ($bfd_deb -ne $null) { Write-Host "DEBUG: cname set to '$bfd_cname'" } 
-    Return
+    Set-Variable bfd_cname $($args[0]) -Scope Global
+    If ($global:bfd_deb -ne $null) { Write-Host "DEBUG: cname set to '$bfd_cname'" } 
 }
 
 function _cmd_m {
     Write-Host "BFD: Attempt to make directory '$bfd_target\$($args[0])'"
-    If (-not (Test-Path -Path "$bfd_target\$($args[0])")) {
-	    mkdir "$bfd_target\$($args[0])"
-    }
-    Else {
-	    Write-Host "BFD: Directory '$bfd_target\$($args[0])' already exists"
-    }
-    If ($LASTEXITCODE -ne 1) { Return }
-    Write-Host "BFD: mkdir returned an error"
-    $bfd_err = 1
-    Return
+	If (-not (Test-Path -Path "$bfd_target\$($args[0])")) {
+		New-Item -Path "$bfd_target\$($args[0])" -ItemType Directory
+	}
 }
 
 function MSDOS {
@@ -385,10 +348,10 @@ function FD {
 }
 
 function Label {
-    If ($bfd_img -ne $null) { Label-Image }
+    If ($global:bfd_img -ne $null) { Label-Image }
     Write-Host "BFD: Label"
-    If ($args[1] -ne $null) { label $bfd_target $($args[0]) }
-    If ($args[1] -eq $null) { label $bfd_target modboot }
+    If ($args[1] -ne $null) { label $global:bfd_target $($args[0]) }
+    If ($args[1] -eq $null) { label $global:bfd_target modboot }
     Return
 }
 
@@ -399,37 +362,45 @@ function Label-Image {
     Else {
         $bfd_la = modboot
     }
-    bin\mkbt.exe -x "os\$bfd_os\bootsect.bin" $bfd_target
+    bin\mkbt.exe -x "os\$bfd_os\bootsect.bin" $global:bfd_target
 }
 
 function _cmd_x {
-    Write-Host "BFD: xcopying '$($args[0])' to '$bfd_target\$($args[1])'"
-    xcopy "$($args[0])\*.*" "$bfd_target\$($args[1])\" /S /E /I
-    If ($LASTEXITCODE -ne 1) { Return }
-    Write-Host "BFD: xcopy returned an error"
-    $bfd_err = 1
+    Write-Host "BFD: copying folder '$($args[0])' to '$($bfd_target)\'"
+	ForEach ($item in "$($args[0])\*") {
+		If (($bfd_target -ne $null) -or (-not (Test-Path -Path $bfd_target))) {
+			Copy-Item -Path "$($args[0])\*" -Destination "$bfd_target\" -Recurse -Force
+		}
+		Else {
+			Write-Host "BFD: '$($bfd_target)\' already exists!"
+		}
+	}
 }
 
 function Done {
-    If ($bfd_img -ne $null) { Write-Host BFD: Image "$bfd_img" created. }
+    If ($global:bfd_img -ne $null) { Write-Host BFD: Image "$global:bfd_img" created. }
     Write-Host BFD: Done!
     End1
 }
 
 function Abort {
-    If ($bfd_img -eq $null) { Abort1 }
-    If (Test-Path -Path $bfd_img -PathType Leaf) {
+    If ($global:bfd_img -eq $null) { Abort1 }
+    If (Test-Path -Path $global:bfd_img -PathType Leaf) {
 	    Write-Host "BFD: Removing '$bfd_img'"
-	    Remove-Item -Path $bfd_img
+	    Remove-Item -Path $global:bfd_img
     }
     Abort1
 }
 
 function Abort1 {
+	If (Test-Path -Path $($env:temp + '\_bfd_')) {
+		Write-Host "BFD: Removing '$env:temp\_bfd_'"
+		Remove-Item -Path $($env:temp + '\_bfd_\*') -Recurse
+	}
     Write-Host "BFD: Aborted..."
     Write-Host "`n"
     $rv = 1
-    Read-Host -Prompt "Press any key to continue"
+    Read-Host -Prompt "Press the [Enter] key to continue..."
     End2
 }
 
@@ -439,6 +410,6 @@ function End1 {
 }
 
 function End2 {
-    Write-Host "BFD: Exiting with return value $rv"
+    Write-Host "BFD: Exiting with return value $global:rv"
     Exit
 }
