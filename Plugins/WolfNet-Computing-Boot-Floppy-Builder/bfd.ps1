@@ -56,26 +56,26 @@ For ($i = 0; $i -lt $args.Length; $i++) {
 		$bfd_nop = 1
 	}
 	ElseIf ($($args[$i]) -eq "-i") {
-        $bfd_img = $($args[($i + 1)])
 		$i = ($i + 1)
+        $bfd_img = $($args[($i + 1)])
 	}
 	ElseIf ($($args[$i]) -eq "-o") {
-        $bfd_os = $($args[($i + 1)])
 		$i = ($i + 1)
+        $bfd_os = $($args[($i + 1)])
 	}
     ElseIf ($($args[$i]) -eq "-t") {
+		$($args[($i + 1)])
         $bfd_type = $($args[($i + 1)])
-		$i = ($i + 1)
     }
     ElseIf ($($args[$i]) -eq "-target") {
-        $bfd_target = $($args[($i + 1)])
 		$i = ($i + 1)
+        $bfd_target = $($args[($i + 1)])
     }
 	ElseIf (Test-Name $($args[$i])) {
 		$bfd_name = $($args[($i)])
     }
     Else {
-        Write-Host "BFD: Unknown parameter '$($args[$i])' at position '$i'"
+		Write-Host "BFD: Invalid parameter '$($args[($i)])'."
         Abort
     }
 }
@@ -100,6 +100,15 @@ If (Test-Path -Path "plugin") {
 	    Write-Host "BFD: Calling 'Parse-Configuration $file'"
 	    Parse-Configuration "$file"
 	    If ($bfd_err -eq 1) { Abort }
+    }
+}
+If (Test-Path -Path "cds") {
+    ForEach ($directory in (Get-ChildItem -Path "cds" -Directory -Name)) {
+		ForEach ($file in (Get-ChildItem -Path $directory -File -Include "bfd.cfg")) {
+			Write-Host "BFD: Calling 'Parse-Configuration $file'"
+			Parse-Configuration "$file"
+			If ($bfd_err -eq 1) { Abort }
+		}
     }
 }
 

@@ -19,7 +19,7 @@ function Show-Help {
 function Remove-MSDOS {
 	Write-Host "BFD: Removing MS-DOS and related files..."
 	Remove-Item -Path "cabs\os\md*\*" -Recurse
-	Remove-Item -Path  "s\md*\*" -Recurse
+	Remove-Item -Path  "os\md*\*" -Recurse
 	Remove-Item -Path "cabs\ms*.cab"
 }
 
@@ -44,23 +44,41 @@ function Test-Name {
             }
         }
     }
-    If (Test-Path -Path "plugin") {
-        ForEach ($file in $(Get-ChildItem -Path "plugin" -Include "*.cfg")) {
-            If ($bfd_deb -ne $null) { Write-Host "DEBUG: Testing names in 'plugin\$file'" }
+    If (Test-Path -Path ".\plugin" -PathType Container) {
+        ForEach ($file in $(Get-ChildItem -Path ".\plugin" -Include "*.cfg")) {
+            If ($bfd_deb -ne $null) { Write-Host "DEBUG: Testing names in '.\plugin\$file'" }
             ForEach ($line in $(Get-Content -Path $file)) {
                 If ((-not ($line.StartsWith("#"))) -and ($line -ne '')) {
                     $line = $line.split('#')
                     $line[0]=$line[0] -replace "\s+",' '
-                    $_a, $_b, $_c, $_d = $line[0].split(' ')
+                    $_a, $_b, $_c, $_d = $line[0] -Split ' '
                     If ($bfd_deb -ne $null) { Write-Host "DEBUG: _a =[$_a] _b=[$_b] _c=[$_c] _d=[$_d]" }
-                    If (($_a -eq "n") -and ($_b -eq $args[0])) {
+                    If (($_a -eq "n") -and ($_b -eq $($args[0]))) {
                         Return $true
                     }
                 }
             }
-        }
-    }
-    Return $false
+		}
+	}
+	If (Test-Path -Path ".\cds" -PathType Container) {
+		ForEach ($directory in (Get-ChildItem -Path "cds" -Directory -Name)) {
+			If (Test-Path -Path ".\cds\$directory\bfd.cfg" -PathType Leaf) {
+				If ($bfd_deb -ne $null) { Write-Host "DEBUG: Testing names in '.\cds\$directory\bfd.cfg'" }
+				ForEach ($line in $(Get-Content -Path ".\cds\$directory\bfd.cfg")) {
+					If ((-not ($line.StartsWith("#"))) -and ($line -ne '')) {
+						$line = $line.split('#')
+						$line[0]=$line[0] -replace "\s+",' '
+						$_a, $_b, $_c, $_d = $line[0] -Split ' '
+						If ($bfd_deb -ne $null) { Write-Host "DEBUG: _a =[$_a] _b=[$_b] _c=[$_c] _d=[$_d]" }
+						If (($_a -eq "n") -and ($_b -eq $($args[0]))) {
+							Return $true
+						}
+					}
+				}
+			}
+		}
+	}
+    Invalid-Name $($args[0])
 }
 
 function Parse-Configuration {
@@ -86,38 +104,51 @@ function Filter-Vars {
 }
 
 function Invalid-Name {
-    Write-Host "BFD: '$bfd_name' is an invalid name!"
+    Write-Host "BFD: '$($args[0])' is an invalid name!"
     Write-Host "BFD: You must specify one of the following names:"
-    ForEach ($line in $(Get-Content -Path "bfd.cfg")) {
+    ForEach ($line in $(Get-Content -Path ".\bfd.cfg")) {
         If ((-not ($line.StartsWith("#"))) -and (-not ($line -eq ''))) {
             $line = $line.split('#')
             $line[0] = $line[0] -replace "\s+",' '
-            $_a, $_b, $_c, $_d = $line[0].split(' ')
-            Parse-Names $_a $_b $_c $_d
+            $_a, $_b, $_c, $_d = $line[0] -Split ' '
+			If ($_a -eq "n") { Write-Host $_b }
         }
     }
-    ForEach ($file in $(Get-ChildItem -Path "plugin" -Include "*.cfg")) {
-        Write-Host "BFD: Additional names from '$($args[0])'"
-		ForEach ($line in $(Get-Content -Path $file)) {
-			If ((-not ($line.StartsWith("#"))) -and (-not ($line -eq ''))) {
-				$line = $line.split('#')
-				$line[0] = $($line[0] -replace "\s+",' ')
-				$_a, $_b, $_c, $_d = $line[0].split(' ')
-				If ($bfd_deb -ne $null) { Write-Host "DEBUG: _a =[$_a] _b=[$_b] _c=[$_c] _d=[$_d]" }
-				Parse-Names $_a $_b $_c $_d
+    If (Test-Path -Path ".\plugin" -PathType Container) {
+        ForEach ($file in $(Get-ChildItem -Path ".\plugin" -Include "*.cfg")) {
+            If ($bfd_deb -ne $null) { Write-Host "DEBUG: Additional names from '.\plugin\$file'" }
+            ForEach ($line in $(Get-Content -Path $file)) {
+                If ((-not ($line.StartsWith("#"))) -and ($line -ne '')) {
+                    $line = $line.split('#')
+                    $line[0]=$line[0] -replace "\s+",' '
+                    $_a, $_b, $_c, $_d = $line[0] -Split ' '
+                    If ($bfd_deb -ne $null) { Write-Host "DEBUG: _a =[$_a] _b=[$_b] _c=[$_c] _d=[$_d]" }
+					If ($_a -eq "n") { Write-Host $_b }
+                }
+            }
+        }
+    }
+	If (Test-Path -Path ".\cds" -PathType Container) {
+		ForEach ($directory in (Get-ChildItem -Path "cds" -Directory -Name)) {
+			If (Test-Path -Path ".\cds\$directory\bfd.cfg" -PathType Leaf) {
+				If ($bfd_deb -ne $null) { Write-Host "DEBUG: Testing names in '.\cds\$directory\bfd.cfg'" }
+				ForEach ($line in $(Get-Content -Path ".\cds\$directory\bfd.cfg")) {
+					If ((-not ($line.StartsWith("#"))) -and ($line -ne '')) {
+						$line = $line.split('#')
+						$line[0]=$line[0] -replace "\s+",' '
+						$_a, $_b, $_c, $_d = $line[0] -Split ' '
+						If ($bfd_deb -ne $null) { Write-Host "DEBUG: _a =[$_a] _b=[$_b] _c=[$_c] _d=[$_d]" }
+						If ($_a -eq "n") { Write-Host $_b }
+					}
+				}
 			}
 		}
-    }
+	}
     Abort
 }
 
-function Parse-Names {
-    If ($global:bfd_deb -ne $null) { Write-Host "DEBUG: line = [$($args[0])] [$($args[1])] [$($args[2])]" }
-    If ($($args[0]) -eq "n") { Write-Host $($args[1]) }
-}
-
 function Parse-Command {
-    If ($global:bfd_deb -ne $null) { Write-Host DEBUG: line = [$($args[0])] [$($args[1])] [$($args[2])] [$($args[3])] }
+    If ($global:bfd_deb -ne $null) { Write-Host "DEBUG: line = [$($args[0])] [$($args[1])] [$($args[2])] [$($args[3])]" }
     If ($($args[0]) -eq "n") {
         _cmd_n $($args[1]) $($args[2]) $($args[3])
         Return $true
@@ -181,7 +212,7 @@ function _cmd_i {
 }
 
 function _cmd_o {
-    Set-Variable -Name bfd_os -Value $args[0] -Scope Script
+    Set-Variable -Name bfd_os -Value $args[0]
     Write-Host "BFD: Operating system '$bfd_os'"
     If (-not (Test-Path -Path "$($args[0]).cfg")) {
 	    Write-Host "BFD: OS include file '$($args[0]).cfg' not found"
