@@ -1,11 +1,12 @@
 ﻿function End2 {
+	If (Test-Path -path "$env:TEMP\temp.ps1" -PathType Leaf) { del $env:TEMP\temp.ps1 }
+	If (Test-Path -path "$env:TEMP\_diskpart_.txt" -PathType Leaf) { del $env:TEMP\_diskpart_.txt }
+	Write-Host "BUSBD: Returning with return value $rv"
     Exit
 }
 
 function End1 {
-	If (Test-Path -path $env:TEMP\temp.ps1 -PathType Leaf) { del $env:TEMP\temp.ps1 }
 	Set-Variable -Name rv -Value 0 -Scope Script
-	Write-Host BUSBD: Returning with return value $rv
     End2
 }
 
@@ -14,7 +15,7 @@ function Abort {
 		bin\Wbusy.exe "Building Drive" "Drive creation failed!" /stop /sound
 	}
 	Write-Error "BUSBD: Aborted..."
-    End1
+    End2
 }
 
 function Build-FloppyImage {
