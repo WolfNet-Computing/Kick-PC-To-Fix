@@ -40,6 +40,7 @@ ForEach ($file in "bin\bfi.exe","bin\cabarc.exe","bin\mkbt.exe","bin\Wbox.exe") 
 	    Abort
     }
 }
+
 If (-not (Test-Path -Path bfd.ok -PathType Leaf)) {
     bin\Wbox.exe "* IMPORTANT NOTICE *"  "This program uses some files from Microsoft Windows 98 which are protected by ^copyright. You must have a valid Windows 98 license before using these files. ^When you do not have a valid license for Windows 98 but you do have one for ^Windows 95 or msdos 6 you should create an OS plugin with those licensed files or ^If you have no microsoft licenses then use FreeDOS. ^Do you have a valid license for MS-DOS 7.01 OR Windows 98? ^(If you click 'no' then ALL ms-dos files will be removed from the installation.)" "Yes;No;Quit" /OT /DB=2 /TL=7 /FS=12 /BG=#444444
     If ($LASTEXITCODE -eq 0) { Abort }
