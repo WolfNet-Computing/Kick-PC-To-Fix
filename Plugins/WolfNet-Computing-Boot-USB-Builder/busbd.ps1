@@ -166,8 +166,7 @@ If ($busbd_virtual -ne $null) {
 	$form.Add_Shown({$textBox.Select()})
 	
 	$result = $form.ShowDialog()
-	If ($result -eq [System.Windows.Forms.DialogResult]::OK)
-	{
+	If ($result -eq [System.Windows.Forms.DialogResult]::OK) {
 		If ($textBox.Text.EndsWith("MB")) {
 			$_temp_var = [int32]$textBox.Text.TrimEnd("MB")
 			$busbd_image_size = $_temp_var
@@ -187,16 +186,23 @@ If ($busbd_virtual -ne $null) {
 		Write-Error "BUSBD: How would we know what size to make the drive!?"
         Abort
 	}
-
 	bin\Wbusy.exe "Building Drive" "Building drive '$($busbd_image)' from your files at '.\usbs\$($busbd_name)\files'..." /marquee /noclose
 	$_wbusy_active = 1
-	$_our_letter = "Z"
+	$_our_letter = "T"
+	If ($busbd_format -eq $null) {
+		If ($busbd_image_size -lt 32768) {
+			$busbd_format = "fat32"
+		}
+		Else {
+			$busbd_format = "ntfs"
+		}
+	}
 	New-Variable -Name _str -Value @(
 		"CREATE vdisk file=`"$($busbd_image)`" maximum=$($busbd_image_size) noerr",
 		"SELECT vdisk file=`"$($busbd_image)`" noerr",
 		"ATTACH vdisk noerr",
 		"CREATE partition primary noerr",
-		"FORMAT fs=ntfs label=`"$($busbd_name)`" quick noerr",
+		"FORMAT fs=$($busbd_format) label=`"$($busbd_name)`" quick noerr",
 		"ASSIGN letter=$($_our_letter) noerr"
 	)
 	Out-File -FilePath "$($env:temp)\_diskpart_.txt" -InputObject $_str -Force -Encoding ascii
@@ -233,13 +239,13 @@ If ($busbd_path -ne $null) {
 	xcopy $busbd_path $_drive_name /H /S /E /I /F /Y
 }
 If ($busbd_virtual -ne $null) {
-	$_str = 'SELECT vdisk file="' + $busbd_image + '"'
-	Out-File -FilePath $env:temp\_diskpart_.tmp -InputObject $_str -Encoding ascii
-	$_str = 'DETACH vdisk'
-	Out-File -FilePath $env:temp\_diskpart_.tmp -InputObject $_str -Append -noClobber -Encoding ascii
-	$_str = 'EXIT'
-	Out-File -FilePath $env:temp\_diskpart_.tmp -InputObject $_str -Append -noClobber -Encoding ascii
-	diskpart /s "$env:temp\_diskpart_.tmp"
+	Set-Variable -Name _str -Value @(
+		"SELECT vdisk file=`"$($busbd_image)`"",
+		"DETACH vdisk",
+		"EXIT"
+	)
+	Out-File -FilePath "$env:temp\_diskpart_.tmp" -InputObject $_str -Force -Encoding ascii
+	diskpart /S "$env:temp\_diskpart_.tmp"
 }
 bin\Wbusy.exe "Building Drive" "Drive created successfully!" /stop /sound
 Clear-Variable -Name _wbusy_active

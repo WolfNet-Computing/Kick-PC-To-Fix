@@ -1,6 +1,6 @@
 ﻿function End2 {
-	If (Test-Path -path "$env:TEMP\temp.ps1" -PathType Leaf) { del $env:TEMP\temp.ps1 }
-	If (Test-Path -path "$env:TEMP\_diskpart_.txt" -PathType Leaf) { del $env:TEMP\_diskpart_.txt }
+	If (Test-Path -path "$env:TEMP\temp.ps1" -PathType Leaf) { Remove-Item -Path "$env:TEMP\temp.ps1" }
+	If (Test-Path -path "$env:TEMP\_diskpart_.txt" -PathType Leaf) { Remove-Item -Path "$env:TEMP\_diskpart_.txt" }
 	Write-Host "BUSBD: Returning with return value $rv"
     Exit
 }
