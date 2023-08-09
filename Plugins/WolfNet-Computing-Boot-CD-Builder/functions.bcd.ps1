@@ -9,7 +9,7 @@
     bin\cdrecord.exe dev=$bcd_dev $bcd_tmp -v $bcd_cdr $_save_location
     If ($LASTEXITCODE -eq 1) {
 	    Write-Host "BCD: cdrecord returned an error"
-	    Abort
+	    Abort1
     }
     Clear-Variable -Name bcd_tmp
     Write-Host "BCD: Recording '$bcd_name' done."
@@ -22,13 +22,13 @@ function Detect-CD {
     If ($LASTEXITCODE -eq 1) {
 	    Write-Error "BCD:'cdrecord -scanbus' returned an error! Burning not possible!"
 	    Set-Variable -Name bcd_noburn -Value 1 -Scope Script
-	    Abort
+	    Abort1
     }
     findstr /I "/C:cd-rom" $env:temp\_bcd_.tmp > $env:temp\_bcd_.tm2
     If (-not (Test-Path -Path "$env:temp\_bcd_.tm2" -PathType Leaf)) {
         Write-Error "BCD: No CD-ROM type devices found! Burning not possible!"
         Set-Variable -Name bcd_noburn -Value 1 -Scope Script
-        Abort
+        Abort1
     }
     Write-Host "BCD: Found CD-ROM devices:"
     type $env:temp\_bcd_.tm2
@@ -53,9 +53,8 @@ function Detect-CD {
     If ($bcd_dev -eq $null) {
 	    Write-Error "BCD: No CD writer device found! Burning not possible!"
 	    Set-Variable -Name bcd_noburn -Value 1 -Scope Script
-	    Abort
+	    Abort1
     }
-
 }
 
 function Detect-CDOptions {
@@ -71,18 +70,18 @@ function Detect-CDOptions {
         findstr /I /B "burnfree " $env:temp\_bcd_.tmp >$env:temp\_bcd_.tm2
         If (Test-Path -Path $env:temp\_bcd_.tm2 -PathType Leaf) {
             Write-Host "BCD: Drive supports burnfree, adding 'driveropts=burnfree'"
-            Set-Variable -Name bcd_cdr -Value "%bcd_cdr% driveropts=burnfree" -Scope Script
+            Set-Variable -Name bcd_cdr -Value "$bcd_cdr driveropts=burnfree"
         }
     }
     Write-Host "BCD: Loading media"
-    bin\cdrecord.exe dev=%bcd_dev% -load >nul | Out-Null
+    bin\cdrecord.exe dev=$bcd_dev -load >nul | Out-Null
     If ($LASTEXITCODE -eq 1) { NoMedia }
     Write-Host "BCD: Checking media type"
-    bin\cdrecord.exe dev=%bcd_dev% -atip >$env:temp\_bcd_.tmp | Out-Null
+    bin\cdrecord.exe dev=$bcd_dev -atip >$env:temp\_bcd_.tmp | Out-Null
     If ($LASTEXITCODE -eq 1) {
 	    Write-Error "BCD: cdrecord returned an error"
 	    type $env:temp\_bcd_.tmp
-	    Abort
+	    Abort1
     }
     findstr /I "/C:No disk / Wrong disk!" $env:temp\_bcd_.tmp >$env:temp\_bcd_.tm3
     If (Test-Path -Path "$env:temp\_bcd_.tm3" -PathType Leaf) { NoMedia }
@@ -97,7 +96,7 @@ function IsCDRW {
     If ($LASTEXITCODE -eq 1) {
 	    Write-Host "BCD: cdrecord returned an error"
 	    type $env:temp\_bcd_.tmp
-	    Abort
+	    Abort1
     }
     findstr /I "/C:Cannot read TOC header" $env:temp\_bcd_.tmp >$env:temp\_bcd_.tm3
     If (Test-Path -Path "$env:temp\_bcd_.tm3" -PathType Leaf) { 
@@ -113,7 +112,7 @@ function IsCDRW {
     bin\cdrecord.exe dev=$bcd_dev $bcd_tmp -v blank=fast
     If ($LASTEXITCODE -eq 1) {
 	    Write-Host "BCD: cdrecord returned an error"
-	    Abort
+	    Abort1
     }
     Write-CD
     Clear-Variable -Name bcd_tmp
@@ -126,11 +125,11 @@ function IsBlank {
 
 function IsCDR {
     Write-Host "BCD: Media is CD-R, checking blank"
-    bin\cdrecord.exe dev=%bcd_dev% -toc >$env:temp\_bcd_.tmp | Out-Null
+    bin\cdrecord.exe dev=$bcd_dev -toc >$env:temp\_bcd_.tmp | Out-Null
     If ($LASTEXITCODE -eq 1) {
 	    Write-Error "BCD: cdrecord returned an error"
 	    type $env:temp\_bcd_.tmp
-	    Abort
+	    Abort1
     }
     findstr /I "/C:Cannot read TOC header" $env:temp\_bcd_.tmp >$env:temp\_bcd_.tm3
     If (Test-Path -Path "$env:temp\_bcd_.tm3" -PathType Leaf) {
@@ -142,22 +141,22 @@ function IsCDR {
     If ($LASTEXITCODE -eq 1) {
 	    Write-Error "BCD: cdrecord returned an error"
 	    type "$env:temp\_bcd_.tmp"
-	    Abort
+	    Abort1
     }
-    bin\bchoice.exe /c:ca /d:c Press C or Enter to continue or A to Abort?
+    bin\bchoice.exe /c:ca /d:c "Press C or Enter to continue or A to Abort?"
     If ($LASTEXITCODE -eq 1) { goto End1 }
     Write-CD
 }
 
 function NoMedia {
-    Write-Host "BCD: Insert media for '%bcd_name%'..."
-    bin\cdrecord.exe dev=%bcd_dev% -eject | Out-Null
+    Write-Host "BCD: Insert media for '$bcd_name'..."
+    bin\cdrecord.exe dev=$bcd_dev -eject | Out-Null
     If ($LASTEXITCODE -eq 1) {
 	    Write-Host "BCD: cdrecord returned an error"
 	    type "$env:temp\_bcd_.tmp"
-	    Abort
+	    Abort1
     }
-    bin\bchoice /c:ca /d:c Press C or Enter to continue or A to Abort?
+    bin\bchoice /c:ca /d:c "Press C or Enter to continue or A to Abort?"
     If ($LASTEXITCODE -eq 1) { End1 }
     Write-CD
 }
@@ -166,13 +165,13 @@ function Check-CD {
 	If ($bcd_dev -eq $null) { End2 }
 	If (Test-Path -Name "$env:temp\_bcd_.tm3" -PathType Leaf) { Remove-Item -Path "$env:temp\_bcd_.tm3" }
 	Write-Host "BCD: Get drive capabilities for device $bcd_tmp"
-	bin\cdrecord.exe dev=%bcd_tmp% -prcap > $env:temp\_bcd_.tmp | Write-Host 
+	bin\cdrecord.exe dev=$bcd_tmp -prcap > $env:temp\_bcd_.tmp | Write-Host 
 	If ($LASTEXITCODE -eq 1) { End2 }
 	If (-not ($bcd_deb -eq $null)) {
 	    Write-Host "DEBUG: Drive capabilities output from device $bcd_tmp"
 	    type "$env:temp\_bcd_.tmp"
 	    Write-Host "DEBUG: End of drive capabilities output"
-	    Write-Host "DEBUG: Looking for '%*'"
+	    Write-Host "DEBUG: Looking for '$args'"
         findstr /L "/C:%*" $env:temp\_bcd_.tmp >$env:temp\_bcd_.tm3
 	    If (Test-Path -Path "$env:temp\_bcd_.tm3" -PathType Leaf) { Set-Variable -Name bcd_dev -Value $bcd_tmp -Scope Script }
 	    End2
@@ -183,12 +182,12 @@ function Parse-Configuration {
     ForEach ($line in $(Get-Content -Path $($args[0]))) {
         If ((-not ($line.StartsWith("#"))) -and (-not ($line -eq ''))) {
             $line = $line.split('#')
-            $_a, $_b, $_c, $_d, $_e, $_f = $line[0].split(' ')
+            $_a, $_b, $_c, $_d = $line[0].split(' ')
             If ($args[0].EndsWith("bcd.cfg")) {
-                Parse-ConfigFile $_a $_b $_c $_d $_e $_f
+                Parse-ConfigFile $_a $_b $_c $_d
             }
             Else {
-                Parse-BootConfigFile $_a $_b $_c $_d $_e $_f
+                Parse-BootConfigFile $_a $_b $_c $_d
             }
         }
     }
@@ -198,7 +197,7 @@ function Parse-ConfigFile {
 	If ($bcd_deb -ne $null) {
         Write-Host "DEBUG: cmd=[$($args[0])] arg=[$($args[1])] err=[$bcd_err]"
     }
-	If ($bcd_err -eq 1) { Abort }
+	If ($bcd_err -eq 1) { Abort1 }
 	If ($($args[0]) -eq "bootfile") {
 		Set-Variable -Name bcd_boot -Value $($args[1]) -Scope Script
 		Add-VarToIsofs "-b"
@@ -258,7 +257,7 @@ function Parse-ConfigFile {
 function ParseAndCount-BootConfigFile {
 	If ($bcd_err -eq 1) { Break }
 	Write-Host "BCD: Creating bootimage '$($args[2])'"
-	.\bfd -i $($args[0])\files\$($args[2]) $($args[1])
+	.\bfd -i "$($args[0])\files\$($args[2])" -p "$($args[1])"
 	If ($rv -eq 1) {
 		Set-Variable -Name bcd_err -Value 1
 		Break
@@ -268,12 +267,12 @@ function ParseAndCount-BootConfigFile {
 	
 function Parse-BootConfigFile {
 	If ($bcd_err -eq 1) { Break }
-	If (Test-Path -Path "cds\%bcd_name%\files\$($args[1])" -PathType Leaf) {
+	If (Test-Path -Path "cds\$bcd_name\files\$($args[1])" -PathType Leaf) {
         Write-Host "BCD: Bootimage '$($args[1])' already exists, skip creation"
         Break
     }
 	Write-Host "BCD: Bootimage '$($args[1])' does not exist, let's create it now!"
-	.\bfd -i cds\%bcd_name%\files\$($args[1]) $($args[0])
+	.\bfd -i "cds\$bcd_name\files\$($args[1])" -p "$($args[0])"
 	If ($rv -eq 1) {
         Set-Variable -Name bcd_err -Value 1
     }
@@ -315,10 +314,10 @@ function Build-All {
 	If (-not (Test-Path -Path "$($args[0])\bootdisk.cfg" -PathType Leaf)) { Break }
 	Write-Host "BCD: Processing bootdisk config file '$($args[0])\bootdisk.cfg'"
 	Clear-Variable -Name rv
-	ForEach ($line in "$($args[0])\bootdisk.cfg") {
-        Parse-BootConfigFile $($args[0]) %%j %%k
+	ForEach ($line in (Get-Content -Path "$($args[0])\bootdisk.cfg")) {
+        Parse-BootConfigFile $($args[0]) $line
 	}
-    If ($bcd_err -eq 1) { Abort }
+    If ($bcd_err -eq 1) { Abort1 }
 }
 
 function Build-AllBoot {
@@ -330,12 +329,12 @@ function Build-AllBoot {
 	Write-Host "BCD: $bcd_cnt boot disk(s) were built."
 }
 
-function Abort {
+function Abort11 {
 	If (Test-Path -Path $_save_location -PathType Leaf) {
-		Write-Host "BCD: Aborting, removing ISO file '$_save_location'"
-		Remove-Item -Path %_save_location%
+		Write-Host "BCD: Abort1ing, removing ISO file '$_save_location'"
+		Remove-Item -Path $_save_location
 	}
-	Write-Error "BCD: Aborted..."
+	Write-Error "BCD: Abort1ed..."
 	Set-Variable -Name rv -Value 1
 	End2
 }

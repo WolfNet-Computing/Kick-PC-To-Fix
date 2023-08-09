@@ -1,3 +1,35 @@
+[CmdletBinding(PositionalBinding=$false)]
+param ( 
+	[Parameter(Mandatory=$false)]
+	[Alias("d")]
+	[switch]$bfd_deb,
+	
+	[Parameter(Mandatory=$false)]
+	[Alias("n")]
+	[switch]$bfd_nop,
+	
+	[Parameter(Mandatory=$true)]
+	[Alias("i")]
+	[ValidateNotNullOrEmpty()]
+	[string]$bfd_img = $(throw "an image location is required."),
+	
+	[Parameter(Mandatory=$false)]
+	[Alias("o")]
+	[ValidateNotNullOrEmpty()]
+	[string]$bfd_os,
+	
+	[Parameter(Mandatory=$false)]
+	[Alias("t")]
+	[ValidateSet('144','288')]
+	[PSDefaultValue(Help='1.44MB Floppy')]
+	[int]$bfd_type = 144,
+	
+	[Parameter(Mandatory=$true)]
+	[Alias("p")]
+	[ValidateNotNullOrEmpty()]
+	[string]$bfd_name = $(throw "a project name is required.")
+)
+
 Set-Location -Path $PSScriptRoot
 
 . .\functions.bfd.ps1
@@ -15,8 +47,6 @@ Write-Host "Bootable Floppy Builder."
 Write-Host "Version: $bfd_version"
 Write-Host "Copyright (c) 2022-2023 WolfNet Computing. All rights reserved."
 Write-Host "`n"
-
-If ($args[0] -eq $null) { Show-Help }
 
 If (Test-Path -Path $($env:temp + '\_bfd_')) {
 	Write-Host "BFD: Removing '$env:temp\_bfd_'"
@@ -49,43 +79,9 @@ If (-not (Test-Path -Path bfd.ok -PathType Leaf)) {
     Write-Host "OK" > bfd.ok | Out-Null
 }
 
-For ($i = 0; $i -lt $args.Length; $i++) {
-	If ($($args[$i]) -eq "-d") {
-		$bfd_deb = 1
-	}
-	ElseIf ($($args[$i]) -eq "-n") {
-		$bfd_nop = 1
-	}
-	ElseIf ($($args[$i]) -eq "-i") {
-		$i = ($i + 1)
-        $bfd_img = $($args[($i + 1)])
-	}
-	ElseIf ($($args[$i]) -eq "-o") {
-		$i = ($i + 1)
-        $bfd_os = $($args[($i + 1)])
-	}
-    ElseIf ($($args[$i]) -eq "-t") {
-		$($args[($i + 1)])
-        $bfd_type = $($args[($i + 1)])
-    }
-    ElseIf ($($args[$i]) -eq "-target") {
-		$i = ($i + 1)
-        $bfd_target = $($args[($i + 1)])
-    }
-	ElseIf (Test-Name $($args[$i])) {
-		$bfd_name = $($args[($i)])
-    }
-    Else {
-		Write-Host "BFD: Invalid parameter '$($args[($i)])'."
-        Abort
-    }
-}
-
-If ($bfd_name -eq $null)  { Show-Help }
-If ($bfd_type -eq $null)  { $bfd_type = 144 }
-If (($bfd_img -eq $null) -and ($bfd_target -eq $null))  { $bfd_target = "a:" }
 Write-Host "BFD: Building '$bfd_name'"
 If ($bfd_img -eq $null) {
+	$bfd_target = "a:"
     Write-Host "BFD: Target drive '$bfd_target'"
 }
 Else {
@@ -95,16 +91,18 @@ Else {
 }
 
 Write-Host "BFD: Calling 'Parse-Configuration bfd.cfg'"
-Parse-Configuration "bfd.cfg"
-If (Test-Path -Path "plugin") {
-    ForEach ($file in (Get-ChildItem -Path "plugin" -File -Include "*.cfg" )) {
+Parse-Configuration ".\bfd.cfg"
+If (Test-Path -Path ".\plugin" -PathType Container) {
+    ForEach ($file in (Get-ChildItem -Path ".\plugin" -File -Include "*.cfg" )) {
 	    Write-Host "BFD: Calling 'Parse-Configuration $file'"
 	    Parse-Configuration "$file"
 	    If ($bfd_err -eq 1) { Abort }
     }
 }
-If (Test-Path -Path "cds") {
-    ForEach ($directory in (Get-ChildItem -Path "cds" -Directory -Name)) {
+If (Test-Path -Path ".\cds" -PathType Container) {
+	Write-Host $(Get-ChildItem -Path ".\cds" -Directory -Name)
+    ForEach ($directory in (Get-ChildItem -Path ".\cds" -Directory -Name)) {
+		Write-Host $(Get-ChildItem -Path $directory -File -Include "bfd.cfg")
 		ForEach ($file in (Get-ChildItem -Path $directory -File -Include "bfd.cfg")) {
 			Write-Host "BFD: Calling 'Parse-Configuration $file'"
 			Parse-Configuration "$file"

@@ -21,7 +21,7 @@ function Abort {
 function Build-FloppyImage {
 	If ($busbd_err -eq 1) { Return }
 	Write-Host "BUSBD: Creating bootdrive '$args[3]'"
-	.\bfd -i $args[1]\files\$args[3] $args[2]
+	.\bfd -i "$($args[1])\files\$($args[3])" -p "$($args[2])"
 	If ($rv -eq 1) {
 		Set-Variable -Name busbd_err -Value 1 -Scope Script
 		Return
@@ -63,7 +63,7 @@ function Parse-ConfigFile {
 	}
 	If ($($args[0]) -eq "addpath") {
 		Set-Variable -Name busbd_path -Value $($args[1]) -Scope Script
-		Write-Host  ("BUSBD: Custom path '" + $($args[1]) + "' added to list of files/folders to add.")
+		Write-Host  ("BUSBD: Custom path(s) '" + $($args[1]) + "' added to list of files/folders to add.")
 		Return
 	}
 	Write-Host ("BUSBD: unknown keyword '$($args[0])'...")
