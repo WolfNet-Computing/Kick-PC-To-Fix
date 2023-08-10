@@ -154,7 +154,7 @@ If ($busbd_virtual -ne $null) {
 	$label = New-Object System.Windows.Forms.Label
 	$label.Location = New-Object System.Drawing.Point(10,20)
 	$label.Size = New-Object System.Drawing.Size(280,20)
-	$label.Text = 'How big should the image be? (M = MB, G = GB)'
+	$label.Text = 'How big should the image be? (Include a suffix, MB or GB)'
 	$form.Controls.Add($label)
 	
 	$textBox = New-Object System.Windows.Forms.TextBox
@@ -189,13 +189,11 @@ If ($busbd_virtual -ne $null) {
 	bin\Wbusy.exe "Building Drive" "Building drive '$($busbd_image)' from your files at '.\usbs\$($busbd_name)\files'..." /marquee /noclose
 	$_wbusy_active = 1
 	$_our_letter = "T"
-	If ($busbd_format -eq $null) {
-		If ($busbd_image_size -lt 32768) {
-			$busbd_format = "fat32"
-		}
-		Else {
-			$busbd_format = "ntfs"
-		}
+	$busbd_format = "ntfs"
+	If ($busbd_image_size -lt 128) {
+		Write-Error "BUSBD: Bad image size"
+		Write-Error "BUSBD: Must be greater than 128MB"
+		Abort
 	}
 	New-Variable -Name _str -Value @(
 		"CREATE vdisk file=`"$($busbd_image)`" maximum=$($busbd_image_size) noerr",
