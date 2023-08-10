@@ -6,7 +6,7 @@ LICENSING: The apache license doesn't cover **anything** in the 'bin', 'cds/\*\/
   
 DEVELOPER NOTICE: Please read the developer documentation [here](/DEVELOPER_README.md) before doing **anything**.
   
-IMPORTANT: The Apache License used is in the file "[LICENSE.md](./LICENSE.MD)" instead of "LICENSE" and the Copyright Notice is in the file "[NOTICE.md](./NOTICE.md)" instead of "NOTICE". This is to make reading the files on GitHub easier.  
+IMPORTANT: The Apache License used is in the file "[LICENSE.md](./LICENSE.md)" instead of "LICENSE" and the Copyright Notice is in the file "[NOTICE.md](./NOTICE.md)" instead of "NOTICE". This is to make reading the files on GitHub easier.  
   
 ## Download and Installation  
   
