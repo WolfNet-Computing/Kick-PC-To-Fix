@@ -12,7 +12,7 @@
 # syslinuxargs <options>
 
 # Call a sub batchfile to check for some files or do whatever you like
-call custom.cmd #here is a comment
+call custom.ps1
 
 # Additional path arguments for mkisofs
 # addpath <path1> [<path2> ...]
