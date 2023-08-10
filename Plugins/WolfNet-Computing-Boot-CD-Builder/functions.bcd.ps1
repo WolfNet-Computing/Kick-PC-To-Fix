@@ -329,7 +329,7 @@ function Build-AllBoot {
 	Write-Host "BCD: $bcd_cnt boot disk(s) were built."
 }
 
-function Abort11 {
+function Abort1 {
 	If (Test-Path -Path $_save_location -PathType Leaf) {
 		Write-Host "BCD: Abort1ing, removing ISO file '$_save_location'"
 		Remove-Item -Path $_save_location
@@ -357,5 +357,5 @@ function End2 {
 }
 
 function End3 {
-    Exit
+    Exit $rv
 }

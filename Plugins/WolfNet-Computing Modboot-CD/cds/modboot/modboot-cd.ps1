@@ -43,14 +43,13 @@ For ($i = 0; $i -lt $args.Length; $i++) {
 }
 
 Set-Variable -Name mb_count -Value 1
-Out-Null > "$env:temp\menu.tmp"
 $_menu_item = @("")
 Write-Host "`n================== Modboot CD Builder =================="
+Write-Host "`n"
 ForEach ($line in (Get-Content -Path "$PSScriptRoot\modboot-cd.cfg")) {
 	$line = $line.Split('#')
     $_str = $($line[0] -Replace "\s+"," ")
     $_command, $_name = $_str.split(" ")
-    #$_command = $(Filter-Vars $_command)
     If ($mb_deb -ne $null) { Write-Host "DEBUG: line = [$_name] [$_command]" }
 	If ($_command -eq "n") {
 		Write-Host "$mb_count`) $_name"
@@ -60,12 +59,15 @@ ForEach ($line in (Get-Content -Path "$PSScriptRoot\modboot-cd.cfg")) {
 }
 Write-Host "`n"
 Write-Host "Q`) Quit"
+Write-Host "`n"
 Write-Host "========================================================"
 Set-Variable -Name _entry_quit -Value $mb_count
 $choice = Read-Host "`nSelect Configuration"
 For ($i = 0; $i -le $mb_count; $i++) {
-	If ($choice -eq "Q") {
-		End1
+	Write-Host $choice
+	If ($choice -eq "q") {
+		Write-Host "You chose not to build a disc!"
+		Abort1
 	}
 	ElseIf ($choice -eq $i) {
 		$mb_name = $_menu_item[$i]

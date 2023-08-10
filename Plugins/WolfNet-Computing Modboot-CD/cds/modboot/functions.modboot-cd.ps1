@@ -86,16 +86,19 @@ function _cmd_dd {
 function _cmd_da {
     Write-Host "MB-CD: Adding driver info to index '$mb_target\$($args[1]).nic'"
     If (Test-Path -Path "$env:temp\ndis.*" -PathType Leaf) { Remove-Item -Path "$env:temp\ndis.*" }
-    bin\cabarc.exe -o "x" "$($args[0]) ndis.*" "$env:temp\"
+    bin\cabarc.exe -o "x" "$($args[0])" "ndis.*" "$env:temp\"
     If (Test-Path -Path "$mb_target\$($args[1]).nic" -PathType Leaf) { _cmd_pn }
-    Write-Host "; This file is used to manual" > $mb_target\$($args[1]).nic
-    Write-Host "; select a network driver" >> $mb_target\$($args[1]).nic
-    Write-Host ":_ndis 'Select Network driver...' [x]" >> $mb_target\$($args[1]).nic
+	New-Variable -Name _str -Value @(
+		"; This file is used to manual",
+		"; select a network driver",
+		":_ndis 'Select Network driver...' [x]"
+	)
+	Out-File -FilePath "$mb_target\$($args[1]).nic" -InputObject $_str -Force
 }
 
 function _cmd_pn {
     If (Test-Path -Path $mb_target\$($args[0]).pci -PathType Leaf) { _cmd_pp }
-    Write-Host "; PCI map file (created by mb.cmd)" > $("$mb_target\$($args[0]).pci")
+	Out-File -FilePath "$mb_target\$($args[0]).pci" -InputObject "; PCI map file (created by mb.cmd)" -Force
     _cmd_pp
     If (Test-Path -Path "$env:temp\ndis.pci" -PathType Leaf) { type $env:temp\ndis.pci >> "$mb_target\$($args[0]).pci "}
     If (Test-Path -Path "$env:temp\ndis.txt" -PathType Leaf) { type $env:temp\ndis.txt >> "$mb_target\$($args[0]).nic "}
@@ -180,5 +183,5 @@ function End1 {
 
 function End2 {
 	Write-Host "MB-CD: Exiting with return value $rv"
-	Exit
+	Exit $rv
 }

@@ -7,8 +7,8 @@ Else {
     Set-Variable -Name _version -Value (Get-Content -Path VERSION)
 }
 
-$Host.UI.RawUI.BackgroundColor = 'Green'
-$Host.UI.RawUI.ForegroundColor = 'DarkGray'
+#$Host.UI.RawUI.BackgroundColor = 'Green'
+#$Host.UI.RawUI.ForegroundColor = 'DarkGray'
 $Host.UI.RawUI.WindowTitle = “Boot Tools - v$_version”
 function prompt { 'WolfNet Computing Boot Tools> ' }
 

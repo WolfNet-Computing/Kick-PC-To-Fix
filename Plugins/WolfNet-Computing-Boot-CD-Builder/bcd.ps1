@@ -137,12 +137,14 @@ If ($bcd_isofs -eq $null) {
 If ((-not ($bcd_call -eq $null)) -and (Test-Path -Path "cds\$bcd_name\$bcd_call" -PathType Leaf)) {
     Write-Host "BCD: Calling custom script 'cds\$bcd_name\$bcd_call'..."
 	If ($bcd_call.EndsWith(".ps1")) {
-		. ".\cds\$bcd_name\$bcd_call"
+		If (-not (. ".\cds\$bcd_name\$bcd_call")) {
+            Write-Host "BCD: Custom script 'cds\$bcd_name\$bcd_call' failed!"
+            Abort1
+        }
 	}
 	Else {
 		Invoke-Command ".\cds\$bcd_name\$bcd_call"
 	}
-    If ($rv -eq 1) { Abort1 }
 }
 
 If (-not ($bcd_boot -eq $null)) {
