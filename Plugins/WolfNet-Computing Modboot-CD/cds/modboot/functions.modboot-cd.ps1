@@ -62,46 +62,46 @@ function _cmd_i {
 }
 
 function _cmd_c {
-    Write-Host "MB-CD: Copying '$($args[0])' to '$($mb_target)\$($args[1])\'"
-    Copy-Item -Path "$($args[0])" -Destination "$mb_target\$($args[1])\" -Container:$false | Out-Null
+    Write-Host "MB-CD: Copying '$($args[0])' to 'cds\$bcd_name\files\$($args[1])\'"
+    Copy-Item -Path "$($args[0])" -Destination "cds\$bcd_name\files\$($args[1])\" -Container:$false | Out-Null
 }
 
 function _cmd_t {
     If (-not (Test-Path -Path "$($args[0])" -PathType Any)) { Return }
-    Write-Host "MB-CD: Copying $($args[0]) to '$global:mb_target\$($args[1])'"
-    Copy-Item -Path "$($args[0])" -Destination "$global:mb_target\$($args[1])" -Container:$false
+    Write-Host "MB-CD: Copying $($args[0]) to '$global:bcd_target\$($args[1])'"
+    Copy-Item -Path "$($args[0])" -Destination "$global:bcd_target\$($args[1])" -Container:$false
 }
 
 function _cmd_d {
-    Write-Host "MB-CD: Copy driver file(s) '$($args[0])' to '$mb_target\$($args[1])'"
+    Write-Host "MB-CD: Copy driver file(s) '$($args[0])' to 'cds\$bcd_name\files\$($args[1])'"
     ForEach ($file in $($args[0])) { _cmd_dd $file $($args[1]) $($args[2]) $($args[3])}
 }
 
 function _cmd_dd {
-    Write-Host "MB-CD: Copying file '$($args[0])' to '$mb_target\$($args[1])'"
-    Copy-Item -Path $($args[0]) -Destination "$mb_target\$($args[1])" | Out-Null
+    Write-Host "MB-CD: Copying file '$($args[0])' to 'cds\$bcd_name\files\$($args[1])'"
+    Copy-Item -Path $($args[0]) -Destination "cds\$bcd_name\files\$($args[1])" | Out-Null
     _cmd_da $($args[0]) $($args[2])
 }
 
 function _cmd_da {
-    Write-Host "MB-CD: Adding driver info to index '$mb_target\$($args[1]).nic'"
+    Write-Host "MB-CD: Adding driver info to index 'cds\$bcd_name\files\$($args[1]).nic'"
     If (Test-Path -Path "$env:temp\ndis.*" -PathType Leaf) { Remove-Item -Path "$env:temp\ndis.*" }
     bin\cabarc.exe -o "x" "$($args[0])" "ndis.*" "$env:temp\"
-    If (Test-Path -Path "$mb_target\$($args[1]).nic" -PathType Leaf) { _cmd_pn }
+    If (Test-Path -Path "cds\$bcd_name\files\$($args[1]).nic" -PathType Leaf) { _cmd_pn }
 	New-Variable -Name _str -Value @(
 		"; This file is used to manual",
 		"; select a network driver",
 		":_ndis 'Select Network driver...' [x]"
 	)
-	Out-File -FilePath "$mb_target\$($args[1]).nic" -InputObject $_str -Force
+	Out-File -FilePath "cds\$bcd_name\files\$($args[1]).nic" -InputObject $_str -Force
 }
 
 function _cmd_pn {
-    If (Test-Path -Path $mb_target\$($args[0]).pci -PathType Leaf) { _cmd_pp }
-	Out-File -FilePath "$mb_target\$($args[0]).pci" -InputObject "; PCI map file (created by mb.cmd)" -Force
+    If (Test-Path -Path cds\$bcd_name\files\$($args[0]).pci -PathType Leaf) { _cmd_pp }
+	Out-File -FilePath "cds\$bcd_name\files\$($args[0]).pci" -InputObject "; PCI map file (created by mb.cmd)" -Force
     _cmd_pp
-    If (Test-Path -Path "$env:temp\ndis.pci" -PathType Leaf) { type $env:temp\ndis.pci >> "$mb_target\$($args[0]).pci "}
-    If (Test-Path -Path "$env:temp\ndis.txt" -PathType Leaf) { type $env:temp\ndis.txt >> "$mb_target\$($args[0]).nic "}
+    If (Test-Path -Path "$env:temp\ndis.pci" -PathType Leaf) { type $env:temp\ndis.pci >> "cds\$bcd_name\files\$($args[0]).pci "}
+    If (Test-Path -Path "$env:temp\ndis.txt" -PathType Leaf) { type $env:temp\ndis.txt >> "cds\$bcd_name\files\$($args[0]).nic "}
     If (Test-Path -Path "$env:temp\ndis.*" -PathType Leaf) { del $env:temp\ndis.* } 
 }
 
@@ -117,20 +117,20 @@ function _cmd_n {
 }
 
 function _cmd_m {
-    Write-Host "MB-CD: Attempt to make directory '$mb_target\$($args[0])'"
-	If (-not (Test-Path -Path "$mb_target\$($args[0])")) {
-		New-Item -Path "$mb_target\$($args[0])" -ItemType Directory
+    Write-Host "MB-CD: Attempt to make directory 'cds\$bcd_name\files\$($args[0])'"
+	If (-not (Test-Path -Path "cds\$bcd_name\files\$($args[0])")) {
+		New-Item -Path "cds\$bcd_name\files\$($args[0])" -ItemType Directory
 	}
 }
 
 function _cmd_x {
-    Write-Host "MB-CD: copying folder '$($args[0])' to '$mb_target\'"
+    Write-Host "MB-CD: copying folder '$($args[0])' to 'cds\$bcd_name\files\'"
 	ForEach ($item in "$($args[0])\*") {
-		If (($mb_target -ne $null) -or (-not (Test-Path -Path $mb_target))) {
-			Copy-Item -Path "$($args[0])\*" -Destination "$mb_target\" -Recurse -Force
+		If ((cds\$bcd_name\files -ne $null) -or (-not (Test-Path -Path cds\$bcd_name\files))) {
+			Copy-Item -Path "$($args[0])\*" -Destination "cds\$bcd_name\files\" -Recurse -Force
 		}
 		Else {
-			Write-Host "MB-CD: '$mb_target\' already exists!"
+			Write-Host "MB-CD: 'cds\$bcd_name\files\' already exists!"
 		}
 	}
 }
