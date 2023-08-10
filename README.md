@@ -15,7 +15,8 @@ Download and install the current version of the program [available here](https:/
 When installing, the following applies to the options chosen:  
   
  - Core: Always selected and contains files required to run and common to all plugins.  
- - Boot CD/DVD Builder: Contains files for building bootable CDs/DVDs and also 2 example disc templates. These are stored in the 'CDs' subdirectory of the installation directory.  
+ - Boot CD/DVD Builder: Contains files for building bootable CDs/DVDs or images and also 2 example disc templates. These are stored in the 'cds' subdirectory of the installation directory.
+ - Boot USB Builder: Contains files for building bootable USB drives or images and 1 example template. This is stored in the 'usbs' subdirectory of the installation directory.
  - Boot Floppy Builder: Contains files for building bootable Floppy Discs.  
  - Corporate ModBoot: The same as ModBoot except this is aimed more towards businesses, companies and organisations.  
  - NetBoot: A bigger boot disc based on the Boot CD/DVD Builder that uses ISOLINUX and iPXE to boot from either the local filesystem or a remote (TFTP or HTTP/HTTPS) server.  
