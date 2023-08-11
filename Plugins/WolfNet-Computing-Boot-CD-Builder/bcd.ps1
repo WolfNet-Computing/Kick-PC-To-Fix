@@ -1,3 +1,32 @@
+[CmdletBinding(PositionalBinding=$false)]
+param ( 
+	[Parameter(Mandatory=$false)]
+	[Alias("d")]
+	[switch]$bcd_deb,
+	
+	[Parameter(Mandatory=$false)]
+	[Alias("b")]
+	[switch]$bcd_noburn,
+	
+	[Parameter(Mandatory=$false)]
+	[Alias("s")]
+	[ValidateRange(1,50)]
+	[int]$bcd_spd,
+	
+	[Parameter(Mandatory=$false)]
+	[Alias("bab")]
+	[switch]$bcd_bab,
+	
+	[Parameter(Mandatory=$false)]
+	[Alias("all")]
+	[switch]$bcd_all,
+	
+	[Parameter(Mandatory=$true)]
+	[Alias("p")]
+	[ValidateNotNullOrEmpty()]
+	[string]$bcd_name = $(throw "a project name is required.")
+)
+
 Set-Location -Path $PSScriptRoot
 
 [void] [System.Reflection.Assembly]::LoadWithPartialName("System.Drawing") 
@@ -19,34 +48,13 @@ Write-Host "Version: $bcd_version"
 Write-Host "Copyright (c) 2022-2023 WolfNet Computing. All rights reserved."
 Write-Host "`n"
 
-If ($args[0] -eq $null) {
-    Write-Host "  Usage:"
-	Write-Host "  bcd [-d] [-b] [-s nn] name"
-	Write-Host "  bcd -bab"
-	Write-Host "  bcd -all"
-	Write-Host "`n"
-	Write-Host "  name	: name of the CD to build"
-	Write-Host "  -a		: build all ISO9660 image files"
-	Write-Host "  -d		: print debug messages"
-	Write-Host "  -b		: burning disabled (only create ISO image)"
-	Write-Host "  -s nn	: set burning speed"
-	Write-Host "  -bab	: build all bootimages for all CD's"
-	Write-Host "				(using CD's bootdisk.cfg)"
-	Write-Host "`n"
-	Write-Host "Returns environment variable 'rv', 0 If succesfull, 1 If error"
-	Write-Host "`n"
-	Write-Host "This program uses the following files (located in the 'bin' directory):"
-	Write-Host "	- Xorriso by ?? (GNU-GPL license)."
-	Write-Host "	- Nero Aspi Library (wnaspi32.dll) by Ahead Software AG (abandonware)."
-	End1
-}
-If ($($args[0]) -eq "-all") {
-        ForEach ($item in (Get-ChildItem -Path ".\cds\" -Directory)) {
+If ($bcd_all) {
+    ForEach ($item in (Get-ChildItem -Path ".\cds\" -Directory)) {
         & $MyInvocation.MyCommand.Name -b $item
     }
     End1
 }
-ElseIf ($($args[0]) -eq "-bab") {
+ElseIf ($bcd_bab) {
 	Write-Host "BCD: Build all bootdrives!"
 	Set-Variable -Name bcd_cnt -Value 0
 	ForEach ($item in (Get-ChildItem -Path ".\cds\" -Directory)) {
@@ -62,37 +70,6 @@ ForEach ($item in "bin\bchoice.exe","bin\cdrecord.exe","bin\cygwin1.dll","bin\mk
 	    Write-Host "BCD: File '$item' not found."
 	    Abort1
     }
-}
-
-For ($i = 0; $i -lt $args.Length; $i++) {
-	If ($($args[$i]) -eq "-d") {
-		Set-Variable -Name bcd_deb -Value 1
-	}
-	ElseIf ($($args[$i]) -eq "-b") {
-		Write-Host "BCD: Build image only!"
-		Set-Variable -Name bcd_noburn -Value 1
-	}
-	ElseIf ($($args[$i]) -eq "-s") {
-		Set-Variable -Name bcd_spd -Value $($args[($i++)])
-	    Write-Host "BCD: Speed set to '$bcd_spd'"
-        If ($bcd_spd -gt 50) {
-		    Write-Host "BCD: Ignoring invalid speed argument '$bcd_spd', must be between 1-50."
-		    Clear-Variable -Name bcd_spd
-        }
-	    If ($bcd_spd -lt 1) {
-		    Write-Host "BCD: Ignoring invalid speed argument '$bcd_spd', must be between 1-50."
-		    Clear-Variable -Name bcd_spd
-        }
-		Set-Variable -Name i -Value ($i++)
-	}
-	ElseIf (Test-Path -Path ".\cds\$($args[$i])") {
-		Write-Host "BCD: Setting `$bcd_name to '$($args[$i])'!"
-		Set-Variable -Name bcd_name -Value $($args[$i])
-    }
-	Else {
-		Write-Host "BCD: Unknown parameter '$($args[$i])'"
-		Abort1
-	}
 }
 
 If (-not (Test-Path -Path cds\$bcd_name\)) {
@@ -168,7 +145,6 @@ If (-not ($bcd_boot -eq $null)) {
         Write-Host "BCD: Bootfile is ISOLINUX adding '-boot-info-table -allow-leading-dots -allow-multidot -l'"
         Add-VarToIsofs "-boot-info-table"
         Add-VarToIsofs "-allow-leading-dots"
-        Add-VarToIsofs "-allow-leading-dots"
         Add-VarToIsofs "-l"
     }
     Set-Variable -Name _string -Value $(Select-String -Pattern "setupldr.bin" -Path $bcd_tmp -SimpleMatch)
@@ -185,29 +161,31 @@ Else {
 }
 
 Write-Host "BCD: Creating ISO image file (running mkisofs.exe)"
-$SaveChooser = New-Object -TypeName System.Windows.Forms.SaveFileDialog
-$SaveChooser.filter = "ISO Image files (*.iso)| *.iso"
-if ($SaveChooser.ShowDialog() -ne "OK") {
-    Write-Error "BCD: You cancelled the dialog!"
-    Write-Error "BCD: How would we know where to save the image!?"
-    Abort1
+If ($bcd_noburn) {
+	$SaveChooser = New-Object -TypeName System.Windows.Forms.SaveFileDialog
+	$SaveChooser.filter = "ISO Image files (*.iso)| *.iso"
+	if ($SaveChooser.ShowDialog() -ne "OK") {
+		Write-Error "BCD: You cancelled the dialog!"
+		Write-Error "BCD: How would we know where to save the image!?"
+		Abort1
+	}
+	Set-Variable -Name _save_location -Value ($SaveChooser.filename)
 }
-Set-Variable -Name _save_location -Value ($SaveChooser.filename)
+Else {
+	Set-Variable -Name _save_location -Value "$env:temp\_bcd_.iso"
+}
 Write-Host "BCD: Arguments; $bcd_isofs -v -c boot.cat -o $_save_location cds\$bcd_name\files $bcd_path"
-echo $PSScriptRoot
-cd
 bin\mkisofs.exe $bcd_isofs -v -c boot.cat -o $_save_location cds\$bcd_name\files $bcd_path
 If ($LASTEXITCODE -eq 1) {
 	Write-Error "BCD: mkisofs.exe returned an error..."
 	Abort1
 }
 Write-Host "BCD: ISO file '$_save_location' created."
-If (-not ($bcd_noburn -eq $null)) { End1 }
+If ($bcd_noburn) { End1 }
 If (-not (Test-Path -Path "bin\wnaspi32.dll" )) {
     Write-Error "BCD: File 'bin\wnaspi32.dll' is missing, please re-install the"
     Write-Error "BCD: package WolfNet-Computing-Boot-Tools to regain it."
     Write-Error "BCD: This file is required to access your CD-writer."
-    Set-Variable -Name bcd_noburn -Value 1
     Abort1
 }
 Detect-CD

@@ -21,7 +21,6 @@ function Detect-CD {
     bin\cdrecord.exe -scanbus > $env:temp\_bcd_.tmp | Out-Null
     If ($LASTEXITCODE -eq 1) {
 	    Write-Error "BCD:'cdrecord -scanbus' returned an error! Burning not possible!"
-	    Set-Variable -Name bcd_noburn -Value 1 -Scope Script
 	    Abort1
     }
     findstr /I "/C:cd-rom" $env:temp\_bcd_.tmp > $env:temp\_bcd_.tm2
@@ -74,7 +73,7 @@ function Detect-CDOptions {
         }
     }
     Write-Host "BCD: Loading media"
-    bin\cdrecord.exe dev=$bcd_dev -load >nul | Out-Null
+    bin\cdrecord.exe dev=$bcd_dev -load | Out-Null
     If ($LASTEXITCODE -eq 1) { NoMedia }
     Write-Host "BCD: Checking media type"
     bin\cdrecord.exe dev=$bcd_dev -atip >$env:temp\_bcd_.tmp | Out-Null
@@ -331,10 +330,10 @@ function Build-AllBoot {
 
 function Abort1 {
 	If (Test-Path -Path $_save_location -PathType Leaf) {
-		Write-Host "BCD: Abort1ing, removing ISO file '$_save_location'"
+		Write-Host "BCD: Aborting, removing ISO file '$_save_location'"
 		Remove-Item -Path $_save_location
 	}
-	Write-Error "BCD: Abort1ed..."
+	Write-Error "BCD: Aborted..."
 	Set-Variable -Name rv -Value 1
 	End2
 }
@@ -345,6 +344,10 @@ function End1 {
 }
 
 function End2 {
+	If (Test-Path -Path "$env:temp\_bcd_.iso" -PathType Leaf) {
+		Write-Host "BCD: Removing temp file '$env:temp\_bcd_.iso'"
+		Remove-Item -Path "$env:temp\_bcd_.iso"
+	}
     If (Test-Path -Path "$env:temp\_bcd_.tm?" -PathType Leaf) {
 		Write-Host "BCD: Removing temp file(s) '$env:temp\_bcd_.tm?'"
 		Remove-Item -Path "$env:temp\_bcd_.tm?"
