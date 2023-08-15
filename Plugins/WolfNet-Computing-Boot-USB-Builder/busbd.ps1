@@ -1,25 +1,25 @@
 [CmdletBinding(PositionalBinding=$false)]
 param (
-	[Parameter(Mandatory=$false)]
+	[Parameter(Mandatory=$false, ParameterSetName="Build")]
 	[Alias("d")]
 	[switch]$busbd_deb,
 	
-	[Parameter(Mandatory=$false)]
+	[Parameter(Mandatory, ParameterSetName="BuildAllBoot")]
 	[Alias("bab")]
 	[switch]$busbd_bab,
 	
-	[Parameter(Mandatory=$false)]
+	[Parameter(Mandatory, ParameterSetName="BuildAll")]
 	[Alias("all")]
 	[switch]$busbd_all,
 	
-	[Parameter(Mandatory=$false)]
+	[Parameter(Mandatory, ParameterSetName="Help")]
 	[Alias("help")]
 	[switch]$busbd_help,
 	
-	[Parameter(Mandatory=$true)]
+	[Parameter(Mandatory, ParameterSetName="Build")]
 	[Alias("p")]
 	[ValidateNotNullOrEmpty()]
-	[string]$busbd_name = $(throw "a project name is required.")
+	[string]$busbd_name
 )
 
 Set-Location -Path $PSScriptRoot

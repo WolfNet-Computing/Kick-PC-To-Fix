@@ -1,37 +1,37 @@
 [CmdletBinding(PositionalBinding=$false)]
 param ( 
-	[Parameter(Mandatory=$false)]
+	[Parameter(Mandatory=$false, ParameterSetName="Build")]
 	[Alias("d")]
 	[switch]$bfd_deb,
 	
-	[Parameter(Mandatory=$false)]
+	[Parameter(Mandatory=$false, ParameterSetName="Build")]
 	[Alias("n")]
 	[switch]$bfd_nop,
 	
-	[Parameter(Mandatory=$true)]
+	[Parameter(Mandatory, ParameterSetName="Build")]
 	[Alias("i")]
 	[ValidateNotNullOrEmpty()]
-	[string]$bfd_img = $(throw "an image location is required."),
+	[string]$bfd_img,
 	
-	[Parameter(Mandatory=$false)]
+	[Parameter(Mandatory=$false, ParameterSetName="Build")]
 	[Alias("o")]
 	[ValidateNotNullOrEmpty()]
 	[string]$bfd_os,
 	
-	[Parameter(Mandatory=$false)]
+	[Parameter(Mandatory=$false, ParameterSetName="Build")]
 	[Alias("t")]
 	[ValidateSet('144','288')]
 	[PSDefaultValue(Help='1.44MB Floppy')]
 	[int]$bfd_type = 144,
 	
-	[Parameter(Mandatory=$false)]
+	[Parameter(Mandatory, ParameterSetName="Help")]
 	[Alias("help")]
 	[switch]$bfd_help,
 	
-	[Parameter(Mandatory=$true)]
+	[Parameter(Mandatory, ParameterSetName="Build")]
 	[Alias("p")]
 	[ValidateNotNullOrEmpty()]
-	[string]$bfd_name = $(throw "a project name is required.")
+	[string]$bfd_name
 )
 
 Set-Location -Path $PSScriptRoot

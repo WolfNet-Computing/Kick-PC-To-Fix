@@ -1,34 +1,34 @@
 [CmdletBinding(PositionalBinding=$false)]
 param (
-	[Parameter(Mandatory=$false)]
+	[Parameter(Mandatory=$false, ParameterSetName="Build")]
 	[Alias("d")]
 	[switch]$bcd_deb,
 	
-	[Parameter(Mandatory=$false)]
+	[Parameter(Mandatory=$false, ParameterSetName="Build")]
 	[Alias("b")]
 	[switch]$bcd_noburn,
 	
-	[Parameter(Mandatory=$false)]
+	[Parameter(Mandatory=$false, ParameterSetName="Build")]
 	[Alias("s")]
 	[ValidateRange(1,50)]
 	[int]$bcd_spd,
 	
-	[Parameter(Mandatory=$false)]
+	[Parameter(Mandatory, ParameterSetName="BuildAllBoot")]
 	[Alias("bab")]
 	[switch]$bcd_bab,
 	
-	[Parameter(Mandatory=$false)]
+	[Parameter(Mandatory, ParameterSetName="BuildAll")]
 	[Alias("all")]
 	[switch]$bcd_all,
 	
-	[Parameter(Mandatory=$false)]
+	[Parameter(Mandatory, ParameterSetName="Help")]
 	[Alias("help")]
 	[switch]$bcd_help,
 	
-	[Parameter(Mandatory=$true)]
+	[Parameter(Mandatory, ParameterSetName="Build")]
 	[Alias("p")]
 	[ValidateNotNullOrEmpty()]
-	[string]$bcd_name = $(throw "a project name is required.")
+	[string]$bcd_name
 )
 
 Set-Location -Path $PSScriptRoot
