@@ -1,3 +1,23 @@
+[CmdletBinding(PositionalBinding=$false)]
+param (
+	[Parameter(Mandatory=$false)]
+	[Alias("d")]
+	[switch]$busbd_deb,
+	
+	[Parameter(Mandatory=$false)]
+	[Alias("bab")]
+	[switch]$busbd_bab,
+	
+	[Parameter(Mandatory=$false)]
+	[Alias("all")]
+	[switch]$busbd_all,
+	
+	[Parameter(Mandatory=$true)]
+	[Alias("p")]
+	[ValidateNotNullOrEmpty()]
+	[string]$busbd_name = $(throw "a project name is required.")
+)
+
 Set-Location -Path $PSScriptRoot
 
 [void] [System.Reflection.Assembly]::LoadWithPartialName("System.Drawing") 
@@ -19,57 +39,12 @@ Write-Host "Version: $busbd_version"
 Write-Host "Copyright (c) 2023 WolfNet Computing. All rights reserved."
 Write-Host "`n"
 
-If (($($args[0]) -eq $null)) {
-    Write-Host "Usage:"
-	Write-Host "busbd [-d] [-l label] name"
-	Write-Host "busbd -bab"
-	Write-Host "`n"
-	Write-Host "name : name of the USB to build"
-	Write-Host "-d      : print debug messages"
-	Write-Host "-bab  : build all bootdrives For all USB's"
-	Write-Host "            (using USB's bootdisk.cfg)"
-	Write-Host "`n"
-	Write-Host "Returns environment variable 'rv', 0 If succesfull, 1 If error"
-	Write-Host "`n"
-	Write-Host "This program uses the following files (located in the 'bin' directory):"
-    End2
-}
-
 Write-Host "BUSBD: Checking For required files:"
-ForEach ($item in "bin\syslinux.exe","bin\Wbusy.exe","bin\Wprompt.exe") {
+ForEach ($item in "bin\syslinux.exe","bin\Wbusy.exe") {
     If (-not (Test-Path -Path $item -PathType Leaf)) {
 	    Write-Error ("BUSBD: File $item not found.")
 	    Abort
     }
-}
-
-For ($i = 0; $i -lt $args.Length; $i++) {
-	If ($($args[$i]) -eq "-d") {
-		Set-Variable -Name busbd_deb -Value 1
-	}
-	ElseIf ($($args[$i]) -eq "-l") {
-		Set-Variable -Name busbd_label -Value $($args[($script:i + 1)])
-		Set-Variable -Name i -Value ($i++)
-	}
-	ElseIf ($($args[$i]) -eq "-i") {
-		Set-Variable -Name busbd_virtual -Value 1
-	}
-	ElseIf ($($args[0]) -eq "-bab") {
-		Write-Host "BUSBD: Build all bootdrives!"
-		Set-Variable -Name busbd_cnt -Value 0
-		ForEach ($item in (Get-ChildItem -Path ".\usbs\" -Directory)) {
-			BUSBD-Build $item
-		}
-		Write-Host ("BUSBD: $busbd_cnt boot disk(s) were built...")
-		End1
-	}
-	ElseIf (Test-Path -Path ".\usbs\$($args[$i])") {
-		Set-Variable -Name "busbd_name" -Value $($args[$i])
-	}
-	Else {
-		Write-Host "BFD: Invalid parameter '$($args[($i)])'."
-        Abort
-	}
 }
 
 If (-not (Test-Path -Path .\usbs\$busbd_name\)) {
@@ -247,4 +222,3 @@ If ($busbd_virtual -ne $null) {
 }
 bin\Wbusy.exe "Building Drive" "Drive created successfully!" /stop /sound
 Clear-Variable -Name _wbusy_active
-End1

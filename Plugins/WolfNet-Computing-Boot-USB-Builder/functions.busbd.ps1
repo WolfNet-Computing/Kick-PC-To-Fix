@@ -1,4 +1,20 @@
-﻿function End2 {
+﻿function Show-Help {
+	Write-Host "Usage:"
+	Write-Host "busbd [-d] [-l label] name"
+	Write-Host "busbd -bab"
+	Write-Host "`n"
+	Write-Host "name : name of the USB to build"
+	Write-Host "-d      : print debug messages"
+	Write-Host "-bab  : build all bootdrives For all USB's"
+	Write-Host "            (using USB's bootdisk.cfg)"
+	Write-Host "`n"
+	Write-Host "Returns environment variable 'rv', 0 If succesfull, 1 If error"
+	Write-Host "`n"
+	Write-Host "This program uses the following files (located in the 'bin' directory):"
+    End2
+}
+
+function End2 {
 	If (Test-Path -path "$env:TEMP\temp.ps1" -PathType Leaf) { Remove-Item -Path "$env:TEMP\temp.ps1" }
 	If (Test-Path -path "$env:TEMP\_diskpart_.txt" -PathType Leaf) { Remove-Item -Path "$env:TEMP\_diskpart_.txt" }
 	Write-Host "BUSBD: Returning with return value $rv"
