@@ -2,7 +2,7 @@
   
 ## Notices  
   
-LICENSING: The apache license doesn't cover **anything** in the 'bin', 'cds/\*\/files', 'cabs' or 'os' directories. These have their own licenses. At the command line, type 'bcd \/?' or 'bfd \/?' to find out more about the external files used and their licensing conditions.  
+LICENSING: The apache license doesn't cover **anything** in the 'bin', 'cds/\*\/files', 'cabs' or 'os' directories. These have their own licenses. At the command line, type 'bcd -help' or 'bfd -help' to find out more about the external files used and their licensing conditions.  
   
 DEVELOPER NOTICE: Please read the developer documentation [here](/DEVELOPER_README.md) before doing **anything**.
   
@@ -29,7 +29,7 @@ The main script **must be run with administrator privileges**. You can do this b
 **Alternative: Right-click the shortcut, then click 'Properties', click 'Advanced', click 'Run as Administrator', click 'OK' and then 'OK'. Now when you double-click the shortcut it automatically runs with elevated privileges**  
   
 The main script is run whenever the shortcut is clicked and is used to run the other scripts.  
- - For BFD type `.\bfd [options] [name]`  
- - For BCD type `.\bcd [options] [name]`  
- - For BUSBD type `.\busbd [options] [name]`  
+ - For BFD type `.\bfd [options] -p [name]`  
+ - For BCD type `.\bcd [options] -p [name]`  
+ - For BUSBD type `.\busbd [options] -p [name]`  
   
