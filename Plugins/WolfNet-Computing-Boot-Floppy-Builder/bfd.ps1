@@ -24,6 +24,10 @@ param (
 	[PSDefaultValue(Help='1.44MB Floppy')]
 	[int]$bfd_type = 144,
 	
+	[Parameter(Mandatory=$false)]
+	[Alias("help")]
+	[switch]$bfd_help,
+	
 	[Parameter(Mandatory=$true)]
 	[Alias("p")]
 	[ValidateNotNullOrEmpty()]
@@ -47,6 +51,8 @@ Write-Host "Bootable Floppy Builder."
 Write-Host "Version: $bfd_version"
 Write-Host "Copyright (c) 2022-2023 WolfNet Computing. All rights reserved."
 Write-Host "`n"
+
+If ($bfd_help) { Show-Help }
 
 If (Test-Path -Path $($env:temp + '\_bfd_')) {
 	Write-Host "BFD: Removing '$env:temp\_bfd_'"

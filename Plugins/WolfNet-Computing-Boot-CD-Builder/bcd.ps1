@@ -1,5 +1,5 @@
 [CmdletBinding(PositionalBinding=$false)]
-param ( 
+param (
 	[Parameter(Mandatory=$false)]
 	[Alias("d")]
 	[switch]$bcd_deb,
@@ -20,6 +20,10 @@ param (
 	[Parameter(Mandatory=$false)]
 	[Alias("all")]
 	[switch]$bcd_all,
+	
+	[Parameter(Mandatory=$false)]
+	[Alias("help")]
+	[switch]$bcd_help,
 	
 	[Parameter(Mandatory=$true)]
 	[Alias("p")]
@@ -47,6 +51,8 @@ Write-Host "Bootable CD/DVD Builder."
 Write-Host "Version: $bcd_version"
 Write-Host "Copyright (c) 2022-2023 WolfNet Computing. All rights reserved."
 Write-Host "`n"
+
+If ($bcd_help) { Show-Help }
 
 If ($bcd_all) {
     ForEach ($item in (Get-ChildItem -Path ".\cds\" -Directory)) {

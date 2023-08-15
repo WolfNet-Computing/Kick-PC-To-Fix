@@ -1,4 +1,26 @@
-﻿function Write-CD {
+﻿function Show-Help {
+	Write-Host "  Usage:"
+	Write-Host "  bcd [-d] [-b] [-s nn] name"
+	Write-Host "  bcd -bab"
+	Write-Host "  bcd -all"
+	Write-Host "`n"
+	Write-Host "  name	: name of the CD to build"
+	Write-Host "  -a		: build all ISO9660 image files"
+	Write-Host "  -d		: print debug messages"
+	Write-Host "  -b		: burning disabled (only create ISO image)"
+	Write-Host "  -s nn	: set burning speed"
+	Write-Host "  -bab	: build all bootimages for all CD's"
+	Write-Host "				(using CD's bootdisk.cfg)"
+	Write-Host "`n"
+	Write-Host "Returns environment variable 'rv', 0 If succesfull, 1 If error"
+	Write-Host "`n"
+	Write-Host "This program uses the following files (located in the 'bin' directory):"
+	Write-Host "	- Xorriso by ?? (GNU-GPL license)."
+	Write-Host "	- Nero Aspi Library (wnaspi32.dll) by Ahead Software AG (abandonware)."
+	End1
+}
+
+function Write-CD {
     Clear-Variable -Name bcd_tmp
     If (-not ($bcd_spd -eq $null)) {
         Set-Variable -Name bcd_tmp -Value $bcd_spd -Scope Script

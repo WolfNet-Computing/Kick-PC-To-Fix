@@ -12,6 +12,10 @@ param (
 	[Alias("all")]
 	[switch]$busbd_all,
 	
+	[Parameter(Mandatory=$false)]
+	[Alias("help")]
+	[switch]$busbd_help,
+	
 	[Parameter(Mandatory=$true)]
 	[Alias("p")]
 	[ValidateNotNullOrEmpty()]
@@ -38,6 +42,8 @@ Write-Host "Bootable USB Builder."
 Write-Host "Version: $busbd_version"
 Write-Host "Copyright (c) 2023 WolfNet Computing. All rights reserved."
 Write-Host "`n"
+
+If ($busbd_help) { Show-Help }
 
 Write-Host "BUSBD: Checking For required files:"
 ForEach ($item in "bin\syslinux.exe","bin\Wbusy.exe") {
