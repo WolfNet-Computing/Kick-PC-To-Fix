@@ -4,6 +4,10 @@ param (
 	[Alias("d")]
 	[switch]$busbd_deb,
 	
+	[Parameter(Mandatory=$false, ParameterSetName="Build")]
+	[Alias("img")]
+	[switch]$busbd_virtual,
+	
 	[Parameter(Mandatory, ParameterSetName="BuildAllBoot")]
 	[Alias("bab")]
 	[switch]$busbd_bab,
@@ -22,12 +26,132 @@ param (
 	[string]$busbd_name
 )
 
-Set-Location -Path $PSScriptRoot
+# Consider adding some comment based help for the script here.
 
-[void] [System.Reflection.Assembly]::LoadWithPartialName("System.Drawing") 
+
+#----------------[ Declarations ]----------------
+
+[void] [System.Reflection.Assembly]::LoadWithPartialName("System.Drawing")
 [void] [System.Reflection.Assembly]::LoadWithPartialName("System.Windows.Forms")
 
-. .\functions.busbd.ps1
+Set-Location -Path $PSScriptRoot
+
+#----------------[ Functions ]------------------
+
+function Show-Help {
+	Write-Host "Usage:"
+	Write-Host "busbd [-d] [-l label] name"
+	Write-Host "busbd -bab"
+	Write-Host "`n"
+	Write-Host "name : name of the USB to build"
+	Write-Host "-d      : print debug messages"
+	Write-Host "-bab  : build all bootdrives For all USB's"
+	Write-Host "            (using USB's bootdisk.cfg)"
+	Write-Host "`n"
+	Write-Host "Returns environment variable 'rv', 0 If succesfull, 1 If error"
+	Write-Host "`n"
+	Write-Host "This program uses the following files (located in the 'bin' directory):"
+    End2
+}
+
+function End2 {
+	If (Test-Path -path "$env:TEMP\temp.ps1" -PathType Leaf) { Remove-Item -Path "$env:TEMP\temp.ps1" }
+	If (Test-Path -path "$env:TEMP\_diskpart_.txt" -PathType Leaf) { Remove-Item -Path "$env:TEMP\_diskpart_.txt" }
+	Write-Host "BUSBD: Returning with return value $rv"
+    Exit $rv
+}
+
+function End1 {
+	Set-Variable -Name rv -Value 0 -Scope Script
+    End2
+}
+
+function Abort {
+    If ($_wbusy_active -eq $null) {
+		bin\Wbusy.exe "Building Drive" "Drive creation failed!" /stop /sound
+	}
+	Write-Error "BUSBD: Aborted..."
+    End2
+}
+
+function Build-FloppyImage {
+	If ($busbd_err -eq 1) { Return }
+	Write-Host "BUSBD: Creating bootdrive '$($args[2])'"
+	.\bfd -i "$($args[0])\files\$($args[2])" -p "$($args[1])"
+	If ($rv -eq 1) {
+		Set-Variable -Name busbd_err -Value 1 -Scope Script
+		Return
+	}
+}
+
+function Parse-Configuration {
+    ForEach ($line in (Get-Content -Path $args[0])) {
+        If (-not ($line.StartsWith("#"))) {
+			If ($line -ne "") {
+				$line = $line.split("#")
+				$_str = $line[0] -replace "\s+",' '
+				$a, $b, $c = $_str.split(" ")
+				If ([System.IO.Path]::GetFileName($args[0]) -eq "busbd.cfg") {
+					Parse-ConfigFile $a $b $c
+				}
+				Else {
+					Parse-BootConfigFile $a $b $c
+				}
+			}
+		}
+    }
+}
+
+function Parse-ConfigFile {
+	If ($busbd_deb -ne $null) { Write-Host ("debug: cmd=[$($args[0])] arg=[$($args[1])] err=[$busbd_err]") }
+	If ($busbd_err -eq 1) { Return }
+	If ($($args[0]) -eq "label") {
+		Set-Variable -Name busbd_label -Value $($args[1]) -Scope Script
+		Write-Host ("BUSBD: Drive name arguments '" + $($args[1]) + "' appended.")
+		Return
+	}
+	If ($($args[0]) -eq "syslinuxargs") {
+		Set-Variable -Name busbd_syslinux -Value $($args[1]) -Scope Script
+		Write-Host  ("BUSBD: Syslinuxargs set to '" + $($args[1]) + "'.")
+		Return
+	}
+	If ($($args[0]) -eq "call") {
+		Set-Variable -Name busbd_call -Value $($args[1]) -Scope Script
+		Write-Host  ("BUSBD: Custom Script set to '" + $($args[1]) + "'.")
+		Return
+	}
+	If ($($args[0]) -eq "addpath") {
+		Set-Variable -Name busbd_path -Value $($args[1]) -Scope Script
+		Write-Host  ("BUSBD: Custom path(s) '" + $($args[1]) + "' added to list of files/folders to add.")
+		Return
+	}
+	Write-Host ("BUSBD: unknown keyword '$($args[0])'...")
+	Set-Variable -Name busbd_err -Value 1
+}
+
+function Parse-BootConfigFile {
+	If ($busbd_err -eq 1) { Return }
+    If (Test-Path -path ".\usbs\$busbd_name\files\$($args[1])" -PathType Leaf) {
+		Write-Information "BUSBD: Bootdrive '$($args[1])' already exists, skip creation"
+		Return
+	}
+	Write-Host "BUSBD: Bootdrive '$($args[1])' does not exist, let's create it now!"
+	.\bfd -i ".\usbs\$busbd_name\files\$($args[1])" -p "$($args[0])"
+	If ($rv -eq 1) { Set-Variable -Name busbd_err -Value 1 }
+}
+<#
+:_ball
+	If ($busbd_err -eq 1) { Return }
+	Write-Host "BUSBD: Processing USB setup '$args[0]'."
+	If not exist $args[0]\bootdisk.cfg Return
+	Write-Host "BUSBD: Processing bootdisk config file '$args[0]\bootdisk.cfg'."
+	set rv=
+	For /f "eol=# tokens=1,2" %%j in (%1\bootdisk.cfg) do call :_bflopo $args[0] %%j %%k
+	If not "%busbd_err%" -eq "" End1
+	Return
+#>
+
+#----------------[ Main Execution ]---------------
 
 If (-not (Test-Path -Path BUSBD.VERSION -PathType Leaf)) {
 	Write-Error "VERSION file doesn't exist!"
@@ -58,57 +182,51 @@ If (-not (Test-Path -Path .\usbs\$busbd_name\)) {
     Abort
 }
 
-If (-not (Test-Path -Path busbd.cfg)) {
-    If (-not (Test-Path -Path busbd.sam)) {
+If (-not (Test-Path -Path .\busbd.cfg)) {
+    If (-not (Test-Path -Path .\busbd.sam)) {
 	    Write-Error "BUSBD: Could not find 'busbd.cfg' or 'busbd.sam'..."
         Write-Error "BUSBD: Assuming the installation is broken..."
 	    Abort
     }
 	Write-Information "BUSBD: Renaming 'busbd.sam' into 'busbd.cfg'..."
-	Rename-Item -Path "busbd.sam" -newName "busbd.cfg"
+	Rename-Item -Path ".\busbd.sam" -newName ".\busbd.cfg"
 }
 
-Write-Host "BUSBD: Processing (Main) config file 'busbd.cfg...'"
-Parse-Configuration "busbd.cfg"
+Write-Host "BUSBD: Processing (Main) config file '.\busbd.cfg...'"
+Parse-Configuration ".\busbd.cfg"
 If (-not ($busbd_err -eq $null)) { Abort }
 
-If (Test-Path -Path usbs\$busbd_name\busbd.cfg -PathType Leaf) {
-    Write-Host "BUSBD: Processing (USB) config file 'usbs\$busbd_name\busbd.cfg'..."
-    Parse-Configuration "usbs\$busbd_name\busbd.cfg"
+If (Test-Path -Path .\usbs\$busbd_name\busbd.cfg -PathType Leaf) {
+    Write-Host "BUSBD: Processing (USB) config file '.\usbs\$busbd_name\busbd.cfg'..."
+    Parse-Configuration ".\usbs\$busbd_name\busbd.cfg"
     If (-not ($busbd_err -eq $null)) { Abort }
 }
 
 If (Test-Path -Path usbs\$busbd_name\bootdisk.cfg -PathType Leaf) {
-    Write-Host "BUSBD: Processing (Boot Disk) config file 'usbs\$busbd_name\bootdisk.cfg'..."
-    Parse-Configuration "usbs\$busbd_name\bootdisk.cfg"
+    Write-Host "BUSBD: Processing (Boot Disk) config file '.\usbs\$busbd_name\bootdisk.cfg'..."
+    Parse-Configuration ".\usbs\$busbd_name\bootdisk.cfg"
     If (-not ($busbd_err -eq $null)) { Abort }
 }
 
-If ($busbd_label -eq $null) {
+If ($busbd_label) {
 	$busbd_label = "WCBT-USB"
 }
 
-If ((-not ($busbd_call -eq $null)) -and (Test-Path -Path "usbs\$busbd_name\$busbd_call" -PathType Leaf)) {
-    Write-Host "BUSBD: Calling custom batchfile 'usbs\$busbd_name\$busbd_call'..."
-	If ($busbd_call.EndsWith(".ps1")) {
-		. "usbs\$busbd_name\$busbd_call"
-	}
-	Else {
-		Invoke-Command "usbs\$busbd_name\$busbd_call"
-	}
-    If ($rv -eq 1) { Abort }
+If (($busbd_call) -and (Test-Path -Path ".\usbs\$busbd_name\$busbd_call" -PathType Leaf)) {
+    Write-Host "BUSBD: Calling custom script '.\usbs\$busbd_name\$busbd_call'..."
+	& ".\usbs\$busbd_name\$busbd_call"
 }
 
-If ($busbd_virtual -ne $null) {
+If ($busbd_virtual) {
 	$FileBrowser = New-Object System.Windows.Forms.SaveFileDialog -Property @{
 		InitialDirectory = [Environment]::GetFolderPath('MyComputer')
 		Filter = 'Virtual Hard Drive v2 (*.vhdx)|*.vhdx'
 	}
-    If ($FileBrowser.ShowDialog() -ne "OK") {
-        Write-Error "BUSBD: You cancelled the dialog!"
-        Write-Error "BUSBD: How would we know where to save the image!?"
-        Abort
-    }
+	If ($FileBrowser.ShowDialog() -ne "OK") {
+		Write-Error "BUSBD: You cancelled the dialog!"
+		Write-Error "BUSBD: How would we know where to save the image!?"
+		Abort
+	}
 	$busbd_image = $($FileBrowser.FileName)
 	
 	$form = New-Object System.Windows.Forms.Form
@@ -135,7 +253,7 @@ If ($busbd_virtual -ne $null) {
 	$label = New-Object System.Windows.Forms.Label
 	$label.Location = New-Object System.Drawing.Point(10,20)
 	$label.Size = New-Object System.Drawing.Size(280,20)
-	$label.Text = 'How big should the image be? (Include a suffix, MB or GB)'
+	$label.Text = 'How big should the image be? (Include a suffix, MB or GB (Must be at least 128MB in capacity))'
 	$form.Controls.Add($label)
 	
 	$textBox = New-Object System.Windows.Forms.TextBox
@@ -217,7 +335,7 @@ xcopy .\usbs\$busbd_name\files\ $_drive_name /H /S /E /I /F
 If ($busbd_path -ne $null) {
 	xcopy $busbd_path $_drive_name /H /S /E /I /F /Y
 }
-If ($busbd_virtual -ne $null) {
+If ($busbd_virtual) {
 	Set-Variable -Name _str -Value @(
 		"SELECT vdisk file=`"$($busbd_image)`"",
 		"DETACH vdisk",
