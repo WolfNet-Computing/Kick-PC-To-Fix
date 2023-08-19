@@ -1,0 +1,55 @@
+UI vesamenu.c32
+MENU INCLUDE /boot/config/options.cfg
+MENU INCLUDE /boot/config/colours.cfg
+TIMEOUT 300
+ONTIMEOUT slitaz
+
+LABEL -
+	MENU LABEL SliTaz Linux:
+	MENU DISABLE
+
+LABEL slitaz
+	MENU LABEL SliTaz Live - Autodetect
+	COM32 c32box.c32
+	APPEND ifmem 416M core64 384M core 240M gtkonly 160M justx 64M base hacker
+
+LABEL core64
+	MENU LABEL SliTaz core Live - 64bit
+	LINUX /boot/bzImage
+	INITRD /boot/rootfs5.gz,/boot/rootfs4.gz,/boot/rootfs3.gz,/boot/rootfs2.gz,/boot/rootfs1.gz
+	APPEND root=/dev/null video=-32 autologin
+
+LABEL core
+	MENU LABEL SliTaz core Live
+	LINUX /boot/bzImage
+	INITRD /boot/rootfs4.gz,/boot/rootfs3.gz,/boot/rootfs2.gz,/boot/rootfs1.gz
+	APPEND root=/dev/null video=-32 autologin
+
+LABEL gtkonly
+	MENU LABEL SliTaz gtkonly Live
+	LINUX /boot/bzImage
+	INITRD /boot/rootfs4.gz,/boot/rootfs3.gz,/boot/rootfs2.gz
+	APPEND root=/dev/null video=-32 autologin
+
+LABEL justx
+	MENU LABEL SliTaz justx Live
+	LINUX /boot/bzImage
+	INITRD /boot/rootfs4.gz,/boot/rootfs3.gz
+	APPEND root=/dev/null video=-32 autologin
+
+LABEL base
+	MENU LABEL SliTaz base Live
+	LINUX /boot/bzImage
+	INITRD /boot/rootfs4.gz
+	APPEND root=/dev/null video=-32 autologin
+
+label hacker
+	MENU LABEL SliTaz noram Live
+	LINUX /boot/bzImage
+	APPEND rw root=/dev/null vga=normal
+	
+MENU SEPARATOR
+
+LABEL main
+	MENU LABEL Previous menu
+	CONFIG /boot/menus/linux.menu

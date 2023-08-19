@@ -1,0 +1,33 @@
+UI vesamenu.c32
+ALLOWOPTIONS 0
+IMPLICIT 0
+NOESCAPE 1
+PROMPT 0
+MENU INCLUDE /boot/config/colours.cfg
+MENU TITLE Netboot Disk made with WolfNet Computing Boot Tools
+TIMEOUT 300
+ONTIMEOUT reboot
+
+LABEL -
+	MENU LABEL Many Operating Systems have now dropped
+	MENU DISABLE
+
+LABEL -
+	MENU LABEL support for 32-bit Operating Systems.
+	MENU DISABLE
+
+LABEL -
+	MENU LABEL This means that most of the features on
+	MENU DISABLE
+
+LABEL -
+	MENU LABEL this disk would be unusable to you. We're
+	MENU DISABLE
+
+LABEL -
+	MENU LABEL very sorry.
+	MENU DISABLE
+
+LABEL reboot
+	MENU HIDE
+	COM32 reboot.c32

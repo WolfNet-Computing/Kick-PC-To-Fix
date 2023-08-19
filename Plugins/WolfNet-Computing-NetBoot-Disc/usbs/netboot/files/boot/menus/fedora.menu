@@ -1,0 +1,33 @@
+UI vesamenu.c32
+MENU INCLUDE /boot/config/options.cfg
+MENU INCLUDE /boot/config/colours.cfg
+TIMEOUT 300
+ONTIMEOUT fedora
+
+LABEL -
+	MENU LABEL SilverBlue:
+	MENU DISABLE
+
+LABEL silverblue
+	MENU LABEL ^Install Fedora Silverblue 38
+	LINUX /kernels/fedora/silverblue/vmlinuz
+	INITRD /kernels/fedora/silverblue/initrd.img
+	APPEND inst.stage2=hd:LABEL=NETBOOT:/fedora/silverblue quiet
+
+LABEL basic
+	MENU LABEL Install Fedora 38 Silverblue in ^basic graphics mode
+	LINUX /kernels/fedora/silverblue/vmlinuz
+	INITRD /kernels/fedora/silverblue/initrd.img
+	APPEND inst.stage2=hd:LABEL=NETBOOT:/fedora/silverblue nomodeset quiet
+
+LABEL rescue
+	MENU LABEL ^Rescue a Fedora Silverblue system
+	LINUX /kernels/fedora/silverblue/vmlinuz
+	INITRD /kernels/fedora/silverblue/initrd.img
+	APPEND inst.stage2=hd:LABEL=NETBOOT:/fedora/silverblue inst.rescue quiet
+	
+MENU SEPARATOR
+
+LABEL main
+	MENU LABEL Previous menu
+	CONFIG /boot/menus/linux.menu

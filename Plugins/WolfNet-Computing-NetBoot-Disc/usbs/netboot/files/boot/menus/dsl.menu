@@ -1,0 +1,70 @@
+UI vesamenu.c32
+MENU INCLUDE /boot/config/options.cfg
+MENU INCLUDE /boot/config/colours.cfg
+TIMEOUT 300
+ONTIMEOUT dsl
+
+LABEL -
+	MENU LABEL Damn Small Linux modes:
+	MENU DISABLE
+
+LABEL dsl
+	MENU LABEL ^Damn Small Linux - Normal Mode
+	KERNEL /kernels/dsl/linux24
+	APPEND ramdisk_size=100000 init=/etc/init lang=us apm=power-off vga=791 initrd=/kernels/dsl/minirt24.gz nomce noapic quiet BOOT_IMAGE=NETBOOT
+	
+LABEL dsl-txt
+	MENU LABEL Damn Small Linux - ^Text Mode
+	KERNEL /kernels/dsl/linux24
+	APPEND ramdisk_size=100000 init=/etc/init lang=us apm=power-off vga=normal initrd=/kernels/dsl/minirt24.gz nomce noapic quiet BOOT_IMAGE=NETBOOT
+	
+LABEL expert
+	MENU LABEL Damn Small Linux - ^Expert Mode
+	KERNEL /kernels/dsl/linux24
+	APPEND ramdisk_size=100000 init=/etc/init lang=us apm=power-off vga=791 initrd=/kernels/dsl/minirt24.gz nomce BOOT_IMAGE=expert
+	
+MENU SEPARATOR
+LABEL -
+	MENU LABEL Damn Small Linux resolutions:
+	MENU DISABLE
+
+LABEL fb1280x1024
+	MENU LABEL Damn Small Linux - 1280x1024 Resolution
+	KERNEL /kernels/dsl/linux24
+	APPEND ramdisk_size=100000 init=/etc/init lang=us apm=power-off vga=794 xmodule=fbdev initrd=/kernels/dsl/minirt24.gz nomce noapic quiet BOOT_IMAGE=NETBOOT
+	
+LABEL fb1024x768
+	MENU LABEL Damn Small Linux - 1024x768 Resolution
+	KERNEL /kernels/dsl/linux24
+	APPEND ramdisk_size=100000 init=/etc/init lang=us apm=power-off vga=791 xmodule=fbdev initrd=/kernels/dsl/minirt24.gz nomce noapic quiet BOOT_IMAGE=NETBOOT
+	
+LABEL fb800x600
+	MENU LABEL Damn Small Linux - 800x600 Resolution
+	KERNEL /kernels/dsl/linux24
+	APPEND ramdisk_size=100000 init=/etc/init lang=us apm=power-off vga=788 xmodule=fbdev initrd=/kernels/dsl/minirt24.gz nomce noapic quiet BOOT_IMAGE=NETBOOT
+	
+MENU SEPARATOR
+LABEL -
+	MENU LABEL Damn Small Linux other:
+	MENU DISABLE
+
+LABEL lowram
+	MENU LABEL Damn Small Linux - ^Low RAM Mode
+	KERNEL /kernels/dsl/linux24
+	APPEND ramdisk_size=100000 init=/etc/init lang=us apm=power-off vga=normal initrd=/kernels/dsl/minirt24.gz noscsi noideraid nosound nousb nofirewire noicons minimal nomce noapic noapm quiet BOOT_IMAGE=NETBOOT
+	
+LABEL install
+	MENU LABEL Damn Small Linux - ^Installation
+	KERNEL /kernels/dsl/linux24
+	APPEND ramdisk_size=100000 init=/etc/init lang=us apm=power-off vga=normal initrd=/kernels/dsl/minirt24.gz noscsi noideraid nosound nofirewire legacy base norestore _install_ nomce noapic noapm quiet BOOT_IMAGE=NETBOOT
+	
+LABEL failsafe
+	MENU LABEL Damn Small Linux - ^Failsafe Mode
+	KERNEL /kernels/dsl/linux24
+	APPEND ramdisk_size=100000 init=/etc/init lang=us vga=normal atapicd nosound noscsi nousb nopcmcia nofirewire noagp nomce nodhcp xmodule=vesa initrd=/kernels/dsl/minirt24.gz BOOT_IMAGE=NETBOOT
+	
+MENU SEPARATOR
+
+LABEL main
+	MENU LABEL Previous menu
+	CONFIG /boot/menus/linux.menu

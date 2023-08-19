@@ -1,0 +1,25 @@
+UI vesamenu.c32
+MENU INCLUDE /boot/config/options.cfg
+MENU INCLUDE /boot/config/colours.cfg
+MENU TITLE Netboot Disk  - Tools
+TIMEOUT 300
+ONTIMEOUT chntpw
+
+LABEL -
+	MENU LABEL Password Tools:
+	MENU DISABLE
+
+LABEL chntpw
+	MENU LABEL ^CHNTPW
+	TEXT HELP
+		This entry is for changing passworods on NT machines.
+		This will ONLY work for OFFLINE passwords. NOT AD PASSWORDS!
+	ENDTEXT
+	KERNEL /kernels/chntpw/VMLINUZ
+	APPEND rw vga=1 initrd=/kernels/chntpw/INITRD.CGZ,/kernels/chntpw/SCSI.CGZ loglevel=1
+	
+MENU SEPARATOR
+
+LABEL main
+	MENU LABEL Previous menu
+	CONFIG /boot/menus/main.menu

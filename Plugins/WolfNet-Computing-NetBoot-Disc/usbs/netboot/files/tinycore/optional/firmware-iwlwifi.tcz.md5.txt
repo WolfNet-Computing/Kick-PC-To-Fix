@@ -1,0 +1,1 @@
+173d52f0c7d534c4251e8f3d6e73c4ed  firmware-iwlwifi.tcz

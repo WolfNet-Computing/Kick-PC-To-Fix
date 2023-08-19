@@ -1,0 +1,36 @@
+UI vesamenu.c32
+MENU INCLUDE /boot/config/options.cfg
+MENU INCLUDE /boot/config/colours.cfg
+TIMEOUT 300
+ONTIMEOUT dslinux
+
+LABEL -
+	MENU LABEL Micro Linux Distributions:
+	MENU DISABLE
+
+LABEL dslinux
+	MENU LABEL ^Damn Small Linux
+	TEXT HELP
+		A **VERY** small OS that fits on a 50mb cd. Based on Knoppix.
+	ENDTEXT
+	CONFIG /boot/menus/dsl.menu
+
+LABEL tinycore
+	MENU LABEL ^TinyCore Linux
+	TEXT HELP
+		A **VERY** small OS that fits on a 17-248mb cd.
+	ENDTEXT
+	CONFIG /boot/menus/tinycore.menu
+
+LABEL slitaz
+	MENU LABEL ^SliTaz Linux
+	TEXT HELP
+		A **VERY** small OS that fits on a 67mb cd.
+	ENDTEXT
+	CONFIG /boot/menus/slitaz.menu
+	
+MENU SEPARATOR
+
+LABEL main
+	MENU LABEL Previous menu
+	CONFIG /boot/menus/main.menu

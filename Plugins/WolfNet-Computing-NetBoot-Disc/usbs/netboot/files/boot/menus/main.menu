@@ -1,0 +1,58 @@
+UI vesamenu.c32
+MENU INCLUDE /boot/config/options.cfg
+MENU INCLUDE /boot/config/colours.cfg
+TIMEOUT 300
+ONTIMEOUT linux
+
+LABEL -
+	MENU LABEL Operating Systems:
+	MENU DISABLE
+
+LABEL linux
+	MENU LABEL ^Linux
+	TEXT HELP
+		All Linux based operating systems that are contained on this disk.
+		(Fedora, Kali, for example)
+	ENDTEXT
+	CONFIG /boot/menus/linux.menu
+
+LABEL windows
+	MENU LABEL ^Windows
+	MENU DEFAULT
+	TEXT HELP
+		All Microsoft Windows based operating systems that are contained on this disk.
+	ENDTEXT
+	CONFIG /boot/menus/windows.menu
+
+LABEL dos
+	MENU LABEL ^DOS
+	TEXT HELP
+		All DOS based operating systems that are contained on this disk.
+		(MS-DOS, FreeDOS, for example)
+	ENDTEXT
+	CONFIG /boot/menus/dos.menu
+
+MENU SEPARATOR
+LABEL -
+	MENU LABEL Other:
+	MENU DISABLE
+
+LABEL utils
+	MENU LABEL ^Utilities
+	TEXT HELP
+		All tools and utilities that can be booted that are contained on this disk.
+	ENDTEXT
+	CONFIG /boot/menus/utilities.menu
+	
+LABEL -
+	MENU LABEL Boot Options:
+	MENU DISABLE
+
+LABEL network
+	MENU LABEL Boot from a ^Network
+	MENU DEFAULT
+	TEXT HELP
+		This is where you boot if you want to load an Operating System from a remote location.
+		This can be either a PXE Server or a Web Server.
+	ENDTEXT
+	KERNEL /kernels/ipxe.lkrn
