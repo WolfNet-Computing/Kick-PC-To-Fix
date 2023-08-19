@@ -31,10 +31,10 @@ param (
 	[string]$bcd_name
 )
 
-Set-Location -Path $PSScriptRoot
-
-[void] [System.Reflection.Assembly]::LoadWithPartialName("System.Drawing") 
+[void] [System.Reflection.Assembly]::LoadWithPartialName("System.Drawing")
 [void] [System.Reflection.Assembly]::LoadWithPartialName("System.Windows.Forms")
+
+Set-Location -Path $PSScriptRoot
 
 . .\functions.bcd.ps1
 
@@ -117,7 +117,7 @@ If ($bcd_isofs -eq $null) {
 	Add-VarToIsofs "-N"
 }
 
-If ((-not ($bcd_call -eq $null)) -and (Test-Path -Path "cds\$bcd_name\$bcd_call" -PathType Leaf)) {
+If (($bcd_call -ne $null) -and (Test-Path -Path "cds\$bcd_name\$bcd_call" -PathType Leaf)) {
     Write-Host "BCD: Calling custom script 'cds\$bcd_name\$bcd_call'..."
 	If ($bcd_call.EndsWith(".ps1")) {
 		If (-not (. ".\cds\$bcd_name\$bcd_call")) {
