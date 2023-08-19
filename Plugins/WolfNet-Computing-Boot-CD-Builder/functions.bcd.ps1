@@ -201,8 +201,9 @@ function Check-CD {
 
 function Parse-Configuration {
     ForEach ($line in $(Get-Content -Path $($args[0]))) {
-        If ((-not ($line.StartsWith("#"))) -and (-not ($line -eq ''))) {
+        If ((-not ($line.StartsWith("#"))) -and ($line -ne '')) {
             $line = $line.split('#')
+            $line[0]=$line[0] -replace "\s+",' '
             $_a, $_b, $_c, $_d = $line[0].split(' ')
             If ($args[0].EndsWith("bcd.cfg")) {
                 Parse-ConfigFile $_a $_b $_c $_d
@@ -260,15 +261,15 @@ function Parse-ConfigFile {
 		Return
     }
 	If ($($args[0]) -eq "cdrecordargs") {
-		Set-Variable -Name bcd_cdr -Value $($args[1]) -Scope Script
+		Set-Variable -Name bcd_cdr -Value $($args[1])
 		Return
     }
 	If ($($args[0])-eq "call") {
-		Set-Variable -Name bcd_call -Value $($args[1]) -Scope Script
+		Set-Variable -Name bcd_call -Value $($args[1])
 		Return
     }
 	If ($($args[0])-eq "addpath") {
-		Set-Variable -Name bcd_path -Value $($args[1]) -Scope Script
+		Set-Variable -Name bcd_path -Value $($args[1])
 		Return
     }
 	Write-Host "BCD: unknown keyword '$($args[0])'"
