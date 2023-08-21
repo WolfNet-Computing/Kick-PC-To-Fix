@@ -9,16 +9,13 @@
 
 #----------------[ Declarations ]----------------
 
+[void] [System.Reflection.Assembly]::LoadWithPartialName("System.Drawing")
+[void] [System.Reflection.Assembly]::LoadWithPartialName("System.Windows.Forms")
+
 $file_list = @(
-	"https://wolfnet-computing.com/pxe/ipxe.lkrn"
-)
-
-$iso_list = @(
-	"http://distro.ibiblio.org/damnsmall/dslcore/dslcore_20080717.iso"
-)
-
-$zip_list = @(
-	"http://pogostick.net/~pnh/ntpasswd/usb140201.zip"
+	("iPXE", "https://wolfnet-computing.com/pxe/ipxe.lkrn"),
+	("DSL Linux", "http://distro.ibiblio.org/damnsmall/dslcore/dslcore_20080717.iso"),
+	("CHNTPW", "http://pogostick.net/~pnh/ntpasswd/usb140201.zip")
 )
 
 #----------------[ Functions ]------------------
@@ -49,7 +46,7 @@ Function Download-File {
 	Invoke-WebRequest -Uri $url -OutFile $filename
 }
 
-function Add-DownloadToList {
+Function Add-DownloadToList {
 	<#
 	.SYNOPSIS
 		This advanced function adds a location to the download list.
@@ -71,53 +68,54 @@ function Add-DownloadToList {
         [Parameter(Mandatory=$True)]
         [string]$filename
     )
-	If ($downloads -eq $null) {
-		$downloads = @(
-			()
+	If ($download_list -eq $null) {
+		$download_list = @(
+			($url, $filename)
 		)
+	}
+	Else {
+		$download_list += @($url, $filename)
 	}
 }
 
 #----------------[ Main Execution ]---------------
 
-# Create the temporary directory for the downloaded ISO files...
-If (Test-Path -Path "$env:temp\_iso_") { Remove-Item -Path "$env:temp\_iso_" -recurse }
-New-Item -Name "_iso_" -Path $env:temp -itemType Directory
+# Create the form to select the components to be added to the USB.
+$form = New-Object System.Windows.Forms.Form
+$form.Text = "Select which OSes you want on the USB."
+$form.AutoSize = $True
+$form.StartPosition = 'CenterScreen'
 
-# Create the temporary directory for the downloaded ZIP files...
-If (Test-Path -Path "$env:temp\_zip_") { Remove-Item -Path "$env:temp\_zip_" -recurse }
-New-Item -Name "_zip_" -Path $env:temp -itemType Directory
+$listBox = New-Object System.Windows.Forms.CheckedListBox
+
+$okButton = New-Object System.Windows.Forms.Button
+$okButton.Location = New-Object System.Drawing.Point(75,120)
+$okButton.Size = New-Object System.Drawing.Size(75,23)
+$okButton.Text = 'OK'
+$okButton.DialogResult = [System.Windows.Forms.DialogResult]::OK
+$form.AcceptButton = $okButton
+$form.Controls.Add($okButton)
+
+$cancelButton = New-Object System.Windows.Forms.Button
+$cancelButton.Location = New-Object System.Drawing.Point(150,120)
+$cancelButton.Size = New-Object System.Drawing.Size(75,23)
+$cancelButton.Text = 'Cancel'
+$cancelButton.DialogResult = [System.Windows.Forms.DialogResult]::Cancel
+$form.CancelButton = $cancelButton
+$form.Controls.Add($cancelButton)
+
+# Create the temporary directory for the downloaded files...
+If (Test-Path -Path "$env:temp\_netboot_") { Remove-Item -Path "$env:temp\_netboot_" -recurse }
+New-Item -Name "_netboot_" -Path $env:temp -itemType Directory
 
 # Download any missing files that can be downloaded...
-For ($i=0; $i -lt $file_list.Length; $i++) {
-	Download-File -url "$($file_list[$i])" -filename ".\usbs\$busbd_name\files\kernels\$(([uri]$file_list[$i]).Segments[-1])"
-	If (-not (Test-Path -Path ".\usbs\$busbd_name\files\kernels\$(([uri]$file_list[$i]).Segments[-1])")) {
-		Write-Host "CUSTOM: Couldn't download file '.\usbs\$busbd_name\files\kernels\$(([uri]$file_list[$i]).Segments[-1])'."
+For ($i=0; $i -lt $download_list.Length; $i++) {
+	Download-File -url "$($download_list[$i])" -filename "$env:temp\_netboot_\$(([uri]$download_list[$i]).Segments[-1])"
+	If (-not (Test-Path -Path "$env:temp\_netboot_\$(([uri]$download_list[$i]).Segments[-1])")) {
+		Write-Host "CUSTOM: Couldn't download file '$env:temp\_netboot_\$(([uri]$download_list[$i]).Segments[-1])'."
 		Exit
 	}
 }
 
-# Download any ISO files necessary for the disk...
-For ($i=0; $i -lt $iso_list.Length; $i++) {
-	Download-File -url "$($iso_list[$i])" -filename "$env:temp\_iso_\$(([uri]$iso_list[$i]).Segments[-1])"
-	If (-not (Test-Path -Path "$env:temp\_iso_\$(([uri]$iso_list[$i]).Segments[-1])")) {
-		Write-Host "CUSTOM: Couldn't download file '$env:temp\_iso_\$(([uri]$iso_list[$i]).Segments[-1])'."
-		Exit
-	}
-}
-
-# Download any ZIP files necessary for the disk...
-For ($i=0; $i -lt $zip_list.Length; $i++) {
-	Download-File -url "$($zip_list[$i])" -filename "$env:temp\_zip_\$(([uri]$zip_list[$i]).Segments[-1])"
-	If (-not (Test-Path -Path "$env:temp\_zip_\$(([uri]$zip_list[$i]).Segments[-1])")) {
-		Write-Host "CUSTOM: Couldn't download file '$env:temp\_zip_\$(([uri]$zip_list[$i]).Segments[-1])'."
-		Exit
-	}
-}
-
-# Mount ISOs and extract necessary files.
-
-# Extract necessary files from ZIP archives.
-
-Remove-Item -Path "$env:temp\_iso_" -recurse
-Remove-Item -Path "$env:temp\_zip_" -recurse
+# Remove the temporary directory.
+Remove-Item -Path "$env:temp\_netboot_" -recurse
