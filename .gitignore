@@ -1,22 +1,13 @@
 # Wildcard ignores.
 *.ignore
-*.iso
 *.img
 *.nsi
-*.001
-*.002
-*.003
-*.004
-*.005
 *Setup.exe
 
 # File Ignores.
 WolfNet-Computing-Boot-Tools.nssp
 thumbs.db
-LICENSE.txt
 LICENSE.rtf
-bcd.cfg
-bfd.cfg
 
 # Directory Ignores.
 Plugins/OS_win311/
