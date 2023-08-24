@@ -215,6 +215,10 @@ If ($busbd_label) {
 If (($busbd_call) -and (Test-Path -Path ".\usbs\$busbd_name\$busbd_call" -PathType Leaf)) {
     Write-Host "BUSBD: Calling custom script '.\usbs\$busbd_name\$busbd_call'..."
 	& ".\usbs\$busbd_name\$busbd_call"
+	If ($LASTEXITCODE) {
+		Write-Error "BUSBD: Custom script failed."
+		Abort
+	}
 }
 
 If ($busbd_virtual) {
