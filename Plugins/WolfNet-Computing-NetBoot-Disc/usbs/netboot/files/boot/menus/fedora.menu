@@ -5,6 +5,29 @@ TIMEOUT 300
 ONTIMEOUT fedora
 
 LABEL -
+	MENU LABEL 38:
+	MENU DISABLE
+
+LABEL 38
+	MENU LABEL ^Install Fedora 38
+	LINUX /kernels/fedora/38/vmlinuz
+	INITRD /kernels/fedora/38/initrd.img
+	APPEND inst.stage2=hd:LABEL=NETBOOT:/fedora/38 quiet
+
+LABEL 38_basic
+	MENU LABEL Install Fedora 38 in ^basic graphics mode
+	LINUX /kernels/fedora/38/vmlinuz
+	INITRD /kernels/fedora/38/initrd.img
+	APPEND inst.stage2=hd:LABEL=NETBOOT:/fedora/38 nomodeset quiet
+
+LABEL 38_rescue
+	MENU LABEL ^Rescue a Fedora 38 system
+	LINUX /kernels/fedora/38/vmlinuz
+	INITRD /kernels/fedora/38/initrd.img
+	APPEND inst.stage2=hd:LABEL=NETBOOT:/fedora/38 inst.rescue quiet
+	
+MENU SEPARATOR
+LABEL -
 	MENU LABEL SilverBlue:
 	MENU DISABLE
 

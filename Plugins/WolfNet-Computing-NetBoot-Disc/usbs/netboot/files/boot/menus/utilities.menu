@@ -12,12 +12,27 @@ LABEL -
 LABEL chntpw
 	MENU LABEL ^CHNTPW
 	TEXT HELP
-		This entry is for changing passworods on NT machines.
-		This will ONLY work for OFFLINE passwords. NOT AD PASSWORDS!
+		This entry is for changing passwords on NT machines.
+		This will ONLY work for OFFLINE passwords. NOT Domain passwords!
 	ENDTEXT
 	KERNEL /kernels/chntpw/VMLINUZ
 	APPEND rw vga=1 initrd=/kernels/chntpw/INITRD.CGZ,/kernels/chntpw/SCSI.CGZ loglevel=1
+
+MENU SEPARATOR
+LABEL -
+	MENU LABEL Rescue:
+	MENU DISABLE
+
+LABEL systemrescue
+	MENU LABEL System^Rescue
+	TEXT HELP
+		SystemRescue (formerly known as SystemRescueCd) is a Linux system
+		rescue toolkit available as a bootable medium for administrating or
+		repairing your system and data after a crash.
+	ENDTEXT
+	CONFIG /boot/menus/systemrescue.menu
 	
+
 MENU SEPARATOR
 
 LABEL main

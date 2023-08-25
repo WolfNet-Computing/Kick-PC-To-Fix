@@ -152,7 +152,7 @@ LABEL nocde
 	KERNEL /kernels/tinycore/vmlinuz
 	INITRD /kernels/tinycore/core.gz
 	APPEND loglevel=3 waitusb=5 base
-	
+
 MENU SEPARATOR
 
 LABEL main
