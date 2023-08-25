@@ -1,1 +1,0 @@
-bd35b0f39fbdaedd278a973c0e2e852d  libXrandr.tcz
