@@ -23,7 +23,7 @@ $file_list = @(
 	("Fedora Linux 38", "https://download.fedoraproject.org/pub/fedora/linux/releases/38/Everything/x86_64/iso/Fedora-Everything-netinst-x86_64-38-1.6.iso", (("images\pxeboot\vmlinuz", "kernels\fedora\38"), ("images\pxeboot\initrd.img", "kernels\fedora\38"), ("images\eltorito.img", "fedora\38\images"), ("images\install.img", "fedora\38\images"), (".discinfo", "fedora\38")), $True),
 	("Fedora Linux 38 Silverblue", "https://download.fedoraproject.org/pub/fedora/linux/releases/38/Silverblue/x86_64/iso/Fedora-Silverblue-ostree-x86_64-38-1.6.iso", (("images\pxeboot\vmlinuz", "kernels\fedora\silverblue"), ("images\pxeboot\initrd.img", "kernels\fedora\silverblue"), ("images\eltorito.img", "fedora\silverblue\images"), ("images\install.img", "fedora\silverblue\images"), (".discinfo", "fedora\silverblue")), $True),
 	#("Kali Linux 2023.3", "https://cdimage.kali.org/kali-2023.3/kali-linux-2023.3-installer-netinst-amd64.iso", (()), $True),
-	("Tails Linux", "https://download.tails.net/tails/stable/tails-amd64-5.16.1/tails-amd64-5.16.1.iso", (("live\vmlinuz", "kernels\tails"), ("live\Tails.module", "tails"), ("live\initrd.img", "tails"), ("live\filesystem.packages", "tails"), ("filesystem.squashfs", "tails")), $True),
+	("Tails Linux", "https://download.tails.net/tails/stable/tails-amd64-5.16.1/tails-amd64-5.16.1.iso", (("live\vmlinuz", "kernels\tails"), ("live\Tails.module", "tails"), ("live\initrd.img", "tails"), ("live\filesystem.packages", "tails"), ("live\filesystem.squashfs", "tails")), $True),
 # ZIP archives.
 	("CHNTPW", "http://pogostick.net/~pnh/ntpasswd/usb140201.zip", (("initrd.cgz", "kernels\chntpw\initrd.cgz"), ("scsi.cgz", "kernels\chntpw\scsi.cgz"), ("vmlinuz", "kernels\chntpw\vmlinuz")), $True)
 )
