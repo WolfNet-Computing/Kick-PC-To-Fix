@@ -26,15 +26,6 @@ LABEL sysresccd_copytoram
 	INITRD systemrescue/BOOT/intel_ucode.img,systemrescue/BOOT/amd_ucode.img,kernels/systemrescue/sysresccd.img
 	APPEND archisobasedir=systemrescue archisolabel=NETBOOT iomem=relaxed copytoram
 
-LABEL sysresccd_checksum
-	TEXT HELP
-		Boot SystemRescue and verify the integrity of the live medium
-	ENDTEXT
-	MENU LABEL Boot SystemRescue and verify integrity of the medium (checksum)
-	LINUX kernels/systemrescue/vmlinuz
-	INITRD systemrescue/BOOT/intel_ucode.img,systemrescue/BOOT/amd_ucode.img,kernels/systemrescue/sysresccd.img
-	APPEND archisobasedir=systemrescue archisolabel=NETBOOT iomem=relaxed checksum
-
 LABEL sysresccd_nomodeset
 	TEXT HELP
 		Boot using basic display drivers to avoid display issues
