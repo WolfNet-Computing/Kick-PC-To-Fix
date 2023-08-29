@@ -49,7 +49,6 @@ label hacker
 	APPEND rw root=/dev/null vga=normal
 	
 MENU SEPARATOR
-
 LABEL main
 	MENU LABEL Previous menu
 	CONFIG /boot/menus/linux.menu
