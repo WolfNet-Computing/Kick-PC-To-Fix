@@ -10,6 +10,7 @@ LABEL -
 
 LABEL linux
 	MENU LABEL ^Linux
+	MENU DEFAULT
 	TEXT HELP
 		All Linux based operating systems that are contained on this disk.
 		(Fedora, Kali, for example)
@@ -18,7 +19,6 @@ LABEL linux
 
 LABEL windows
 	MENU LABEL ^Windows
-	MENU DEFAULT
 	TEXT HELP
 		All Microsoft Windows based operating systems that are contained on this disk.
 	ENDTEXT
