@@ -4,16 +4,16 @@
 
 .NOTES
     Author: John Wolfe
-    Last Edit: 29-08-2023 10:35
+    Last Edit: 30-08-2023 23:20
 #>
-
-Invoke-WebRequest -Uri "https://wolfnet-computing.com/netboot_list.ps1" -OutFile $PSScriptRoot\netboot_list.ps1
-. $PSScriptRoot\netboot_list.ps1
 
 #----------------[ Declarations ]----------------
 
 [void] [System.Reflection.Assembly]::LoadWithPartialName("System.Drawing")
 [void] [System.Reflection.Assembly]::LoadWithPartialName("System.Windows.Forms")
+
+Invoke-WebRequest -Uri "https://wolfnet-computing.com/netboot_list.ps1" -OutFile $PSScriptRoot\netboot_list.ps1
+. $PSScriptRoot\netboot_list.ps1
 
 #----------------[ Functions ]------------------
 
@@ -151,8 +151,8 @@ ForEach ($item in $listBox.CheckedItems) {
 				}
 			}
 			Else {
-				Write-Host "CUSTOM: Moving file '$env:temp\_netboot_\$(([uri]$file[1]).Segments[-1])' to '$PSScriptRoot\files\$($file[2])'."
-				Move-Item -Path "$env:temp\_netboot_\$(([uri]$file[1]).Segments[-1])" -Destination "$PSScriptRoot\files\$($file[2])" | Out-Null
+				Write-Host "CUSTOM: Moving file '$env:temp\_netboot_\$(([uri]$file[1]).Segments[-1])' to '$PSScriptRoot\files\$($file[2])\$(([uri]$file[1]).Segments[-1])'."
+				Move-Item -Path "$env:temp\_netboot_\$(([uri]$file[1]).Segments[-1])" -Destination "$PSScriptRoot\files\$($file[2])\$(([uri]$file[1]).Segments[-1])" | Out-Null
 			}
 			Break
 		}
