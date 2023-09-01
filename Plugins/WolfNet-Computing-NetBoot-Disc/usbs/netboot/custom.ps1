@@ -4,7 +4,7 @@
 
 .NOTES
     Author: John Wolfe
-    Last Edit: 30-08-2023 23:20
+    Last Edit: 01-09-2023 01:25
 #>
 
 #----------------[ Declarations ]----------------
@@ -41,6 +41,15 @@ Function Download-File {
     )
 	Write-Host "CUSTOM: Downloading '$filename' from '$url'."
 	Invoke-WebRequest -Uri $url -OutFile $filename
+}
+
+function Add-MenuToBuildList {
+    If ($_menu_list -eq $null) {
+        $global:_menu_list = @($($args[0]))
+    }
+    Else {
+        $global:_menu_list += $($args[0])
+    }
 }
 
 function Abort {
@@ -159,7 +168,99 @@ ForEach ($item in $listBox.CheckedItems) {
 	}
 }
 
-# Remove the temporary directory and files.
+# Build the boot menu list...
+ForEach ($menu in $syslinux_list) {
+	ForEach ($item in $listBox.CheckedItems) {
+		ForEach ($file in $file_list) {
+			If ($($file[0]) -eq [string]$item) {
+				If ($($file[4]) -eq $($menu[0])) {
+					Add-MenuToBuildList $menu[0]
+				}
+			}
+		}
+	}
+	ForEach ($_build_item in $_menu_list) {
+		ForEach ($section in $menu[3]) {
+			ForEach ($entry in $section[1]) {
+				If ($($entry[2]) -eq $_build_item) {
+					Add-MenuToBuildList $entry[2]
+				}
+			}
+		}
+	}
+}
+
+# Build the files listed in the boot menu list...
+ForEach ($item in $_menu_list) {
+	ForEach ($menu in $syslinux_list) {
+		If ($($menu[0]) -eq $item) {
+			# Write the header to the menu file, overwriting if the file already exists...
+			Out-File	-filePath "$PSScriptRoot\files\$($menu[0])" -inputObject "$($menu[2])"
+			# Append any sections to the file and add their entries simultaneously...
+			If ($($menu[3]) -ne $null) {
+				ForEach ($section in $menu[3]) {
+					# Check for any file entries that belong in this section...
+					$_build_section = $False
+					ForEach ($entry in $section) {
+						ForEach ($_item_to_build in $_menu_list) {
+							If ($($entry[2]) -eq $_item_to_build) {
+								$_build_section = $True
+							}
+						}
+					}
+				}
+			}
+			ForEach ($file in $file_list) {
+				ForEach ($_item_to_build in $_menu_list) {
+					If ($($file[5]) -eq $_item_to_build) {
+						$_build_section = $True
+					}
+				}
+			}
+			# Move on to properly building the boot files...
+			If ($_build_section) {
+				$_output_array = @("", "MENU SEPARATOR", "", "LABEL -", "	MENU LABEL $($section[0]):", "	MENU DISABLE")
+				Out-File	-filePath "$PSScriptRoot\files\$($menu[0])" -append -inputObject "$_output_array"
+				ForEach ($entry in $section) {
+					ForEach ($_item_to_build in $_menu_list) {
+						If ($($entry[2]) -eq $_item_to_build) {
+							$_output_array = @("", "LABEL $($entry[1])", "	MENU LABEL $($entry[0])", "	TEXT HELP")
+							ForEach ($_help_line in $entry[3]) {
+								$_output_array += $_help_line
+							}
+							$_output_array += "	ENDTEXT"
+							$_output_array += "	CONFIG $($entry[2].Replace('/','\'))"
+							Out-File	-filePath "$PSScriptRoot\files\$($menu[0])" -append -inputObject "$_output_array"
+						}
+					}
+				}
+				ForEach ($file in $file_list) {
+					If ($($file[5]) -ne $null) {
+						If ($($file[5]) -eq $($section[0])) {
+							Out-File	-filePath "$PSScriptRoot\files\$($menu[0])" -append -inputObject ""
+							Out-File	-filePath "$PSScriptRoot\files\$($menu[0])" -append -inputObject "$($file[6])"
+						}
+					}
+				}
+			}
+		}
+		# Append any orphan entries (Those without a section)...
+		Out-File	-filePath "$PSScriptRoot\files\$($menu[0])" -append -inputObject "MENU SEPARATOR"
+		ForEach ($file in $file_list) {
+			If ($($file[5]) -eq $null) {
+				Out-File	-filePath "$PSScriptRoot\files\$($menu[0])" -append -inputObject ""
+				Out-File	-filePath "$PSScriptRoot\files\$($menu[0])" -append -inputObject "$($file[6])"
+			}
+		}
+		# Append the entry for the previous menu (If there is one)...
+		If ($($menu[1]) -ne $null) {
+			$_output_array = @("", "MENU SEPARATOR", "LABEL previous", "	MENU LABEL Previous menu", "	CONFIG $($menu[1].Replace('/','\'))")
+			Out-File	-filePath "$PSScriptRoot\files\$($menu[0])" -append -inputObject "$_output_array"
+		}
+	}
+}
+
+# Remove the temporary directory and files...
 Remove-Item -Path "$env:temp\_netboot_" -recurse
 Remove-Item -Path "$PSScriptRoot\netboot_list.ps1"
 
