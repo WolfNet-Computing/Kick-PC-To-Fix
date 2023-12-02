@@ -19,7 +19,7 @@ When installing, the following applies to the options chosen:
  - Boot USB Builder: Contains files for building bootable USB drives or images and 1 example template. This is stored in the 'usbs' subdirectory of the installation directory.
  - Boot Floppy Builder: Contains files for building bootable Floppy Discs.  
  - Corporate ModBoot: The same as ModBoot except this is aimed more towards businesses, companies and organisations.  
- - NetBoot: A bigger boot disc based on the Boot CD/DVD Builder that uses ISOLINUX and iPXE to boot from either the local filesystem or a remote (TFTP or HTTP/HTTPS) server.  
+ - NetBoot: A bigger boot disc based on the Boot USB Builder that uses ISOLINUX and iPXE to boot from either the local filesystem or a remote (TFTP or HTTP/HTTPS) server.  
   
 ## Usage  
   
