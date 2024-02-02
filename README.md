@@ -1,4 +1,4 @@
-# Kick PC to Fix - A set of bootable media creation tools.
+# Kick PC to Fix - A set of cross-platform bootable media creation tools.
   
 ## Notices  
   
