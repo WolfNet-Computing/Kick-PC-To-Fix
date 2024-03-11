@@ -2,11 +2,11 @@
   
 ## Notices  
   
-LEGAL DISCLAIMER: Read the really serious legal disclaimer [here](/REALLY\_SERIOUS\_DISCLAIMER.md) before you do anything else.
+LEGAL DISCLAIMER: Read the really serious legal disclaimer [here](./REALLY\_SERIOUS\_DISCLAIMER.md) before you do anything else.
   
 LICENSING: The apache license doesn't cover **anything** in the 'bin', 'cds/\*\/files', 'cabs' or 'os' directories. These have their own licenses. At the command line, type 'bcd -help' or 'bfd -help' to find out more about the external files used and their licensing conditions.  
   
-DEVELOPER NOTICE: Please read the developer documentation [here](/DEVELOPER\_README.md) before doing **anything**.
+DEVELOPER NOTICE: Please read the developer documentation [here](./DEVELOPER\_README.md) before doing **anything**.
   
 IMPORTANT: The Apache License used is in the file "[LICENSE.md](./LICENSE.md)" instead of "LICENSE" and the Copyright Notice is in the file "[NOTICE.md](./NOTICE.md)" instead of "NOTICE". This is to make reading the files on GitHub easier.  
   
