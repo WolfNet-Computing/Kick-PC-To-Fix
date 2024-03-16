@@ -4,7 +4,7 @@
   
 LEGAL DISCLAIMER: Read the really serious legal disclaimer [here](./REALLY\_SERIOUS\_DISCLAIMER.md) before you do anything else.
   
-LICENSING: The apache license doesn't cover **anything** in the 'bin', 'cds/\*\/files', 'cabs' or 'os' directories. These have their own licenses. At the command line, type 'bcd -help' or 'bfd -help' to find out more about the external files used and their licensing conditions.  
+LICENSING: The apache license doesn't cover **anything** in the 'bin', 'cds/\*\/files', 'cabs' or 'os' directories. These have their own licenses. At the command line, type `bcd -help`, `bfd -help` or `busbd -help` to find out more about the external files used and their licensing conditions.  
   
 DEVELOPER NOTICE: Please read the developer documentation [here](./DEVELOPER\_README.md) before doing **anything**.
   
