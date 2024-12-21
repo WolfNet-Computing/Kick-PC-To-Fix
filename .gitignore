@@ -3,11 +3,13 @@
 *.img
 *.nsi
 *Setup.exe
+*.Dockerfile
 
 # File Ignores.
 WolfNet-Computing-Boot-Tools.nssp
 thumbs.db
 LICENSE.rtf
+Dockerfile
 
 # Directory Ignores.
 Plugins/OS_win311/
