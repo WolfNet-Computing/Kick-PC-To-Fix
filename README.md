@@ -10,6 +10,9 @@ DEVELOPER NOTICE: Please read the developer documentation [here](./DEVELOPER\_RE
   
 IMPORTANT: The Apache License used is in the file "[LICENSE.md](./LICENSE.md)" instead of "LICENSE" and the Copyright Notice is in the file "[NOTICE.md](./NOTICE.md)" instead of "NOTICE". This is to make reading the files on GitHub easier.  
   
+> [!TIP]
+> We are now on [Docker Hub](https://hub.docker.com/repository/docker/wolfnetcomputing/kick-pc-to-fix) as an image.
+    
 ## Download and Installation  
   
 Download and install the current version of the program [available here](https://github.com/WolfNet-Computing/Kick-PC-To-Fix/releases) to the suggested location and click either the shortcut on the desktop or in the start menu.  
