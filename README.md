@@ -13,7 +13,7 @@ DEVELOPERS: Please read the developer documentation [here](./DEVELOPER\_README.m
   
 <!-- 
 > [!TIP]
-> We are now on [Docker Hub](https://hub.docker.com/repository/docker/wolfnetcomputing/kick-pc-to-fix) as an image.  
+> We are now on [Docker Hub]() as an image.  
 -->
     
 ## Download and Installation  
